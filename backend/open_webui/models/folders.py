@@ -45,13 +45,13 @@ class FolderModel(BaseModel):
     data: Optional[dict] = None
     is_expanded: bool = False
     created_at: int
-    updated_at: int
+    updated_at: int 
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class FolderMetadataResponse(BaseModel):
-    icon: Optional[str] = None
+    icon: Optional[str] = None 
 
 
 class FolderNameIdResponse(BaseModel):
