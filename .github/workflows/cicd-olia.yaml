@@ -89,7 +89,6 @@ jobs:
       - name: Build Docker image
         run: |
           ls
-          cat .dockerignore
           docker build --no-cache -t olivesoft.azurecr.io/open-webui-custom:latest .
       - name: Push Docker image to ACR
         run: |
