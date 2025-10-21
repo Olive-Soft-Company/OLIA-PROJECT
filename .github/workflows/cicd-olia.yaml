@@ -19,6 +19,7 @@ jobs:
           ssh-private-key: ${{ secrets.AZURE_VM_SSH_KEY }}
       - name: Create .env file from secrets and repository variables
         run: |
+          echo .dockerignore
           cat <<EOF > .env
           # Secrets
           GOOGLE_DRIVE_API_KEY=${GOOGLE_DRIVE_API_KEY}
