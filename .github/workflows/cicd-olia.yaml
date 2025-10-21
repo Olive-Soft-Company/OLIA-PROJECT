@@ -88,7 +88,9 @@ jobs:
           echo ${{ secrets.ACR_PASSWORD }} | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
       - name: Build Docker image
         run: |
-          docker build -t olivesoft.azurecr.io/open-webui-custom:latest .
+          ls
+          cat .dockerignore
+          docker build --no-cache -t olivesoft.azurecr.io/open-webui-custom:latest .
       - name: Push Docker image to ACR
         run: |
           docker push olivesoft.azurecr.io/open-webui-custom:latest
