@@ -257,7 +257,7 @@ class AppConfig:
 
             if self._redis:
                 redis_key = f"{self._redis_key_prefix}:config:{key}"
-                self._redis.set(redis_key, json.dumps(self._state[key].value))
+                self._redis.set(redis_key, json.dumps(self._state[key].value)) 
 
     def __getattr__(self, key):
         if key not in self._state:
