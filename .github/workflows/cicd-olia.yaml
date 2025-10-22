@@ -38,6 +38,7 @@ jobs:
             --build-arg WEBUI_AUTH_SIGNOUT_REDIRECT_URL=${{ secrets.WEBUI_AUTH_SIGNOUT_REDIRECT_URL }} \
             --build-arg ENABLE_IMAGE_PROMPT_GENERATION=${{ vars.ENABLE_IMAGE_PROMPT_GENERATION }} \
             --build-arg USER_PERMISSIONS_CHAT_CONTROLS=${{ vars.USER_PERMISSIONS_CHAT_CONTROLS }} \
+            --build-arg GOOGLE_REDIRECT_URI=${{ vars.GOOGLE_REDIRECT_URI }} \
             --build-arg ENABLE_OAUTH_GROUP_CREATION=${{ vars.ENABLE_OAUTH_GROUP_CREATION }} \
             --build-arg ENABLE_OAUTH_GROUP_MANAGEMENT=${{ vars.ENABLE_OAUTH_GROUP_MANAGEMENT }} \
             --build-arg ENABLE_OAUTH_SIGNUP=${{ vars.ENABLE_OAUTH_SIGNUP }} \
