@@ -27,7 +27,7 @@ OPEN_WEBUI_DIR = ENV_FILE_PATH.parent
 BACKEND_DIR = OPEN_WEBUI_DIR.parent
 
 # BASE_DIR is the parent of BACKEND_DIR (open-webui-dev/)
-BASE_DIR = BACKEND_DIR.parent
+BASE_DIR = BACKEND_DIR.parent 
 
 try:
     from dotenv import find_dotenv, load_dotenv
