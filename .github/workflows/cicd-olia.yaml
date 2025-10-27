@@ -49,6 +49,7 @@ jobs:
             --build-arg OAUTH_GROUP_CLAIM=${{ vars.OAUTH_GROUP_CLAIM }} \
             --build-arg OAUTH_PROVIDER_NAME=${{ vars.OAUTH_PROVIDER_NAME }} \
             --build-arg OPENAI_API_BASE_URL=${{ vars.OPENAI_API_BASE_URL }} \
+            --build-arg ONEDRIVE_SHAREPOINT_URL=${{ vars.ONEDRIVE_SHAREPOINT_URL }} \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
