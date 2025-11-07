@@ -26,7 +26,7 @@ from redis import Redis
 
 
 from fastapi import (
-    Depends,
+    Depends, 
     FastAPI,
     File,
     Form,
