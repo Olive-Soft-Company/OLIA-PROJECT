@@ -29,7 +29,7 @@ def search_firecrawl(
         results = [
             SearchResult(
                 link=result.url,
-                title=result.title,
+                title=result.title, 
                 snippet=result.description,
             )
             for result in results[:count]
