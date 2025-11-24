@@ -143,7 +143,7 @@ class FilesTable:
                 return None
 
     def get_file_metadata_by_id(self, id: str) -> Optional[FileMetadataResponse]:
-        with get_db() as db:
+        with get_db() as db: 
             try:
                 file = db.get(File, id)
                 return FileMetadataResponse(
