@@ -53,6 +53,7 @@ jobs:
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
+            --build-arg WEBUI_URL=${{ vars.WEBUI_URL }} \
             -t olivesoft.azurecr.io/open-webui-custom:latest .
 
       - name: Push Docker image to ACR
