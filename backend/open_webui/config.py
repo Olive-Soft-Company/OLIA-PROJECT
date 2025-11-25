@@ -454,7 +454,7 @@ OPENID_PROVIDER_URL = PersistentConfig(
     os.environ.get("OPENID_PROVIDER_URL", ""),
 )
 
-OPENID_REDIRECT_URI = PersistentConfig(
+OPENID_REDIRECT_URI = PersistentConfig( 
     "OPENID_REDIRECT_URI",
     "oauth.oidc.redirect_uri",
     os.environ.get("OPENID_REDIRECT_URI", ""),
