@@ -631,6 +631,17 @@
 	const inputFilesHandler = async (inputFiles) => {
 		console.log('Input files handler called with:', inputFiles);
 
+		// Enforce maximum limit of 10 files per upload request
+		const MAX_FILES_PER_UPLOAD_REQUEST = 10;
+		if (inputFiles.length > MAX_FILES_PER_UPLOAD_REQUEST) {
+			toast.error(
+				$i18n.t(`You can only upload a maximum of {{maxCount}} file(s) per request.`, {
+					maxCount: MAX_FILES_PER_UPLOAD_REQUEST
+				})
+			);
+			return;
+		}
+
 		if (
 			($config?.file?.max_count ?? null) !== null &&
 			files.length + inputFiles.length > $config?.file?.max_count
