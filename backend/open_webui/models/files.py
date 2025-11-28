@@ -204,6 +204,31 @@ class FilesTable:
                 for file in db.query(File).filter_by(user_id=user_id).all()
             ]
 
+    def count_recent_upload_files_by_user_id(self, user_id: str, time_window_seconds: int = 5) -> int:
+        """
+        Count files that were uploaded recently (within time_window_seconds) for a specific user.
+        This helps enforce the limit of files per upload request.
+        """
+        import time
+        current_time = int(time.time())
+        time_threshold = current_time - time_window_seconds
+        
+        with get_db() as db:
+            files = db.query(File).filter_by(user_id=user_id).all()
+            count = 0
+            for file in files:
+                # Check if file was created recently (within time window)
+                if file.created_at and file.created_at >= time_threshold:
+                    # Also check if file is being processed or was just uploaded
+                    if file.data and isinstance(file.data, dict):
+                        status = file.data.get("status")
+                        if status in ("pending", "processing", None):
+                            count += 1
+                    elif not file.data:
+                        # File just uploaded, no status yet
+                        count += 1
+            return count
+
     def update_file_hash_by_id(self, id: str, hash: str) -> Optional[FileModel]:
         with get_db() as db:
             try:

@@ -104,6 +104,9 @@ class ERROR_MESSAGES(str, Enum):
         "Duplicate content detected. Please provide unique content to proceed."
     )
     FILE_NOT_PROCESSED = "Extracted content is not available for this file. Please ensure that the file is processed before proceeding."
+    TOO_MANY_FILES_FOR_INDEXING = (
+        lambda max_count="": f"Oops! You can only index a maximum of {max_count if max_count else '10'} files per request. Please reduce the number of files and try again."
+    )
 
 
 class TASKS(str, Enum):
