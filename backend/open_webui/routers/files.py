@@ -173,6 +173,17 @@ def upload_file_handler(
             )
     file_metadata = metadata if metadata else {}
 
+    # Enforce maximum limit of 10 files per upload request before processing/indexing
+    # Check for files uploaded in the last 5 seconds (same upload batch)
+    if process:
+        MAX_FILES_PER_UPLOAD_REQUEST = 10
+        recent_uploads_count = Files.count_recent_upload_files_by_user_id(user.id, time_window_seconds=5)
+        if recent_uploads_count >= MAX_FILES_PER_UPLOAD_REQUEST:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=ERROR_MESSAGES.TOO_MANY_FILES_FOR_INDEXING(str(MAX_FILES_PER_UPLOAD_REQUEST)),
+            )
+
     try:
         unsanitized_filename = file.filename
         filename = os.path.basename(unsanitized_filename)

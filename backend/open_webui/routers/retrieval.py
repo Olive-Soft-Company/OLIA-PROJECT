@@ -112,6 +112,9 @@ from open_webui.constants import ERROR_MESSAGES
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["RAG"])
 
+# Maximum number of files that can be indexed per request
+MAX_FILES_PER_INDEXING_REQUEST = 10
+
 ##########################################
 #
 # Utility functions
@@ -2393,6 +2396,13 @@ def process_files_batch(
     """
     Process a batch of files and save them to the vector database.
     """
+    # Enforce maximum limit of files per request before indexing
+    if len(form_data.files) > MAX_FILES_PER_INDEXING_REQUEST:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERROR_MESSAGES.TOO_MANY_FILES_FOR_INDEXING(str(MAX_FILES_PER_INDEXING_REQUEST)),
+        )
+    
     results: List[BatchProcessFilesResult] = []
     errors: List[BatchProcessFilesResult] = []
     collection_name = form_data.collection_name

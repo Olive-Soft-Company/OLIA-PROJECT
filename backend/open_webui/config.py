@@ -635,12 +635,13 @@ def load_oauth_providers():
     ):
 
         def microsoft_oauth_register(oauth: OAuth):
-            client = oauth.register(
-                name="microsoft",
-                client_id=MICROSOFT_CLIENT_ID.value,
-                client_secret=MICROSOFT_CLIENT_SECRET.value,
-                server_metadata_url=f"{MICROSOFT_CLIENT_LOGIN_BASE_URL.value}/{MICROSOFT_CLIENT_TENANT_ID.value}/v2.0/.well-known/openid-configuration?appid={MICROSOFT_CLIENT_ID.value}",
-                client_kwargs={
+            # Build register kwargs
+            register_kwargs = {
+                "name": "microsoft",
+                "client_id": MICROSOFT_CLIENT_ID.value,
+                "client_secret": MICROSOFT_CLIENT_SECRET.value,
+                "server_metadata_url": f"{MICROSOFT_CLIENT_LOGIN_BASE_URL.value}/{MICROSOFT_CLIENT_TENANT_ID.value}/v2.0/.well-known/openid-configuration?appid={MICROSOFT_CLIENT_ID.value}",
+                "client_kwargs": {
                     "scope": MICROSOFT_OAUTH_SCOPE.value,
                     **(
                         {"timeout": int(OAUTH_TIMEOUT.value)}
@@ -648,12 +649,18 @@ def load_oauth_providers():
                         else {}
                     ),
                 },
-                redirect_uri=MICROSOFT_REDIRECT_URI.value,
-            )
+            }
+            # Only add redirect_uri if explicitly configured
+            # Otherwise, handle_login will construct it from WEBUI_URL
+            if MICROSOFT_REDIRECT_URI.value:
+                register_kwargs["redirect_uri"] = MICROSOFT_REDIRECT_URI.value
+            
+            client = oauth.register(**register_kwargs)
             return client
 
         OAUTH_PROVIDERS["microsoft"] = {
-            "redirect_uri": MICROSOFT_REDIRECT_URI.value,
+            # Store None if not set, so handle_login can detect it and use WEBUI_URL
+            "redirect_uri": MICROSOFT_REDIRECT_URI.value if MICROSOFT_REDIRECT_URI.value else None,
             "picture_url": MICROSOFT_CLIENT_PICTURE_URL.value,
             "register": microsoft_oauth_register,
         }

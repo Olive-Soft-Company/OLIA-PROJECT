@@ -16,6 +16,7 @@ from open_webui.routers.retrieval import (
     ProcessFileForm,
     process_files_batch,
     BatchProcessFilesForm,
+    MAX_FILES_PER_INDEXING_REQUEST,
 )
 from open_webui.storage.provider import Storage
 
@@ -732,6 +733,13 @@ def add_files_to_knowledge_batch(
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
         )
 
+    # Enforce maximum limit of files per request before indexing
+    if len(form_data) > MAX_FILES_PER_INDEXING_REQUEST:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERROR_MESSAGES.TOO_MANY_FILES_FOR_INDEXING(str(MAX_FILES_PER_INDEXING_REQUEST)),
+        )
+    
     # Get files content
     log.info(f"files/batch/add - {len(form_data)} files")
     files: List[FileModel] = []
