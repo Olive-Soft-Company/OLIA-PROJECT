@@ -75,10 +75,16 @@ class OneDriveConfig {
 				throw new Error('OneDrive client ID not configured');
 			}
 
+			// Get base URL without any dynamic path segments
+			// Use window.location.origin to ensure we only use the base URL (e.g., http://localhost:8080)
+			// This prevents MSAL from using the current page URL which may include dynamic paths like /c/{sessionId}
+			const baseRedirectUri = window.location.origin;
+
 			const msalParams = {
 				auth: {
 					authority: `https://login.microsoftonline.com/${authorityEndpoint}`,
-					clientId: clientId
+					clientId: clientId,
+					redirectUri: baseRedirectUri
 				}
 			};
 
