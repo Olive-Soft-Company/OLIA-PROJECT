@@ -58,13 +58,11 @@ jobs:
       - name: Push Docker image to ACR
         run: |
           docker push olivesoft.azurecr.io/open-webui-custom:latest
-      - name: Prune unused Docker objects
-        run: |
-          docker system prune -af
       - name: Deploy to Swarm VM
         run: |
           ssh -o StrictHostKeyChecking=no azureuser@10.2.0.5 "
             docker login olivesoft.azurecr.io -u olivesoft -p ${{ secrets.ACR_PASSWORD }}
             docker pull olivesoft.azurecr.io/open-webui-custom:latest
             docker service update -d --with-registry-auth --image olivesoft.azurecr.io/open-webui-custom:latest keycloak_webapp
+            docker system prune -af
           "
