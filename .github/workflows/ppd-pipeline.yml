@@ -63,6 +63,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no azureuser@10.2.0.5 "
             docker login olivesoft.azurecr.io -u olivesoft -p ${{ secrets.ACR_PASSWORD }}
             docker pull olivesoft.azurecr.io/open-webui-custom:latest
-            docker service update -d --with-registry-auth --image olivesoft.azurecr.io/open-webui-custom:latest keycloak_webapp
+            docker service update -d --update-order start-first --with-registry-auth --image olivesoft.azurecr.io/open-webui-custom:latest keycloak_webapp
             docker system prune -af
           "
