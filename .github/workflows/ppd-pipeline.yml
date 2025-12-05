@@ -28,7 +28,7 @@ jobs:
             --build-arg GOOGLE_PSE_API_KEY=${{ secrets.GOOGLE_PSE_API_KEY }} \
             --build-arg GOOGLE_PSE_ENGINE_ID=${{ secrets.GOOGLE_PSE_ENGINE_ID }} \
             --build-arg IMAGES_OPENAI_API_KEY=${{ secrets.IMAGES_OPENAI_API_KEY }} \
-            --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }} \
+            --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET_PPD }} \
             --build-arg ONEDRIVE_CLIENT_ID_BUSINESS=${{ secrets.ONEDRIVE_CLIENT_ID_BUSINESS }} \
             --build-arg ONEDRIVE_CLIENT_ID_PERSONAL=${{ secrets.ONEDRIVE_CLIENT_ID_PERSONAL }} \
             --build-arg ONEDRIVE_SHAREPOINT_TENANT_ID=${{ secrets.ONEDRIVE_SHAREPOINT_TENANT_ID }} \
@@ -45,7 +45,7 @@ jobs:
             --build-arg ENABLE_ONEDRIVE_INTEGRATION=${{ vars.ENABLE_ONEDRIVE_INTEGRATION }} \
             --build-arg ENABLE_ONEDRIVE_PERSONAL=${{ vars.ENABLE_ONEDRIVE_PERSONAL }} \
             --build-arg IMAGES_OPENAI_API_BASE_URL=${{ vars.IMAGES_OPENAI_API_BASE_URL }} \
-            --build-arg OAUTH_CLIENT_ID=${{ vars.OAUTH_CLIENT_ID }} \
+            --build-arg OAUTH_CLIENT_ID=olia-ppd \
             --build-arg OAUTH_GROUP_CLAIM=${{ vars.OAUTH_GROUP_CLAIM }} \
             --build-arg OAUTH_PROVIDER_NAME=${{ vars.OAUTH_PROVIDER_NAME }} \
             --build-arg OPENAI_API_BASE_URL=${{ vars.OPENAI_API_BASE_URL }} \
