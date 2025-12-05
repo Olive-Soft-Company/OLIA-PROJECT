@@ -15,7 +15,7 @@
 	const i18n = getContext('i18n');
 
 	export let modelIds = [];
-	export let models = [];
+	export let models = []; 
 	export let atSelectedModel;
 
 	export let onSelect = (e) => {};
