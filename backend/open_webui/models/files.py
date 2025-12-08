@@ -17,7 +17,7 @@ log.setLevel(SRC_LOG_LEVELS["MODELS"])
 
 class File(Base):
     __tablename__ = "file"
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True, unique=True)
     user_id = Column(String)
     hash = Column(Text, nullable=True)
 
@@ -96,6 +96,12 @@ class FileForm(BaseModel):
     data: dict = {}
     meta: dict = {}
     access_control: Optional[dict] = None
+
+
+class FileUpdateForm(BaseModel):
+    hash: Optional[str] = None
+    data: Optional[dict] = None
+    meta: Optional[dict] = None
 
 
 class FilesTable:
@@ -228,7 +234,28 @@ class FilesTable:
                         # File just uploaded, no status yet
                         count += 1
             return count
+    def update_file_by_id(
+        self, id: str, form_data: FileUpdateForm
+    ) -> Optional[FileModel]:
+        with get_db() as db:
+            try:
+                file = db.query(File).filter_by(id=id).first()
 
+                if form_data.hash is not None:
+                    file.hash = form_data.hash
+
+                if form_data.data is not None:
+                    file.data = {**(file.data if file.data else {}), **form_data.data}
+
+                if form_data.meta is not None:
+                    file.meta = {**(file.meta if file.meta else {}), **form_data.meta}
+
+                file.updated_at = int(time.time())
+                db.commit()
+                return FileModel.model_validate(file)
+            except Exception as e:
+                log.exception(f"Error updating file completely by id: {e}")
+                return None
     def update_file_hash_by_id(self, id: str, hash: str) -> Optional[FileModel]:
         with get_db() as db:
             try:

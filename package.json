@@ -1,6 +1,10 @@
 {
 	"name": "open-webui",
+<<<<<<< HEAD
 	"version": "0.6.36",
+=======
+	"version": "0.6.41",
+>>>>>>> 945c05590 (Upgrade OLIA to V0.6.41)
 	"private": true,
 	"scripts": {
 		"dev": "npm run pyodide:fetch && vite dev --host",

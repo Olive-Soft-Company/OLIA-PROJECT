@@ -1,3 +1,4 @@
+
 export const downloadPdf = async (note) => {
 	const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
 		import('jspdf'),
@@ -9,7 +10,7 @@ export const downloadPdf = async (note) => {
 	const virtualHeight = 1400; // Fixed height (adjust as needed)
 
 	// STEP 1. Get a DOM node to render
-	const html = note.data?.content?.html ?? '';
+	const html = DOMPurify.sanitize(note.data?.content?.html ?? '');
 	const isDarkMode = document.documentElement.classList.contains('dark');
 
 	let node;
