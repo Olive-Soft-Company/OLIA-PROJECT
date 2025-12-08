@@ -1,3 +1,6 @@
+// import { mount, unmount } from 'svelte';
+// import { createClassComponent } from 'svelte/legacy';
+
 import tippy from 'tippy.js';
 
 export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
@@ -104,7 +107,12 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 				popup?.destroy();
 				popup = null;
 
-				component?.$destroy();
+				try {
+					component.$destroy();
+				} catch (e) {
+					console.error('Error unmounting component:', e);
+				}
+
 				component = null;
 
 				if (container?.parentNode) container.parentNode.removeChild(container);

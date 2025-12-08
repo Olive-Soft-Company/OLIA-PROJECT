@@ -72,10 +72,13 @@
 		// remove trailing slash from url
 		url = url.replace(/\/$/, '');
 
+		let _headers = null;
+
 		if (headers) {
 			try {
-				const _headers = JSON.parse(headers);
+				_headers = JSON.parse(headers);
 				if (typeof _headers !== 'object' || Array.isArray(_headers)) {
+					_headers = null;
 					throw new Error('Headers must be a valid JSON object');
 				}
 				headers = JSON.stringify(_headers, null, 2);
@@ -94,7 +97,7 @@
 					auth_type,
 					azure: azure,
 					api_version: apiVersion,
-					headers: JSON.parse(headers)
+					...(_headers ? { headers: _headers } : {})
 				}
 			},
 			direct
@@ -355,7 +358,7 @@
 									<div class="flex-shrink-0 self-start">
 										<select
 											id="select-bearer-or-session"
-											class={`w-full text-sm bg-transparent pr-5 ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
+											class={`dark:bg-gray-900 w-full text-sm bg-transparent pr-5 ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
 											bind:value={auth_type}
 										>
 											<option value="none">{$i18n.t('None')}</option>
@@ -423,7 +426,7 @@
 									<div class="flex-1">
 										<Tooltip
 											content={$i18n.t(
-												'Enter additional headers in JSON format (e.g. {{\'{{"X-Custom-Header": "value"}}\'}})'
+												'Enter additional headers in JSON format (e.g. {"X-Custom-Header": "value"}'
 											)}
 										>
 											<Textarea
