@@ -1,8 +1,7 @@
 import logging
 from typing import Optional, List
-from urllib.parse import urljoin
 
-import requests
+from firecrawl import FirecrawlApp
 from open_webui.retrieval.web.main import SearchResult, get_filtered_results
 from open_webui.env import SRC_LOG_LEVELS
 
@@ -18,32 +17,36 @@ def search_firecrawl(
     filter_list: Optional[List[str]] = None,
 ) -> List[SearchResult]:
     try:
-        firecrawl_search_url = urljoin(firecrawl_url, "/v1/search")
-        response = requests.post(
-            firecrawl_search_url,
-            headers={
-                "User-Agent": "OLIA (https://github.com/open-webui/open-webui) RAG Bot",
-                "Authorization": f"Bearer {firecrawl_api_key}",
-            },
-            json={
-                "query": query,
-                "limit": count,
-            },
+        # Initialize official Firecrawl SDK client
+        firecrawl = FirecrawlApp(api_key=firecrawl_api_key, api_url=firecrawl_url)
+
+        # Run search
+        response = firecrawl.search(
+            query=query,
+            limit=count,
+            ignore_invalid_urls=True,
+            timeout=count * 3,          # safe timeout scaling
         )
-        response.raise_for_status()
-        results = response.json().get("data", [])
+
+        results = response.web or []   # Ensure list if None
+
+        # Optional filtering
         if filter_list:
             results = get_filtered_results(results, filter_list)
-        results = [
+
+        # Normalize to SearchResult objects
+        processed = [
             SearchResult(
-                link=result.get("url"),
-                title=result.get("title"),
-                snippet=result.get("description"),
+                link=result.url,
+                title=result.title,
+                snippet=result.description,
             )
             for result in results[:count]
         ]
-        log.info(f"External search results: {results}")
-        return results
+
+        log.info(f"Firecrawl search results: {processed}")
+        return processed
+
     except Exception as e:
-        log.error(f"Error in External search: {e}")
+        log.error(f"Error in Firecrawl search: {e}")
         return []
