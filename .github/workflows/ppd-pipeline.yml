@@ -34,7 +34,7 @@ jobs:
             --build-arg ONEDRIVE_SHAREPOINT_TENANT_ID=${{ secrets.ONEDRIVE_SHAREPOINT_TENANT_ID }} \
             --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
             --build-arg OPENID_PROVIDER_URL=https://olia-ppd.francecentral.cloudapp.azure.com:8443/realms/OliveSoft/.well-known/openid-configuration \
-            --build-arg OPENID_REDIRECT_URI=https://olia-ppd.francecentral.cloudapp.azure.com:8443/oauth/oidc/callback \
+            --build-arg OPENID_REDIRECT_URI=https://olia-ppd.francecentral.cloudapp.azure.com/oauth/oidc/callback \
             --build-arg WEBUI_AUTH_SIGNOUT_REDIRECT_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
             --build-arg ENABLE_IMAGE_PROMPT_GENERATION=${{ vars.ENABLE_IMAGE_PROMPT_GENERATION }} \
             --build-arg USER_PERMISSIONS_CHAT_CONTROLS=${{ vars.USER_PERMISSIONS_CHAT_CONTROLS }} \
