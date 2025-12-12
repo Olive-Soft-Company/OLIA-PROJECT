@@ -16,7 +16,7 @@ from langchain.retrievers import ContextualCompressionRetriever, EnsembleRetriev
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
-from open_webui.config import VECTOR_DB
+from open_webui.config import VECTOR_DB 
 from open_webui.retrieval.vector.factory import VECTOR_DB_CLIENT
 
 
