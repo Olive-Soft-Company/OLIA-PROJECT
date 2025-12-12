@@ -55,7 +55,8 @@ jobs:
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
             --build-arg WEBUI_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
-            -t olivesoft.azurecr.io/open-webui-custom:latest .
+            -t olivesoft.azurecr.io/open-webui-custom:latest
+
       - name: Push Docker image to ACR
         run: |
           docker push olivesoft.azurecr.io/open-webui-custom:latest
