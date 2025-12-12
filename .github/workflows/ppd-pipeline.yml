@@ -22,7 +22,7 @@ jobs:
           echo ${{ secrets.ACR_PASSWORD }} | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
       - name: Build Docker image
         run: |
-          docker build \
+          docker build . \
             --build-arg GOOGLE_DRIVE_API_KEY=${{ secrets.GOOGLE_DRIVE_API_KEY }} \
             --build-arg GOOGLE_DRIVE_CLIENT_ID=${{ secrets.GOOGLE_DRIVE_CLIENT_ID }} \
             --build-arg GOOGLE_PSE_API_KEY=${{ secrets.GOOGLE_PSE_API_KEY }} \
