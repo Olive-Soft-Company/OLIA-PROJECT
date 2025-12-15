@@ -366,27 +366,6 @@ async def chat_completion_tools_handler(
         log.debug(f"{content=}")
 
         if not content:
-            # Tool-first enforcement: If tools are enabled, we must have content to parse tool calls
-            tool_ids = metadata.get("tool_ids", None)
-            if tool_ids and len(tool_ids) > 0:
-                # Tools are enabled but no content returned, inject "No data from tools"
-                log.warning(f"Tools enabled but no content returned from task model. tool_ids={tool_ids}")
-                sources.append(
-                    {
-                        "source": {
-                            "name": "System",
-                        },
-                        "document": ["No data from tools"],
-                        "metadata": [
-                            {
-                                "source": "System",
-                                "reason": "Tools were enabled but task model did not return tool calls",
-                            }
-                        ],
-                        "tool_result": True,
-                    }
-                )
-                return body, {"sources": sources}
             return body, {}
 
         try:
@@ -523,76 +502,14 @@ async def chat_completion_tools_handler(
         except Exception as e:
             log.debug(f"Error: {e}")
             content = None
-            # Tool-first enforcement: If tools are enabled and parsing failed, inject "No data from tools"
-            tool_ids = metadata.get("tool_ids", None)
-            if tool_ids and len(tool_ids) > 0:
-                log.warning(f"Tools enabled but failed to parse tool calls. tool_ids={tool_ids}, error={e}")
-                sources.append(
-                    {
-                        "source": {
-                            "name": "System",
-                        },
-                        "document": ["No data from tools"],
-                        "metadata": [
-                            {
-                                "source": "System",
-                                "reason": f"Tools were enabled but failed to parse tool calls: {str(e)}",
-                            }
-                        ],
-                        "tool_result": True,
-                    }
-                )
     except Exception as e:
         log.debug(f"Error: {e}")
         content = None
-        # Tool-first enforcement: If tools are enabled and execution failed, inject "No data from tools"
-        tool_ids = metadata.get("tool_ids", None)
-        if tool_ids and len(tool_ids) > 0:
-            log.warning(f"Tools enabled but execution failed. tool_ids={tool_ids}, error={e}")
-            sources.append(
-                {
-                    "source": {
-                        "name": "System",
-                    },
-                    "document": ["No data from tools"],
-                    "metadata": [
-                        {
-                            "source": "System",
-                            "reason": f"Tools were enabled but execution failed: {str(e)}",
-                        }
-                    ],
-                    "tool_result": True,
-                }
-            )
 
     log.debug(f"tool_contexts: {sources}")
 
     if skip_files and "files" in body.get("metadata", {}):
         del body["metadata"]["files"]
-
-    # Tool-first enforcement: If tools are enabled, they must be executed
-    # If no tools were called or no results were returned, inject "No data from tools"
-    tool_ids = metadata.get("tool_ids", None)
-    if tool_ids and len(tool_ids) > 0:
-        # Tools are enabled, check if any were executed and returned results
-        if len(sources) == 0:
-            # No tool results, inject "No data from tools" message
-            log.warning(f"Tools enabled but no results returned. tool_ids={tool_ids}")
-            sources.append(
-                {
-                    "source": {
-                        "name": "System",
-                    },
-                    "document": ["No data from tools"],
-                    "metadata": [
-                        {
-                            "source": "System",
-                            "reason": "Tools were enabled but did not return any data",
-                        }
-                    ],
-                    "tool_result": True,
-                }
-            )
 
     return body, {"sources": sources}
 
@@ -1592,30 +1509,6 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         sources.extend(flags.get("sources", []))
     except Exception as e:
         log.exception(e)
-
-    # Tool-first enforcement: If tools are enabled, ensure they were executed
-    tool_ids = metadata.get("tool_ids", None)
-    if tool_ids and len(tool_ids) > 0:
-        # Check if any tool results were obtained
-        tool_sources = [s for s in sources if s.get("tool_result", False)]
-        if len(tool_sources) == 0:
-            # Tools were enabled but no results, inject "No data from tools"
-            log.warning(f"Tools enabled but no tool results found. tool_ids={tool_ids}")
-            sources.append(
-                {
-                    "source": {
-                        "name": "System",
-                    },
-                    "document": ["No data from tools"],
-                    "metadata": [
-                        {
-                            "source": "System",
-                            "reason": "Tools were enabled but did not return any data",
-                        }
-                    ],
-                    "tool_result": True,
-                }
-            )
 
     # If context is not empty, insert it into the messages
     if len(sources) > 0:
@@ -2915,29 +2808,6 @@ async def process_chat_response(
 
                 await stream_body_handler(response, form_data)
 
-                # Tool-first enforcement for native function calling
-                # If tools are enabled but LLM didn't call any, inject "No data from tools"
-                tool_ids = metadata.get("tool_ids", None)
-                if tool_ids and len(tool_ids) > 0 and len(tool_calls) == 0:
-                    # Tools are enabled but LLM didn't call any, inject "No data from tools"
-                    log.warning(f"Tools enabled but LLM did not call any tools. tool_ids={tool_ids}")
-                    content_blocks.append(
-                        {
-                            "type": "text",
-                            "content": "No data from tools",
-                        }
-                    )
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": {
-                                "content": serialize_content_blocks(content_blocks),
-                            },
-                        }
-                    )
-                    # Stop processing, return early with "No data from tools" message
-                    return
-
                 tool_call_retries = 0
 
                 while (
@@ -3091,27 +2961,6 @@ async def process_chat_response(
                         )
 
                     content_blocks[-1]["results"] = results
-                    
-                    # Tool-first enforcement: Check if tools returned any valid results
-                    tool_ids = metadata.get("tool_ids", None)
-                    if tool_ids and len(tool_ids) > 0:
-                        # Check if any tool returned non-empty results
-                        has_valid_results = any(
-                            result.get("content", "").strip() 
-                            for result in results 
-                            if result.get("content")
-                        )
-                        if not has_valid_results:
-                            # Tools were called but returned no valid data
-                            log.warning(f"Tools enabled and called but returned no valid data. tool_ids={tool_ids}")
-                            results.append(
-                                {
-                                    "tool_call_id": "system",
-                                    "content": "No data from tools",
-                                }
-                            )
-                            content_blocks[-1]["results"] = results
-                    
                     content_blocks.append(
                         {
                             "type": "text",
