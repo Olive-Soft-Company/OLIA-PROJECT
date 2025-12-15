@@ -200,16 +200,29 @@
 										const authUrl = getOAuthClientAuthorizationUrl(serverId, 'mcp');
 										window.open(authUrl, '_self', 'noopener');
 									} else {
-										tools[toolId].enabled = !tools[toolId].enabled;
-
-										const state = tools[toolId].enabled;
-										await tick();
-
-										if (state) {
-											selectedToolIds = [...selectedToolIds, toolId];
-										} else {
+										const wasEnabled = tools[toolId].enabled;
+										
+										if (wasEnabled) {
+											// Désactiver cet outil
+											tools[toolId].enabled = false;
 											selectedToolIds = selectedToolIds.filter((id) => id !== toolId);
+										} else {
+											// Activer cet outil et désactiver tous les autres
+											// Désactiver tous les outils
+											Object.keys(tools).forEach((id) => {
+												tools[id].enabled = false;
+											});
+											// Désactiver WebSearch, Image et Code Interpreter
+											webSearchEnabled = false;
+											imageGenerationEnabled = false;
+											codeInterpreterEnabled = false;
+											
+											// Activer uniquement l'outil sélectionné
+											tools[toolId].enabled = true;
+											selectedToolIds = [toolId];
 										}
+										
+										await tick();
 									}
 								}}
 							>
@@ -262,7 +275,22 @@
 							<button
 								class="flex w-full justify-between gap-2 items-center px-3 py-1.5 text-sm cursor-pointer rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50"
 								on:click={() => {
-									webSearchEnabled = !webSearchEnabled;
+									if (webSearchEnabled) {
+										// Désactiver WebSearch
+										webSearchEnabled = false;
+									} else {
+										// Activer WebSearch et désactiver tous les autres outils
+										webSearchEnabled = true;
+										imageGenerationEnabled = false;
+										codeInterpreterEnabled = false;
+										// Désactiver tous les outils personnalisés
+										if (tools) {
+											Object.keys(tools).forEach((id) => {
+												tools[id].enabled = false;
+											});
+										}
+										selectedToolIds = [];
+									}
 								}}
 							>
 								<div class="flex-1 truncate">
@@ -293,7 +321,22 @@
 							<button
 								class="flex w-full justify-between gap-2 items-center px-3 py-1.5 text-sm cursor-pointer rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50"
 								on:click={() => {
-									imageGenerationEnabled = !imageGenerationEnabled;
+									if (imageGenerationEnabled) {
+										// Désactiver Image
+										imageGenerationEnabled = false;
+									} else {
+										// Activer Image et désactiver tous les autres outils
+										imageGenerationEnabled = true;
+										webSearchEnabled = false;
+										codeInterpreterEnabled = false;
+										// Désactiver tous les outils personnalisés
+										if (tools) {
+											Object.keys(tools).forEach((id) => {
+												tools[id].enabled = false;
+											});
+										}
+										selectedToolIds = [];
+									}
 								}}
 							>
 								<div class="flex-1 truncate">
@@ -328,7 +371,22 @@
 									? $i18n.t('Disable Code Interpreter')
 									: $i18n.t('Enable Code Interpreter')}
 								on:click={() => {
-									codeInterpreterEnabled = !codeInterpreterEnabled;
+									if (codeInterpreterEnabled) {
+										// Désactiver Code Interpreter
+										codeInterpreterEnabled = false;
+									} else {
+										// Activer Code Interpreter et désactiver tous les autres outils
+										codeInterpreterEnabled = true;
+										webSearchEnabled = false;
+										imageGenerationEnabled = false;
+										// Désactiver tous les outils personnalisés
+										if (tools) {
+											Object.keys(tools).forEach((id) => {
+												tools[id].enabled = false;
+											});
+										}
+										selectedToolIds = [];
+									}
 								}}
 							>
 								<div class="flex-1 truncate">
