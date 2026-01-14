@@ -16,6 +16,7 @@
 		theme,
 		WEBUI_NAME,
 		WEBUI_VERSION,
+		WEBUI_DEPLOYMENT_ID,
 		mobile,
 		socket,
 		chatId,

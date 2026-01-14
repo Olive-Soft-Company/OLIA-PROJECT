@@ -862,6 +862,7 @@ class ChatTable:
                 """
 
                 postgres_content_clause = text(postgres_content_sql)
+
                 query = query.filter(
                     or_(
                         Chat.title.ilike(bindparam("title_key")),

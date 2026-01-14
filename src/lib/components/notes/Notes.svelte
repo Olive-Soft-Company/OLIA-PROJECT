@@ -217,7 +217,6 @@
 	});
 
 	onMount(async () => {
-
 		await init();
 		loaded = true;
 

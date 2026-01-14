@@ -57,7 +57,6 @@ We welcome pull requests. Before submitting one, please:
 
 ### 📚 Documentation & Tutorials
 
-
 Help us make OLIA more accessible by improving the documentation, writing tutorials, or creating guides on setting up and optimizing the OLIA.
 
 Help expand our documentation by submitting issues and PRs on our [Docs Repository](https://github.com/open-webui/docs).

@@ -194,6 +194,19 @@
 		if (!RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL) {
 			await embeddingModelUpdateHandler();
 		}
+
+		if (RAGConfig.DOCLING_PARAMS) {
+			try {
+				JSON.parse(RAGConfig.DOCLING_PARAMS);
+			} catch (e) {
+				toast.error(
+					$i18n.t('Invalid JSON format in {{NAME}}', {
+						NAME: $i18n.t('Docling Parameters')
+					})
+				);
+				return;
+			}
+		}
 		if (RAGConfig.MINERU_PARAMS) {
 			try {
 				JSON.parse(RAGConfig.MINERU_PARAMS);
@@ -250,11 +263,6 @@
 			typeof config.DOCLING_PARAMS === 'object'
 				? JSON.stringify(config.DOCLING_PARAMS ?? {}, null, 2)
 				: config.DOCLING_PARAMS;
-
-		config.MINERU_PARAMS =
-			typeof config.MINERU_PARAMS === 'object'
-				? JSON.stringify(config.MINERU_PARAMS ?? {}, null, 2)
-				: config.MINERU_PARAMS;
 
 		config.MINERU_PARAMS =
 			typeof config.MINERU_PARAMS === 'object'
@@ -566,7 +574,6 @@
 								<div class=" flex flex-col w-full justify-between">
 									<div class=" mb-1 text-xs font-medium">
 										{$i18n.t('Parameters')}
-
 									</div>
 									<div class="flex w-full items-center relative">
 										<Textarea

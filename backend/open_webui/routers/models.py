@@ -36,7 +36,6 @@ log = logging.getLogger(__name__)
 router = APIRouter()
 
 
-
 def is_valid_model_id(model_id: str) -> bool:
     return model_id and len(model_id) <= 256
 
@@ -149,9 +148,7 @@ async def create_new_model(
             detail=ERROR_MESSAGES.MODEL_ID_TAKEN,
         )
 
-
     if not is_valid_model_id(form_data.id):
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERROR_MESSAGES.MODEL_ID_TOO_LONG,

@@ -848,6 +848,7 @@ def transcription_handler(request, file_path, metadata, user=None):
         # Check file exists
         if not os.path.exists(file_path):
             raise HTTPException(status_code=400, detail="Audio file not found")
+
         # Check file size
         file_size = os.path.getsize(file_path)
         if file_size > MAX_FILE_SIZE:

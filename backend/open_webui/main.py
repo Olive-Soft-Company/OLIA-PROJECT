@@ -2142,6 +2142,64 @@ async def register_client(request, client_id: str) -> bool:
     return True
 
 
+async def register_client(request, client_id: str) -> bool:
+    server_type, server_id = client_id.split(":", 1)
+
+    connection = None
+    connection_idx = None
+
+    for idx, conn in enumerate(request.app.state.config.TOOL_SERVER_CONNECTIONS or []):
+        if conn.get("type", "openapi") == server_type:
+            info = conn.get("info", {})
+            if info.get("id") == server_id:
+                connection = conn
+                connection_idx = idx
+                break
+
+    if connection is None or connection_idx is None:
+        log.warning(
+            f"Unable to locate MCP tool server configuration for client {client_id} during re-registration"
+        )
+        return False
+
+    server_url = connection.get("url")
+    oauth_server_key = (connection.get("config") or {}).get("oauth_server_key")
+
+    try:
+        oauth_client_info = (
+            await get_oauth_client_info_with_dynamic_client_registration(
+                request,
+                client_id,
+                server_url,
+                oauth_server_key,
+            )
+        )
+    except Exception as e:
+        log.error(f"Dynamic client re-registration failed for {client_id}: {e}")
+        return False
+
+    try:
+        request.app.state.config.TOOL_SERVER_CONNECTIONS[connection_idx] = {
+            **connection,
+            "info": {
+                **connection.get("info", {}),
+                "oauth_client_info": encrypt_data(
+                    oauth_client_info.model_dump(mode="json")
+                ),
+            },
+        }
+    except Exception as e:
+        log.error(
+            f"Failed to persist updated OAuth client info for tool server {client_id}: {e}"
+        )
+        return False
+
+    oauth_client_manager.remove_client(client_id)
+    oauth_client_manager.add_client(client_id, oauth_client_info)
+    log.info(f"Re-registered OAuth client {client_id} for tool server")
+    return True
+
+
 @app.get("/oauth/clients/{client_id}/authorize")
 async def oauth_client_authorize(
     client_id: str,

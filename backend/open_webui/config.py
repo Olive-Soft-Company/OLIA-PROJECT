@@ -584,6 +584,8 @@ OAUTH_ROLES_CLAIM = PersistentConfig(
 )
 OAUTH_ROLES_SEPARATOR = os.environ.get("OAUTH_ROLES_SEPARATOR", ",")
 
+OAUTH_ROLES_SEPARATOR = os.environ.get("OAUTH_ROLES_SEPARATOR", ",")
+
 OAUTH_ALLOWED_ROLES = PersistentConfig(
     "OAUTH_ALLOWED_ROLES",
     "oauth.allowed_roles",
@@ -2594,6 +2596,18 @@ DOCUMENT_INTELLIGENCE_MODEL = PersistentConfig(
     "rag.document_intelligence_model",
     os.getenv("DOCUMENT_INTELLIGENCE_MODEL", "prebuilt-layout"),
 )
+MISTRAL_OCR_API_BASE_URL = PersistentConfig(
+    "MISTRAL_OCR_API_BASE_URL",
+    "rag.MISTRAL_OCR_API_BASE_URL",
+    os.getenv("MISTRAL_OCR_API_BASE_URL", "https://api.mistral.ai/v1"),
+)
+
+DOCUMENT_INTELLIGENCE_MODEL = PersistentConfig(
+    "DOCUMENT_INTELLIGENCE_MODEL",
+    "rag.document_intelligence_model",
+    os.getenv("DOCUMENT_INTELLIGENCE_MODEL", "prebuilt-layout"),
+)
+
 MISTRAL_OCR_API_BASE_URL = PersistentConfig(
     "MISTRAL_OCR_API_BASE_URL",
     "rag.MISTRAL_OCR_API_BASE_URL",

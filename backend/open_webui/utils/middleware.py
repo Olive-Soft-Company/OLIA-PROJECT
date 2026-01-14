@@ -751,6 +751,7 @@ def get_image_urls(delta_images, request, metadata, user) -> list[str]:
 
     return image_urls
 
+
 async def chat_image_generation_handler(
     request: Request, form_data: dict, extra_params: dict, user
 ):
@@ -782,18 +783,6 @@ async def chat_image_generation_handler(
     input_images = get_last_images(message_list)
 
     system_message_content = ""
-    if len(input_images) == 0:
-        # Create image(s)
-        if request.app.state.config.ENABLE_IMAGE_PROMPT_GENERATION:
-            try:
-                res = await generate_image_prompt(
-                    request,
-                    {
-                        "model": form_data["model"],
-                        "messages": form_data["messages"],
-                    },
-                    user,
-                )
 
     if len(input_images) > 0 and request.app.state.config.ENABLE_IMAGE_EDIT:
         # Edit image(s)
@@ -877,7 +866,6 @@ async def chat_image_generation_handler(
                 except Exception as e:
                     prompt = user_message
 
-
             except Exception as e:
                 log.exception(e)
                 prompt = user_message
@@ -911,7 +899,6 @@ async def chat_image_generation_handler(
                 }
             )
 
-
             system_message_content = "<context>The requested image has been created by the system successfully and is now being shown to the user. Let the user know that the image they requested has been generated and is now shown in the chat.</context>"
         except Exception as e:
             log.debug(e)
@@ -934,7 +921,6 @@ async def chat_image_generation_handler(
             )
 
             system_message_content = f"<context>Image generation was attempted but failed because of an error. The system is currently unable to generate the image. Tell the user that the following error occurred: {error_message}</context>"
-
 
     if system_message_content:
         form_data["messages"] = add_or_update_system_message(

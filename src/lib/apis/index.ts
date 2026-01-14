@@ -1425,7 +1425,6 @@ export const getVersion = async (token: string) => {
 		throw error;
 	}
 
-
 	return res;
 };
 

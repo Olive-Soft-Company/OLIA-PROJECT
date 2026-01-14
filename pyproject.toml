@@ -12,11 +12,7 @@ dependencies = [
     "python-multipart==0.0.20",
     "itsdangerous==2.2.0",
 
-<<<<<<< HEAD
-    "python-socketio==5.13.0",
-=======
     "python-socketio==5.15.0",
->>>>>>> 945c05590 (Upgrade OLIA to V0.6.41)
     "python-jose==3.5.0",
     "cryptography",
     "bcrypt==5.0.0",
@@ -77,12 +73,8 @@ dependencies = [
     "pymdown-extensions==10.17.2",
     "docx2txt==0.8",
     "python-pptx==1.0.2",
-<<<<<<< HEAD
-    "unstructured==0.18.15",
-=======
     "unstructured==0.18.21",
     "msoffcrypto-tool==5.4.2",
->>>>>>> 945c05590 (Upgrade OLIA to V0.6.41)
     "nltk==3.9.1",
     "Markdown==3.10",
     "pypandoc==1.16.2",
@@ -160,13 +152,8 @@ all = [
     "pinecone==6.0.2",
     "oracledb==3.2.0",
     "colbert-ai==0.2.21",
-<<<<<<< HEAD
-    "firecrawl-py==4.5.0",
-=======
-
     "firecrawl-py==4.10.0",
     "azure-search-documents==11.6.0",
->>>>>>> 945c05590 (Upgrade OLIA to V0.6.41)
 ]
 
 [project.scripts]
