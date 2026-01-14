@@ -33,15 +33,14 @@ class MinerULoader:
         self.api_key = api_key
 
         # Parse params dict with defaults
-
         self.params = params or {}
         self.enable_ocr = params.get("enable_ocr", False)
         self.enable_formula = params.get("enable_formula", True)
         self.enable_table = params.get("enable_table", True)
         self.language = params.get("language", "en")
         self.model_version = params.get("model_version", "pipeline")
-        self.page_ranges = self.params.pop("page_ranges", "")
 
+        self.page_ranges = self.params.pop("page_ranges", "")
 
         # Validate API mode
         if self.api_mode not in ["local", "cloud"]:

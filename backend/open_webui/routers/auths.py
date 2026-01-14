@@ -565,12 +565,12 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
                 admin_email.lower(), lambda pw: verify_password(admin_password, pw)
             )
     else:
-
         if signin_rate_limiter.is_limited(form_data.email.lower()):
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail=ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
             )
+
         password_bytes = form_data.password.encode("utf-8")
         if len(password_bytes) > 72:
             # TODO: Implement other hashing algorithms that support longer passwords
@@ -583,6 +583,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
         user = Auths.authenticate_user(
             form_data.email.lower(), lambda pw: verify_password(form_data.password, pw)
         )
+
     if user:
 
         expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)

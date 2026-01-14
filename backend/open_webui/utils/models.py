@@ -204,9 +204,7 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
                     if "pipe" in m:
                         pipe = m["pipe"]
 
-
                     connection_type = m.get("connection_type", None)
-
                     break
 
             model = {

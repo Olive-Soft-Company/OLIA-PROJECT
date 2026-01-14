@@ -81,6 +81,7 @@ from mcp.shared.auth import (
 
 from authlib.oauth2.rfc6749.errors import OAuth2Error
 
+
 class OAuthClientMetadata(MCPOAuthClientMetadata):
     token_endpoint_auth_method: Literal[
         "none", "client_secret_basic", "client_secret_post"

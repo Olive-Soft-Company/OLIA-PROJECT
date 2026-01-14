@@ -112,6 +112,7 @@ class ImagesConfig(BaseModel):
     IMAGES_OPENAI_API_KEY: str
     IMAGES_OPENAI_API_VERSION: str
     IMAGES_OPENAI_API_PARAMS: Optional[dict | str]
+
     AUTOMATIC1111_BASE_URL: str
     AUTOMATIC1111_API_AUTH: Optional[dict | str]
     AUTOMATIC1111_PARAMS: Optional[dict | str]
@@ -232,10 +233,10 @@ async def update_config(
     request.app.state.config.IMAGES_OPENAI_API_VERSION = (
         form_data.IMAGES_OPENAI_API_VERSION
     )
-
     request.app.state.config.IMAGES_OPENAI_API_PARAMS = (
         form_data.IMAGES_OPENAI_API_PARAMS
     )
+
     request.app.state.config.AUTOMATIC1111_BASE_URL = form_data.AUTOMATIC1111_BASE_URL
     request.app.state.config.AUTOMATIC1111_API_AUTH = form_data.AUTOMATIC1111_API_AUTH
     request.app.state.config.AUTOMATIC1111_PARAMS = form_data.AUTOMATIC1111_PARAMS
@@ -254,14 +255,12 @@ async def update_config(
     )
 
     # Edit Image
-
     request.app.state.config.ENABLE_IMAGE_EDIT = form_data.ENABLE_IMAGE_EDIT
     request.app.state.config.IMAGE_EDIT_ENGINE = form_data.IMAGE_EDIT_ENGINE
     request.app.state.config.IMAGE_EDIT_MODEL = form_data.IMAGE_EDIT_MODEL
     request.app.state.config.IMAGE_EDIT_SIZE = form_data.IMAGE_EDIT_SIZE
 
     request.app.state.config.IMAGES_EDIT_OPENAI_API_BASE_URL = (
-
         form_data.IMAGES_EDIT_OPENAI_API_BASE_URL
     )
     request.app.state.config.IMAGES_EDIT_OPENAI_API_KEY = (
@@ -550,7 +549,6 @@ async def image_generations(
             if ENABLE_FORWARD_USER_INFO_HEADERS:
                 headers = include_user_info_headers(headers, user)
 
-
             url = f"{request.app.state.config.IMAGES_OPENAI_API_BASE_URL}/images/generations"
             if request.app.state.config.IMAGES_OPENAI_API_VERSION:
                 url = f"{url}?api-version={request.app.state.config.IMAGES_OPENAI_API_VERSION}"
@@ -838,9 +836,7 @@ async def image_edits(
     except Exception as e:
         raise HTTPException(status_code=400, detail=ERROR_MESSAGES.DEFAULT(e))
 
-
     def get_image_file_item(base64_string, param_name="image"):
-
         data = base64_string
         header, encoded = data.split(",", 1)
         mime_type = header.split(";")[0].lstrip("data:")
@@ -881,7 +877,6 @@ async def image_edits(
                 files = [get_image_file_item(form_data.image)]
             elif isinstance(form_data.image, list):
                 for img in form_data.image:
-
                     files.append(get_image_file_item(img, "image[]"))
 
             url_search_params = ""

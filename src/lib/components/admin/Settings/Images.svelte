@@ -123,6 +123,7 @@
 
 			return null;
 		}
+
 		const res = await updateConfig(localStorage.token, {
 			...config,
 			AUTOMATIC1111_PARAMS:
@@ -144,6 +145,7 @@
 				backendConfig.set(await getBackendConfig());
 				getModels();
 			}
+
 			return res;
 		}
 
@@ -251,6 +253,7 @@
 					console.error(e);
 				}
 			}
+
 			config.IMAGES_OPENAI_API_PARAMS =
 				typeof config.IMAGES_OPENAI_API_PARAMS === 'object'
 					? JSON.stringify(config.IMAGES_OPENAI_API_PARAMS ?? {}, null, 2)
@@ -287,6 +290,7 @@
 			<div>
 				<div class="mb-3">
 					<div class=" mt-0.5 mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+
 					<hr class=" border-gray-100/30 dark:border-gray-850/30 my-2" />
 
 					<div class="mb-2.5">
@@ -936,6 +940,7 @@
 							</div>
 						</div>
 					{/if}
+
 					<div class="mb-2.5">
 						<div class="flex w-full justify-between items-center">
 							<div class="text-xs pr-2">
@@ -955,6 +960,7 @@
 							</select>
 						</div>
 					</div>
+
 					{#if config?.IMAGE_EDIT_ENGINE === 'openai'}
 						<div class="mb-2.5">
 							<div class="flex w-full justify-between items-center">

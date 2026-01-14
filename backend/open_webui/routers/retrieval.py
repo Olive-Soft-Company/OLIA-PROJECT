@@ -847,12 +847,12 @@ async def update_rag_config(
         if form_data.DOCUMENT_INTELLIGENCE_KEY is not None
         else request.app.state.config.DOCUMENT_INTELLIGENCE_KEY
     )
-
     request.app.state.config.DOCUMENT_INTELLIGENCE_MODEL = (
         form_data.DOCUMENT_INTELLIGENCE_MODEL
         if form_data.DOCUMENT_INTELLIGENCE_MODEL is not None
         else request.app.state.config.DOCUMENT_INTELLIGENCE_MODEL
     )
+
     request.app.state.config.MISTRAL_OCR_API_BASE_URL = (
         form_data.MISTRAL_OCR_API_BASE_URL
         if form_data.MISTRAL_OCR_API_BASE_URL is not None
