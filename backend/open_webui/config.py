@@ -292,8 +292,10 @@ ENABLE_API_KEYS = PersistentConfig(
     "auth.enable_api_keys",
     os.environ.get("ENABLE_API_KEYS", "False").lower() == "true",
 )
-DOCUMENT_INTELLIGENCE_KEY: Optional[str] = os.getenv(
-    "DOCUMENT_INTELLIGENCE_KEY"
+DOCUMENT_INTELLIGENCE_KEY = PersistentConfig(
+    "DOCUMENT_INTELLIGENCE_KEY",
+    "integrations.document_intelligence.key",
+    os.getenv("DOCUMENT_INTELLIGENCE_KEY"),
 )
 
 ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS = PersistentConfig(
