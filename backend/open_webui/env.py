@@ -882,3 +882,16 @@ PIP_PACKAGE_INDEX_OPTIONS = os.getenv("PIP_PACKAGE_INDEX_OPTIONS", "").split()
 ####################################
 
 EXTERNAL_PWA_MANIFEST_URL = os.environ.get("EXTERNAL_PWA_MANIFEST_URL")
+
+####################################
+# ATLASSIAN OAUTH CONFIG
+####################################
+
+ATLASSIAN_CLIENT_ID = os.environ.get("ATLASSIAN_CLIENT_ID")
+ATLASSIAN_CLIENT_SECRET = os.environ.get("ATLASSIAN_CLIENT_SECRET")
+ATLASSIAN_REDIRECT_URI = os.environ.get("ATLASSIAN_REDIRECT_URI")
+ATLASSIAN_SCOPES = os.environ.get(
+    "ATLASSIAN_SCOPES", "read:jira-work write:jira-work offline_access"
+)
+ATLASSIAN_AUDIENCE = os.environ.get("ATLASSIAN_AUDIENCE", "api.atlassian.com")
+ATLASSIAN_POST_AUTH_REDIRECT = os.environ.get("ATLASSIAN_POST_AUTH_REDIRECT", "")
