@@ -93,6 +93,7 @@ from open_webui.routers import (
     users,
     utils,
     scim,
+    jira_oauth,
 )
 
 from open_webui.routers.retrieval import (
@@ -1400,6 +1401,9 @@ app.include_router(
     evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"]
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
+
+# Jira OAuth callback endpoint
+app.include_router(jira_oauth.router, prefix="/api/oauth", tags=["jira_oauth"])
 
 
 # SCIM 2.0 API for identity management
