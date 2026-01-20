@@ -11,12 +11,26 @@ from open_webui.utils.jira_oauth import JiraOAuthError, complete_oauth_flow, set
 router = APIRouter()
 
 
-def _html_page(title: str, body: str, status_code: int = 200) -> HTMLResponse:
+def _html_page(
+    title: str,
+    body: str,
+    status_code: int = 200,
+    redirect_url: Optional[str] = None,
+) -> HTMLResponse:
+    redirect_meta = (
+        f'<meta http-equiv="refresh" content="2; url={redirect_url}" />'
+        if redirect_url
+        else ""
+    )
+    redirect_cta = (
+        f'<a href="{redirect_url}">Return to OpenWebUI</a>' if redirect_url else ""
+    )
     html = f"""<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>{title}</title>
+    {redirect_meta}
     <style>
       body {{ font-family: Arial, sans-serif; margin: 2rem; }}
       .card {{ max-width: 720px; margin: 0 auto; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 12px; }}
@@ -29,6 +43,7 @@ def _html_page(title: str, body: str, status_code: int = 200) -> HTMLResponse:
     <div class="card">
       <div class="title">{title}</div>
       <div class="details">{body}</div>
+      <div class="hint">{redirect_cta}</div>
       <div class="hint">You can return to OpenWebUI after closing this tab.</div>
     </div>
   </body>
@@ -44,6 +59,7 @@ def _extract_user_key_from_state(state: str) -> Optional[str]:
 
 @router.get("/atlassian/callback", response_class=HTMLResponse)
 async def atlassian_oauth_callback(request: Request):
+    post_auth_redirect = os.environ.get("ATLASSIAN_POST_AUTH_REDIRECT", "").strip()
     code = (request.query_params.get("code") or "").strip()
     state = (request.query_params.get("state") or "").strip()
     if not code or not state:
@@ -51,6 +67,7 @@ async def atlassian_oauth_callback(request: Request):
             "Jira OAuth failed",
             "Missing required query params: code and state.",
             status_code=400,
+            redirect_url=post_auth_redirect or None,
         )
 
     expected_redirect = os.environ.get("ATLASSIAN_REDIRECT_URI", "").strip()
@@ -62,6 +79,7 @@ async def atlassian_oauth_callback(request: Request):
                 "Redirect URI mismatch. Update ATLASSIAN_REDIRECT_URI to exactly "
                 f"match this callback URL: {actual_redirect}",
                 status_code=400,
+                redirect_url=post_auth_redirect or None,
             )
 
     user_key_from_state = _extract_user_key_from_state(state)
@@ -83,6 +101,7 @@ async def atlassian_oauth_callback(request: Request):
                 "Invalid state for the current user. Please run jira_connect again "
                 "from the same OpenWebUI account.",
                 status_code=400,
+                redirect_url=post_auth_redirect or None,
             )
     except Exception:
         if not user_key_from_state:
@@ -91,6 +110,7 @@ async def atlassian_oauth_callback(request: Request):
                 "Unable to determine user identity. Please log into OpenWebUI and "
                 "restart the Jira connection flow.",
                 status_code=401,
+                redirect_url=post_auth_redirect or None,
             )
         user_key = user_key_from_state
         user_hint = (
@@ -110,16 +130,22 @@ async def atlassian_oauth_callback(request: Request):
         )
         if user_hint:
             message = f"{message}\n\nNote: {user_hint}"
-        return _html_page("Jira OAuth success", message)
+        return _html_page(
+            "Jira OAuth success",
+            message,
+            redirect_url=post_auth_redirect or "/",
+        )
     except JiraOAuthError as exc:
         return _html_page(
             "Jira OAuth failed",
             f"OAuth exchange failed: {exc}",
             status_code=400,
+            redirect_url=post_auth_redirect or None,
         )
     except Exception as exc:
         return _html_page(
             "Jira OAuth failed",
             f"Unexpected error: {exc}",
             status_code=500,
+            redirect_url=post_auth_redirect or None,
         )
