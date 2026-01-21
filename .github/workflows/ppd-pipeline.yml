@@ -58,7 +58,7 @@ jobs:
             --build-arg ATLASSIAN_REDIRECT_URI=${{ vars.ATLASSIAN_REDIRECT_URI}} \
             --build-arg ATLASSIAN_SCOPES=${{ vars.ATLASSIAN_SCOPES}} \
             --build-arg ATLASSIAN_AUDIENCE=${{ vars.ATLASSIAN_AUDIENCE}} \
-            --build-arg ATLASSIAN_POST_AUTH_REDIRECT=${{ vars.ATLASSIAN_POST_AUTH_REDIRECT}} \                   
+            --build-arg ATLASSIAN_POST_AUTH_REDIRECT=${{ vars.ATLASSIAN_POST_AUTH_REDIRECT}} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
             --build-arg WEBUI_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
             -t olivesoft.azurecr.io/open-webui-custom:latest
