@@ -10,9 +10,39 @@ import requests
 BASE_TOKEN_DIR = os.getenv("JIRA_OAUTH_TOKEN_DIR", "/data/openwebui/jira_oauth")
 _TOKEN_LOCK = threading.Lock()
 
+import logging
+logger = logging.getLogger("openwebui.jira_oauth")
+
 
 class JiraOAuthError(Exception):
     pass
+
+
+def _env_get_any(*names: str) -> str:
+    for n in names:
+        v = (os.environ.get(n) or "").strip()
+        if v:
+            return v
+    return ""
+
+
+def safe_oauth_env_snapshot() -> Dict[str, Any]:
+    """
+    SAFE snapshot: never prints secrets.
+    """
+    cid = _env_get_any("ATLASSIAN_CLIENT_ID", "ATLASSIAN_OAUTH_CLIENT_ID", "JIRA_CLIENT_ID")
+    csec = _env_get_any("ATLASSIAN_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET", "JIRA_CLIENT_SECRET")
+    ruri = _env_get_any("ATLASSIAN_REDIRECT_URI", "ATLASSIAN_OAUTH_REDIRECT_URI", "JIRA_REDIRECT_URI")
+    scopes = (os.environ.get("ATLASSIAN_SCOPES") or "").strip()
+    aud = (os.environ.get("ATLASSIAN_AUDIENCE") or "").strip()
+    return {
+        "ATLASSIAN_CLIENT_ID": (cid[:6] + "...") if cid else "MISSING",
+        "ATLASSIAN_CLIENT_SECRET_SET": bool(csec),
+        "ATLASSIAN_REDIRECT_URI": ruri or "MISSING",
+        "ATLASSIAN_SCOPES": scopes or "DEFAULT/EMPTY",
+        "ATLASSIAN_AUDIENCE": aud or "api.atlassian.com",
+        "JIRA_OAUTH_TOKEN_DIR": BASE_TOKEN_DIR,
+    }
 
 
 class AtlassianOAuthClient:
@@ -42,16 +72,24 @@ class AtlassianOAuthClient:
 
     @classmethod
     def from_env(cls) -> "AtlassianOAuthClient":
+        # allow alias env names to avoid “configured but code can’t read it”
+        client_id = _env_get_any("ATLASSIAN_CLIENT_ID", "ATLASSIAN_OAUTH_CLIENT_ID", "JIRA_CLIENT_ID")
+        client_secret = _env_get_any("ATLASSIAN_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET", "JIRA_CLIENT_SECRET")
+        redirect_uri = _env_get_any("ATLASSIAN_REDIRECT_URI", "ATLASSIAN_OAUTH_REDIRECT_URI", "JIRA_REDIRECT_URI")
+
+        scopes = os.environ.get("ATLASSIAN_SCOPES", "read:jira-work write:jira-work offline_access")
+        audience = os.environ.get("ATLASSIAN_AUDIENCE", "api.atlassian.com")
+
+        logger.info("OAuth from_env snapshot: %s", safe_oauth_env_snapshot())
         return cls(
-            client_id=os.environ.get("ATLASSIAN_CLIENT_ID", ""),
-            client_secret=os.environ.get("ATLASSIAN_CLIENT_SECRET", ""),
-            redirect_uri=os.environ.get("ATLASSIAN_REDIRECT_URI", ""),
-            scopes=os.environ.get("ATLASSIAN_SCOPES", "read:jira-work write:jira-work offline_access"),
-            audience=os.environ.get("ATLASSIAN_AUDIENCE", "api.atlassian.com"),
+            client_id=client_id,
+            client_secret=client_secret,
+            redirect_uri=redirect_uri,
+            scopes=scopes,
+            audience=audience,
         )
 
     def build_authorize_url(self, state: str) -> str:
-        # IMPORTANT: urlencode produces a valid URL with '&' (not '&amp;').
         params = {
             "audience": self.audience,
             "client_id": self.client_id,
@@ -73,10 +111,7 @@ class AtlassianOAuthClient:
         }
         response = requests.post(self.TOKEN_URL, json=payload, headers={"Accept": "application/json"}, timeout=30)
         if response.status_code < 200 or response.status_code >= 300:
-            raise JiraOAuthError(
-                "OAuth token exchange failed "
-                f"({response.status_code}): {response.text}"
-            )
+            raise JiraOAuthError(f"OAuth token exchange failed ({response.status_code}): {response.text}")
         return response.json()
 
     def refresh_access_token(self, refresh_token: str) -> Dict[str, Any]:
@@ -98,23 +133,20 @@ class AtlassianOAuthClient:
             timeout=30,
         )
         if response.status_code < 200 or response.status_code >= 300:
-            raise JiraOAuthError(
-                "Failed to fetch accessible resources "
-                f"({response.status_code}): {response.text}"
-            )
+            raise JiraOAuthError(f"Failed to fetch accessible resources ({response.status_code}): {response.text}")
         data = response.json()
         if not isinstance(data, list):
             raise JiraOAuthError(f"Unexpected accessible-resources response: {data}")
         return data
 
 
-def _token_path(user_key: str) -> str:
-    safe_key = user_key.replace("/", "_").replace(":", "_")
+def token_path_for_user(user_key: str) -> str:
+    safe_key = (user_key or "").replace("/", "_").replace(":", "_")
     return os.path.join(BASE_TOKEN_DIR, f"user_{safe_key}.json")
 
 
 def get_user_record(user_key: str) -> Dict[str, Any]:
-    path = _token_path(user_key)
+    path = token_path_for_user(user_key)
     if not os.path.exists(path):
         return {}
     with _TOKEN_LOCK:
@@ -127,14 +159,14 @@ def get_user_record(user_key: str) -> Dict[str, Any]:
 
 def set_user_record(user_key: str, record: Dict[str, Any]) -> None:
     os.makedirs(BASE_TOKEN_DIR, exist_ok=True)
-    path = _token_path(user_key)
+    path = token_path_for_user(user_key)
     with _TOKEN_LOCK:
         with open(path, "w", encoding="utf-8") as handle:
             json.dump(record, handle, indent=2)
 
 
 def delete_user_record(user_key: str) -> None:
-    path = _token_path(user_key)
+    path = token_path_for_user(user_key)
     with _TOKEN_LOCK:
         try:
             if os.path.exists(path):
@@ -149,7 +181,7 @@ def build_user_record(token_payload: Dict[str, Any]) -> Dict[str, Any]:
     expires_in = int(token_payload.get("expires_in") or 3600)
 
     if not access_token:
-        raise JiraOAuthError(f"OAuth token exchange returned no access_token: {token_payload}")
+        raise JiraOAuthError(f"OAuth token exchange returned no access_token: {list(token_payload.keys())}")
 
     return {
         "access_token": access_token,
@@ -161,13 +193,20 @@ def build_user_record(token_payload: Dict[str, Any]) -> Dict[str, Any]:
 def choose_accessible_resource(resources: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not resources:
         raise JiraOAuthError("No accessible Jira resources found for this user.")
-    return resources[0]
+    chosen = resources[0]
+    logger.info("Accessible resource chosen: id=%s name=%s url=%s",
+                chosen.get("id"), chosen.get("name"), chosen.get("url"))
+    return chosen
 
 
 def complete_oauth_flow(code: str) -> Dict[str, Any]:
     oauth = AtlassianOAuthClient.from_env()
+
+    logger.info("Starting token exchange (code_present=%s)", bool(code))
     token_payload = oauth.exchange_code_for_token(code)
     record = build_user_record(token_payload)
+
+    logger.info("Token exchange OK. Fetching accessible resources...")
     resources = oauth.get_accessible_resources(record["access_token"])
     chosen = choose_accessible_resource(resources)
 
@@ -176,9 +215,8 @@ def complete_oauth_flow(code: str) -> Dict[str, Any]:
     if not cloud_id:
         raise JiraOAuthError(f"accessible-resources did not include an id: {chosen}")
 
-    record.update(
-        {"cloud_id": cloud_id, "cloud_url": cloud_url, "resource_name": chosen.get("name") or ""}
-    )
+    record.update({"cloud_id": cloud_id, "cloud_url": cloud_url, "resource_name": chosen.get("name") or ""})
+    logger.info("OAuth flow complete. cloud_id=%s cloud_url=%s", cloud_id, cloud_url)
     return record
 
 
