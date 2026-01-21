@@ -31,7 +31,7 @@ def safe_oauth_env_snapshot() -> Dict[str, Any]:
     SAFE snapshot: never prints secrets.
     """
     cid = _env_get_any("ATLASSIAN_CLIENT_ID", "ATLASSIAN_OAUTH_CLIENT_ID", "JIRA_CLIENT_ID")
-    csec = _env_get_any("ATLASSIAN_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET", "JIRA_CLIENT_SECRET")
+    csec = _env_get_any("ATLASSIAN_CLIENT_SECRET","OAUTH_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET", "JIRA_CLIENT_SECRET")
     ruri = _env_get_any("ATLASSIAN_REDIRECT_URI", "ATLASSIAN_OAUTH_REDIRECT_URI", "JIRA_REDIRECT_URI")
     scopes = (os.environ.get("ATLASSIAN_SCOPES") or "").strip()
     aud = (os.environ.get("ATLASSIAN_AUDIENCE") or "").strip()
@@ -74,7 +74,7 @@ class AtlassianOAuthClient:
     def from_env(cls) -> "AtlassianOAuthClient":
         # allow alias env names to avoid “configured but code can’t read it”
         client_id = _env_get_any("ATLASSIAN_CLIENT_ID", "ATLASSIAN_OAUTH_CLIENT_ID", "JIRA_CLIENT_ID")
-        client_secret = _env_get_any("ATLASSIAN_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET", "JIRA_CLIENT_SECRET")
+        client_secret = _env_get_any("ATLASSIAN_CLIENT_SECRET", "OAUTH_CLIENT_SECRET", "ATLASSIAN_OAUTH_CLIENT_SECRET","JIRA_CLIENT_SECRET")
         redirect_uri = _env_get_any("ATLASSIAN_REDIRECT_URI", "ATLASSIAN_OAUTH_REDIRECT_URI", "JIRA_REDIRECT_URI")
 
         scopes = os.environ.get("ATLASSIAN_SCOPES", "read:jira-work write:jira-work offline_access")
