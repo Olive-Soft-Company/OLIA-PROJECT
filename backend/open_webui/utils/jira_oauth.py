@@ -180,25 +180,29 @@ def delete_user_record(user_key: str) -> None:
         except Exception:
             pass
 
-
 def build_user_record(token_payload: Dict[str, Any]) -> Dict[str, Any]:
     access_token = token_payload.get("access_token") or ""
     refresh_token = token_payload.get("refresh_token") or ""
-    
-    # Force token expiration to 1 month (30 days) regardless of expires_in from Atlassian
-    # 30 days = 30 * 24 * 60 * 60 = 2,592,000 seconds
-    ONE_MONTH_SECONDS = 30 * 24 * 60 * 60
-    expires_at = int(time.time() + ONE_MONTH_SECONDS)
 
     if not access_token:
-        raise JiraOAuthError(f"OAuth token exchange returned no access_token: {list(token_payload.keys())}")
+        raise JiraOAuthError(
+            f"OAuth token exchange returned no access_token: {list(token_payload.keys())}"
+        )
 
-    return {
+    # Atlassian decides access token lifetime (commonly ~3600s).
+    # Store it as-is and refresh when needed.
+    expires_in = int(token_payload.get("expires_in") or 3600)
+    obtained_at = int(time.time())
+    expires_at = obtained_at + expires_in
+
+    record = {
         "access_token": access_token,
-        "refresh_token": refresh_token,
+        "refresh_token": refresh_token,   # required for refresh
+        "obtained_at": obtained_at,
+        "expires_in": expires_in,
         "expires_at": expires_at,
     }
-
+    return record
 
 def choose_accessible_resource(resources: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not resources:
