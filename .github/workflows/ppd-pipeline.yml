@@ -55,8 +55,13 @@ jobs:
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
             --build-arg WEBUI_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
+            --build-arg ATLASSIAN_CLIENT_ID=${{ secrets.ATLASSIAN_CLIENT_ID }} \
+            --build-arg ATLASSIAN_CLIENT_SECRET=${{ secrets.ATLASSIAN_CLIENT_SECRET }} \
+            --build-arg ATLASSIAN_REDIRECT_URI=https://olia-ppd.francecentral.cloudapp.azure.com/api/oauth/atlassian/callback \
+            --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:jira-user offline_access" \
+            --build-arg ATLASSIAN_AUDIENCE=api.atlassian.com \
+            --build-arg ATLASSIAN_POST_AUTH_REDIRECT=https://olia-ppd.francecentral.cloudapp.azure.com/ \
             -t olivesoft.azurecr.io/open-webui-custom:latest
-
 
       - name: Push Docker image to ACR
         run: |

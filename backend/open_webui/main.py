@@ -93,6 +93,7 @@ from open_webui.routers import (
     users,
     utils,
     scim,
+    jira_oauth,
 )
 
 from open_webui.routers.retrieval import (
@@ -690,6 +691,8 @@ app.state.config.ENABLE_OPENAI_API = ENABLE_OPENAI_API
 app.state.config.OPENAI_API_BASE_URLS = OPENAI_API_BASE_URLS
 app.state.config.OPENAI_API_KEYS = OPENAI_API_KEYS
 app.state.config.OPENAI_API_CONFIGS = OPENAI_API_CONFIGS
+app.state.config.DOCUMENT_INTELLIGENCE_KEY = DOCUMENT_INTELLIGENCE_KEY
+
 
 app.state.OPENAI_MODELS = {}
 
@@ -1398,6 +1401,10 @@ app.include_router(
     evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"]
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
+
+# Jira OAuth callback endpoint
+app.include_router(jira_oauth.router, prefix="/api/oauth", tags=["jira_oauth"])
+
 
 # SCIM 2.0 API for identity management
 if ENABLE_SCIM:
