@@ -51,6 +51,7 @@ jobs:
             --build-arg ENABLE_ONEDRIVE_BUSINESS="${{ vars.ENABLE_ONEDRIVE_BUSINESS }}" \
             --build-arg ENABLE_ONEDRIVE_INTEGRATION="${{ vars.ENABLE_ONEDRIVE_INTEGRATION }}" \
             --build-arg ENABLE_ONEDRIVE_PERSONAL="${{ vars.ENABLE_ONEDRIVE_PERSONAL }}" \
+            --build-arg ENABLE_FORWARD_USER_INFO_HEADERS="${{ vars.ENABLE_FORWARD_USER_INFO_HEADERS }}" \
             --build-arg IMAGES_OPENAI_API_BASE_URL="${{ vars.IMAGES_OPENAI_API_BASE_URL }}" \
             --build-arg OAUTH_CLIENT_ID="${{ vars.OAUTH_CLIENT_ID }}" \
             --build-arg OAUTH_GROUP_CLAIM="${{ vars.OAUTH_GROUP_CLAIM }}" \
