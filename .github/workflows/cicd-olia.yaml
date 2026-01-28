@@ -62,7 +62,7 @@ jobs:
             --build-arg WEBUI_NAME="${{ vars.WEBUI_NAME }}" \
             --build-arg WEB_SEARCH_ENGINE="${{ vars.WEB_SEARCH_ENGINE }}" \
             --build-arg ATLASSIAN_REDIRECT_URI="${{ vars.ATLASSIAN_REDIRECT_URI }}" \
-            --build-arg ATLASSIAN_SCOPES="${{ vars.ATLASSIAN_SCOPES }}" \
+            --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:sprint write:sprint offline_access read:jira-user" \
             --build-arg ATLASSIAN_AUDIENCE="${{ vars.ATLASSIAN_AUDIENCE }}" \
             --build-arg ATLASSIAN_POST_AUTH_REDIRECT="${{ vars.ATLASSIAN_POST_AUTH_REDIRECT }}" \
             --build-arg WEBUI_URL="${{ vars.WEBUI_URL }}" \
