@@ -53,6 +53,9 @@ jobs:
             --build-arg ENABLE_FORWARD_USER_INFO_HEADERS=${{ vars.ENABLE_FORWARD_USER_INFO_HEADERS }} \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
+            --build-arg LANGFUSE_SECRET_KEY="${{ secrets.LANGFUSE_SECRET_KEY }}" \
+            --build-arg LANGFUSE_PUBLIC_KEY="${{ secrets.LANGFUSE_PUBLIC_KEY }}" \
+            --build-arg LANGFUSE_BASE_URL="${{ vars.LANGFUSE_BASE_URL }}" \            
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
             --build-arg WEBUI_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
             --build-arg ATLASSIAN_CLIENT_ID=${{ secrets.ATLASSIAN_CLIENT_ID }} \

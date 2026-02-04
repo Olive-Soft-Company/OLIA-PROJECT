@@ -59,6 +59,9 @@ jobs:
             --build-arg OPENAI_API_BASE_URL="${{ vars.OPENAI_API_BASE_URL }}" \
             --build-arg ONEDRIVE_SHAREPOINT_URL="${{ vars.ONEDRIVE_SHAREPOINT_URL }}" \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH="${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }}" \
+            --build-arg LANGFUSE_SECRET_KEY="${{ secrets.LANGFUSE_SECRET_KEY }}" \
+            --build-arg LANGFUSE_PUBLIC_KEY="${{ secrets.LANGFUSE_PUBLIC_KEY }}" \
+            --build-arg LANGFUSE_BASE_URL="${{ vars.LANGFUSE_BASE_URL }}" \
             --build-arg WEBUI_NAME="${{ vars.WEBUI_NAME }}" \
             --build-arg WEB_SEARCH_ENGINE="${{ vars.WEB_SEARCH_ENGINE }}" \
             --build-arg ATLASSIAN_REDIRECT_URI="${{ vars.ATLASSIAN_REDIRECT_URI }}" \
