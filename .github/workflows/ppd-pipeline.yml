@@ -47,7 +47,7 @@ jobs:
             --build-arg IMAGES_OPENAI_API_BASE_URL=${{ vars.IMAGES_OPENAI_API_BASE_URL }} \
             --build-arg OAUTH_CLIENT_ID=olia-ppd \
             --build-arg OAUTH_GROUP_CLAIM=${{ vars.OAUTH_GROUP_CLAIM }} \
-            --build-arg WEBUI_SECRET_KEY=${{ vars.WEBUI_SECRET_KEY }} \
+            --build-arg WEBUI_SECRET_KEY=${{ secrets.WEBUI_SECRET_KEY }} \
             --build-arg OAUTH_PROVIDER_NAME=${{ vars.OAUTH_PROVIDER_NAME }} \
             --build-arg OPENAI_API_BASE_URL=${{ vars.OPENAI_API_BASE_URL }} \
             --build-arg ONEDRIVE_SHAREPOINT_URL=${{ vars.ONEDRIVE_SHAREPOINT_URL }} \
