@@ -54,6 +54,7 @@ jobs:
             --build-arg ENABLE_FORWARD_USER_INFO_HEADERS=${{ vars.ENABLE_FORWARD_USER_INFO_HEADERS }} \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
+            --build-arg USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS=${{ vars.USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS }} \
             --build-arg LANGFUSE_SECRET_KEY="${{ secrets.LANGFUSE_SECRET_KEY }}" \
             --build-arg LANGFUSE_PUBLIC_KEY="${{ secrets.LANGFUSE_PUBLIC_KEY }}" \
             --build-arg LANGFUSE_BASE_URL="${{ vars.LANGFUSE_BASE_URL }}" \
