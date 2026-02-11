@@ -112,6 +112,10 @@ class ERROR_MESSAGES(str, Enum):
         err if err else "The password does not meet the required validation criteria."
     )
 
+    INVALID_PASSWORD = lambda err="": (
+        err if err else "The password does not meet the required validation criteria."
+    )
+
 
 class TASKS(str, Enum):
     def __str__(self) -> str:
