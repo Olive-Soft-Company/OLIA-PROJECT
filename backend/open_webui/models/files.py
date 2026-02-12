@@ -233,6 +233,7 @@ class FilesTable:
                 for file in db.query(File).filter_by(user_id=user_id).all()
             ]
 
+    def count_recent_upload_files_by_user_id(self, user_id: str, time_window_seconds: int = 5) -> int: 
     @staticmethod
     def _glob_to_like_pattern(glob: str) -> str:
         """
