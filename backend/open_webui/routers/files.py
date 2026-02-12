@@ -195,12 +195,21 @@ def upload_file_handler(
     # Check for files uploaded in the last 5 seconds (same upload batch)
     if process:
         MAX_FILES_PER_UPLOAD_REQUEST = 10
-        recent_uploads_count = Files.count_recent_upload_files_by_user_id(user.id, time_window_seconds=5)
+
+        # Safe call (prevents AttributeError -> 500 -> frontend JSON parse error)
+        count_fn = getattr(Files, "count_recent_upload_files_by_user_id", None)
+        recent_uploads_count = (
+            count_fn(user.id, time_window_seconds=5) if callable(count_fn) else 0
+        )
+
         if recent_uploads_count >= MAX_FILES_PER_UPLOAD_REQUEST:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=ERROR_MESSAGES.TOO_MANY_FILES_FOR_INDEXING(str(MAX_FILES_PER_UPLOAD_REQUEST)),
+                detail=ERROR_MESSAGES.TOO_MANY_FILES_FOR_INDEXING(
+                    str(MAX_FILES_PER_UPLOAD_REQUEST)
+                ),
             )
+
 
     try:
         unsanitized_filename = file.filename
@@ -288,13 +297,16 @@ def upload_file_handler(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=ERROR_MESSAGES.DEFAULT("Error uploading file"),
                 )
-
+    except HTTPException:
+        # Keep explicit HTTPExceptions (400/404/etc.)
+        raise
     except Exception as e:
         log.exception(e)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERROR_MESSAGES.DEFAULT("Error uploading file"),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=ERROR_MESSAGES.DEFAULT(str(e)),
         )
+
 
 
 ############################
@@ -311,7 +323,7 @@ async def list_files(user=Depends(get_verified_user), content: bool = Query(True
 
     if not content:
         for file in files:
-            if "content" in file.data:
+            if file.data and "content" in file.data:
                 del file.data["content"]
 
     return files
@@ -353,7 +365,7 @@ async def search_files(
 
     if not content:
         for file in matching_files:
-            if "content" in file.data:
+            if file.data and "content" in file.data:
                 del file.data["content"]
 
     return matching_files
