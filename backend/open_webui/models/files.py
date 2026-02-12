@@ -210,7 +210,7 @@ class FilesTable:
                 for file in db.query(File).filter_by(user_id=user_id).all()
             ]
 
-    def count_recent_upload_files_by_user_id(self, user_id: str, time_window_seconds: int = 5) -> int:
+    def count_recent_upload_files_by_user_id(self, user_id: str, time_window_seconds: int = 5) -> int: 
         """
         Count files that were uploaded recently (within time_window_seconds) for a specific user.
         This helps enforce the limit of files per upload request.
