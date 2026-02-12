@@ -1,91 +1,91 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	const i18n = getContext('i18n');
+    import { getContext } from 'svelte';
+    const i18n = getContext('i18n');
 
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import localizedFormat from 'dayjs/plugin/localizedFormat';
-	dayjs.extend(relativeTime);
-	dayjs.extend(localizedFormat);
+    import dayjs from 'dayjs';
+    import relativeTime from 'dayjs/plugin/relativeTime';
+    import localizedFormat from 'dayjs/plugin/localizedFormat';
+    dayjs.extend(relativeTime);
+    dayjs.extend(localizedFormat);
 
-	import { getUsers } from '$lib/apis/users';
-	import { toast } from 'svelte-sonner';
+    import { getUsers } from '$lib/apis/users';
+    import { toast } from 'svelte-sonner';
 
-	import { addUserToGroup, removeUserFromGroup } from '$lib/apis/groups';
-	import { WEBUI_API_BASE_URL } from '$lib/constants';
+    import { addUserToGroup, removeUserFromGroup } from '$lib/apis/groups';
+    import { WEBUI_API_BASE_URL } from '$lib/constants';
 
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Checkbox from '$lib/components/common/Checkbox.svelte';
-	import Badge from '$lib/components/common/Badge.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
-	import Pagination from '$lib/components/common/Pagination.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import Spinner from '$lib/components/common/Spinner.svelte';
+    import Tooltip from '$lib/components/common/Tooltip.svelte';
+    import Checkbox from '$lib/components/common/Checkbox.svelte';
+    import Badge from '$lib/components/common/Badge.svelte';
+    import Search from '$lib/components/icons/Search.svelte';
+    import Pagination from '$lib/components/common/Pagination.svelte';
+    import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
+    import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
+    import Spinner from '$lib/components/common/Spinner.svelte';
 
-	export let groupId: string;
-	export let userCount = 0;
+    // ✅ ONLY ONE EXPORT
+    export let groupId: string;
+    export let userCount = 0;
 
-	let users = null;
-	let total = null;
+    let users = null;
+    let total = null;
 
-	let query = '';
-	let orderBy = `group_id:${groupId}`; // default sort key
-	let direction = 'desc'; // default sort order
+    let query = '';
+    let orderBy = 'created_at';
+    let direction = 'desc';
 
-	let page = 1;
+    let page = 1;
 
-	const setSortKey = (key) => {
-		if (orderBy === key) {
-			direction = direction === 'asc' ? 'desc' : 'asc';
-		} else {
-			orderBy = key;
-			direction = 'asc';
-		}
-	};
+    const setSortKey = (key) => {
+        if (orderBy === key) {
+            direction = direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            orderBy = key;
+            direction = 'asc';
+        }
+        page = 1;
+    };
 
-	const getUserList = async () => {
-		try {
-			const res = await getUsers(localStorage.token, query, orderBy, direction, page).catch(
-				(error) => {
-					toast.error(`${error}`);
-					return null;
-				}
-			);
+    const getUserList = async () => {
+        try {
+            const res = await getUsers(localStorage.token, query, orderBy, direction, page)
+                .catch((error) => {
+                    toast.error(`${error}`);
+                    return null;
+                });
 
-			if (res) {
-				users = res.users;
-				total = res.total;
-			}
-		} catch (err) {
-			console.error(err);
-		}
-	};
+            if (res) {
+                users = res.users;
+                total = res.total;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
-	const toggleMember = async (userId, state) => {
-		if (state === 'checked') {
-			await addUserToGroup(localStorage.token, groupId, [userId]).catch((error) => {
-				toast.error(`${error}`);
-				return null;
-			});
-		} else {
-			await removeUserFromGroup(localStorage.token, groupId, [userId]).catch((error) => {
-				toast.error(`${error}`);
-				return null;
-			});
-		}
+    const toggleMember = async (userId, state) => {
+        if (state === 'checked') {
+            await addUserToGroup(localStorage.token, groupId, [userId]).catch((error) => {
+                toast.error(`${error}`);
+                return null;
+            });
+        } else {
+            await removeUserFromGroup(localStorage.token, groupId, [userId]).catch((error) => {
+                toast.error(`${error}`);
+                return null;
+            });
+        }
 
-		page = 1;
-		getUserList();
-	};
+        getUserList();
+    };
 
-	$: if (page !== null && query !== null && orderBy !== null && direction !== null) {
-		getUserList();
-	}
+    $: if (page !== null && query !== null && orderBy !== null && direction !== null) {
+        getUserList();
+    }
 
-	$: if (query) {
-		page = 1;
-	}
+    $: if (query) {
+        page = 1;
+    }
 </script>
 
 <div class=" max-h-full h-full w-full flex flex-col overflow-y-hidden">
