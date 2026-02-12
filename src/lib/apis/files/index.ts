@@ -1,6 +1,23 @@
 import { WEBUI_API_BASE_URL } from '$lib/constants';
 import { splitStream } from '$lib/utils';
 
+const parseErrorResponse = async (res: Response) => {
+	const contentType = res.headers.get('content-type') || '';
+
+	if (contentType.includes('application/json')) {
+		try {
+			return await res.json();
+		} catch {
+			// Fall back to text below.
+		}
+	}
+
+	const text = await res.text();
+	return {
+		detail: text || `Request failed with status ${res.status}`
+	};
+};
+
 export const uploadFile = async (
 	token: string,
 	file: File,
@@ -29,7 +46,7 @@ export const uploadFile = async (
 		body: data
 	})
 		.then(async (res) => {
-			if (!res.ok) throw await res.json();
+			if (!res.ok) throw await parseErrorResponse(res);
 			return res.json();
 		})
 		.catch((err) => {
