@@ -4,7 +4,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 from open_webui.internal.db import Base, JSONField, get_db, get_db_context
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import BigInteger, Column, String, Text, JSON
 
 log = logging.getLogger(__name__)
@@ -225,7 +225,26 @@ class FilesTable:
                 for file in db.query(File).filter_by(user_id=user_id).all()
             ]
 
-    def count_recent_upload_files_by_user_id(self, user_id: str, time_window_seconds: int = 5) -> int: 
+    def count_recent_upload_files_by_user_id(
+        self, user_id: str, time_window_seconds: int = 5
+    ) -> int:
+        try:
+            with get_db() as db:
+                threshold = int(time.time()) - time_window_seconds
+                return (
+                    db.query(File)
+                    .filter(
+                        File.user_id == user_id,
+                        File.created_at >= threshold,
+                    )
+                    .count()
+                )
+        except Exception as e:
+            log.exception(
+                f"Error counting recent uploaded files by user id: {e}"
+            )
+            return 0
+
     @staticmethod
     def _glob_to_like_pattern(glob: str) -> str:
         """
