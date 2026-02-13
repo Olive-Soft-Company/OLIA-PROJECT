@@ -544,6 +544,7 @@
 		{/if}
 	</div>
 
+<!-- Discover new tools from the community
 	{#if $config?.features.enable_community_sharing}
 		<div class=" my-16">
 			<div class=" text-xl font-medium mb-1 line-clamp-1">
@@ -570,6 +571,7 @@
 			</a>
 		</div>
 	{/if}
+-->
 
 	<DeleteConfirmDialog
 		bind:show={showDeleteConfirm}

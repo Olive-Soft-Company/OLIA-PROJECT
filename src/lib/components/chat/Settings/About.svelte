@@ -50,7 +50,7 @@
 			<div class=" mb-2.5 text-sm font-medium flex space-x-2 items-center">
 				<div>
 					{$WEBUI_NAME}
-					{$i18n.t('Version')}
+					{$i18n.t('Version') + ` ${WEBUI_VERSION}`}
 				</div>
 			</div>
 			<div class="flex w-full justify-between items-center">
@@ -123,54 +123,21 @@
 			</div>
 		{:else}
 			<div class="flex space-x-1">
-				<a href="https://discord.gg/5rJgQTnV4s" target="_blank">
+				<a href="https://www.facebook.com/OliveSoft.tech" target="_blank">
 					<img
-						alt="Discord"
-						src="https://img.shields.io/badge/Discord-Open_WebUI-blue?logo=discord&logoColor=white"
+						alt="Facebook Page"
+						src="https://img.shields.io/badge/Olivesoft-%231877F2.svg?style=for-the-badge&logo=Facebook&logoColor=white"
 					/>
 				</a>
 
-				<a href="https://twitter.com/OpenWebUI" target="_blank">
+				<a href="https://www.linkedin.com/company/olivesoft/" target="_blank">
 					<img
-						alt="X (formerly Twitter) Follow"
-						src="https://img.shields.io/twitter/follow/OpenWebUI"
+						alt="Linkedin Page"
+						src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"
 					/>
 				</a>
 
-				<a href="https://github.com/open-webui/open-webui" target="_blank">
-					<img
-						alt="Github Repo"
-						src="https://img.shields.io/github/stars/open-webui/open-webui?style=social&label=Star us on Github"
-					/>
-				</a>
 			</div>
 		{/if}
-
-		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-			Emoji graphics provided by
-			<a href="https://github.com/jdecked/twemoji" target="_blank">Twemoji</a>, licensed under
-			<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC-BY 4.0</a>.
-		</div>
-
-		<div>
-			<pre
-				class="text-xs text-gray-400 dark:text-gray-500">Copyright (c) {new Date().getFullYear()} <a
-					href="https://openwebui.com"
-					target="_blank"
-					class="underline">Open WebUI Inc.</a
-				> <a href="https://github.com/open-webui/open-webui/blob/main/LICENSE" target="_blank"
-					>All rights reserved.</a
-				>
-</pre>
-		</div>
-
-		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-			{$i18n.t('Created by')}
-			<a
-				class=" text-gray-500 dark:text-gray-300 font-medium"
-				href="https://github.com/tjbck"
-				target="_blank">Timothy J. Baek</a
-			>
-		</div>
 	</div>
 </div>
