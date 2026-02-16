@@ -1,4 +1,4 @@
-name: CI/CD Docker Swarm ACR ppd
+name: CI/CD Docker Swarm ACR prd test
 
 on:
   push:
@@ -61,9 +61,9 @@ jobs:
             --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:jira-user offline_access" \
             --build-arg ATLASSIAN_AUDIENCE=api.atlassian.com \
             --build-arg ATLASSIAN_POST_AUTH_REDIRECT=https://olia-prd.francecentral.cloudapp.azure.com/ \
-            -t olivesoft.azurecr.io/open-webui-custom:latest
+            -t olivesoft.azurecr.io/open-webui-custom:prd-1.0
 
       - name: Push Docker image to ACR
         run: |
-          docker push olivesoft.azurecr.io/open-webui-custom:latest
+          docker push olivesoft.azurecr.io/open-webui-custom:prd-1.0
      
