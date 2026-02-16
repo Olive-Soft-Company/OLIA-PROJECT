@@ -53,6 +53,7 @@
 					{$i18n.t('Version') + ` ${WEBUI_VERSION}`}
 				</div>
 			</div>
+			<!--
 			<div class="flex w-full justify-between items-center">
 				<div class="flex flex-col text-xs text-gray-700 dark:text-gray-200">
 					<div class="flex gap-1">
@@ -95,6 +96,7 @@
 					</button>
 				{/if}
 			</div>
+			-->
 		</div>
 
 		{#if ollamaVersion}
@@ -134,6 +136,13 @@
 					<img
 						alt="Linkedin Page"
 						src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"
+					/>
+				</a>
+
+				<a href="https://www.olivesoft.fr" target="_blank">
+					<img
+						alt="Web site"
+						src="https://img.shields.io/badge/Website-brightgreen?style=for-the-badge"
 					/>
 				</a>
 

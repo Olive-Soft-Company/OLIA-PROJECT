@@ -143,7 +143,7 @@
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
 									</Tooltip>
-
+									<!--
 									{#if $config?.features?.enable_version_update_check}
 										<a
 											href="https://github.com/open-webui/open-webui/releases/tag/v{version.latest}"
@@ -156,8 +156,9 @@
 													: $i18n.t('(latest)')}
 										</a>
 									{/if}
+									-->
 								</div>
-
+								<!--
 								<button
 									class=" underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500"
 									type="button"
@@ -167,8 +168,9 @@
 								>
 									<div>{$i18n.t("See what's new")}</div>
 								</button>
+								-->
 							</div>
-
+							<!--
 							{#if $config?.features?.enable_version_update_check}
 								<button
 									class=" text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
@@ -180,9 +182,11 @@
 									{$i18n.t('Check for updates')}
 								</button>
 							{/if}
+							-->
 						</div>
 					</div>
 
+					<!--
 					<div class="mb-2.5">
 						<div class="flex w-full justify-between items-center">
 							<div class="text-xs pr-2">
@@ -228,7 +232,8 @@
 							</div>
 						</div>
 					</div>
-
+					-->
+				<!--
 					<div class="mb-2.5">
 						<div class="flex w-full justify-between items-center">
 							<div class="text-xs pr-2">
@@ -275,15 +280,16 @@
 								{/if}
 							</div>
 
-							<!-- <button
+							<button
 								class="flex-shrink-0 text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
 							>
 								{$i18n.t('Activate')}
-							</button> -->
+							</button> 
 						</div>
 					</div>
+				-->
 				</div>
-
+				
 				<div class="mb-3">
 					<div class=" mt-0.5 mb-2.5 text-base font-medium">{$i18n.t('Authentication')}</div>
 

@@ -303,7 +303,7 @@
 			<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
 			<DropdownMenu.Item
-				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
 				on:click={async () => {
 					const res = await userSignOut();
 					user.set(null);
@@ -344,7 +344,6 @@
 									<span class="relative inline-flex rounded-full size-2 bg-green-500" />
 								</span>
 							</div>
-							{#if role === 'admin'}
 								<div class=" ">
 									<span class="">
 										{$i18n.t('Active Users')}:
@@ -353,7 +352,6 @@
 										{usage?.user_count}
 									</span>
 								</div>
-							{/if}
 						</div>
 					</Tooltip>
 				{/if}

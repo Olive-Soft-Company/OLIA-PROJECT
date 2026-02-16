@@ -347,6 +347,7 @@
 								</div>
 							</div>
 
+							<!--
 							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
 								{$i18n.t('Trouble accessing Ollama?')}
 								<a
@@ -357,6 +358,7 @@
 									{$i18n.t('Click here for help.')}
 								</a>
 							</div>
+							-->
 						</div>
 					{/if}
 				</div>
