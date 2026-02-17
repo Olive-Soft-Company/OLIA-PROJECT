@@ -3,7 +3,7 @@ name: CI/CD Docker Swarm ACR prd test
 on:
   push:
     branches:
-      - prd-test-chaden
+      - prd-test1
 
 jobs:
   deploy:
