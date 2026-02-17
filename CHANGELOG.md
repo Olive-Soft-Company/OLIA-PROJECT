@@ -3374,7 +3374,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Simplified Ollama Settings**: Ollama settings now don't require the `/api` suffix. You can now utilize the Ollama base URL directly, e.g., `http://localhost:11434`. Also, an `OLLAMA_BASE_URL` environment variable has been added.
-- **Database Renaming**: Starting from this release, `ollama.db` will be automatically renamed to `webui.db`.
+- **Database Renaming**: Starting from this release, `ollama.db` will be automatically renamed to `olia.db`.
 
 ## [0.1.107] - 2024-03-01
 

@@ -1039,7 +1039,7 @@ def transcription_handler(request, file_path, metadata, user=None):
 
             raise HTTPException(
                 status_code=getattr(r, "status_code", 500) if r else 500,
-                detail=detail if detail else "Open WebUI: Server Connection Error",
+                detail=detail if detail else "OLIA: Server Connection Error",
             )
 
 

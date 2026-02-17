@@ -24,6 +24,7 @@
 	import Thread from './Thread.svelte';
 	import i18n from '$lib/i18n';
 	import Spinner from '../common/Spinner.svelte';
+	import { WEBUI_NAME } from '$lib/stores';
 
 	export let id = '';
 
@@ -284,10 +285,10 @@
 					} else {
 						return e.name;
 					}
-				}, '')} • Open WebUI</title
+				}, '')} • {$WEBUI_NAME}</title
 		>
 	{:else}
-		<title>#{channel?.name ?? 'Channel'} • Open WebUI</title>
+		<title>#{channel?.name ?? 'Channel'} • {$WEBUI_NAME}</title>
 	{/if}
 </svelte:head>
 

@@ -23,6 +23,7 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Textarea from './common/Textarea.svelte';
+	import { WEBUI_NAME } from '$lib/stores';
 
 	export let onSubmit: Function = () => {};
 	export let onDelete: Function = () => {};
@@ -580,7 +581,7 @@
 										<div
 											class={`text-xs mt-1 ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
 										>
-											{$i18n.t(`WebUI will make requests to "{{url}}"`, {
+											{$WEBUI_NAME}{$i18n.t(`will make requests to "{{url}}"`, {
 												url: path.includes('://')
 													? path
 													: `${url}${path.startsWith('/') ? '' : '/'}${path}`
@@ -835,11 +836,13 @@
 								'MCP support is experimental and its specification changes often, which can lead to incompatibilities. OpenAPI specification support is directly maintained by the OLIA team, making it the more reliable option for compatibility.'
 							)}
 
+							<!--	
 							<a
 								class="font-medium underline"
 								href="https://docs.openwebui.com/features/mcp"
 								target="_blank">{$i18n.t('Read more →')}</a
 							>
+							-->
 						</div>
 					{/if}
 

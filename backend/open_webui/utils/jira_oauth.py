@@ -10,7 +10,7 @@ import requests
 
 from open_webui.env import DATA_DIR
 
-# Use DATA_DIR (app/backend/data) for Jira OAuth tokens - same location as webui.db
+# Use DATA_DIR (app/backend/data) for Jira OAuth tokens - same location as olia.db
 # Can be overridden via JIRA_OAUTH_TOKEN_DIR environment variable
 _DEFAULT_TOKEN_DIR = Path(DATA_DIR) / "jira_oauth"
 BASE_TOKEN_DIR = os.getenv("JIRA_OAUTH_TOKEN_DIR", str(_DEFAULT_TOKEN_DIR))

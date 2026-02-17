@@ -20,6 +20,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Textarea from '$lib/components/common/Textarea.svelte';
+	import { WEBUI_NAME } from '$lib/stores';
 
 	const i18n = getContext('i18n');
 
@@ -409,8 +410,9 @@
 									bind:value={adminConfig.API_KEYS_ALLOWED_ENDPOINTS}
 								/>
 
+								<!--
 								<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-									<!-- https://docs.openwebui.com/getting-started/advanced-topics/api-endpoints -->
+									https://docs.openwebui.com/getting-started/advanced-topics/api-endpoints 
 									<a
 										href="https://docs.openwebui.com/getting-started/api-endpoints"
 										target="_blank"
@@ -419,6 +421,7 @@
 										{$i18n.t('To learn more about available endpoints, visit our documentation.')}
 									</a>
 								</div>
+								-->
 							</div>
 						{/if}
 					{/if}
@@ -452,13 +455,15 @@
 									<div>
 										<span class=" font-medium">{$i18n.t('Warning')}:</span>
 										<span
-											><a
+											><!--
+											<a
 												href="https://docs.openwebui.com/getting-started/env-configuration#jwt_expires_in"
 												target="_blank"
 												class=" underline"
-												>{$i18n.t('No expiration can pose security risks.')}
-											</a></span
-										>
+												>
+											</a>-->
+											{$i18n.t('No expiration can pose security risks.')}
+										</span>
 									</div>
 								</div>
 							</div>
@@ -783,7 +788,7 @@
 
 					<div class="mb-2.5 w-full justify-between">
 						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('WebUI URL')}</div>
+							<div class=" self-center text-xs font-medium">{$WEBUI_NAME} {$i18n.t('URL')}</div>
 						</div>
 
 						<div class="flex mt-2 space-x-2">
@@ -797,7 +802,7 @@
 
 						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
 							{$i18n.t(
-								'Enter the public URL of your WebUI. This URL will be used to generate links in the notifications.'
+								'Enter the public URL of your OLIA. This URL will be used to generate links in the notifications.',
 							)}
 						</div>
 					</div>
