@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { onMount, getContext, tick, onDestroy } from 'svelte';
+	import { getContext } from 'svelte';
 	const i18n = getContext('i18n');
 
 	import { page } from '$app/stores';
 	import { channels, mobile, showSidebar, user } from '$lib/stores';
-	import { getUserActiveStatusById } from '$lib/apis/users';
 	import { updateChannelById, updateChannelMemberActiveStatusById } from '$lib/apis/channels';
 	import { WEBUI_API_BASE_URL } from '$lib/constants';
 
@@ -17,14 +16,80 @@
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Emoji from '$lib/components/common/Emoji.svelte';
 
-	export let onUpdate: Function = () => {};
-
+	export let onUpdate: () => void = () => {};
 	export let className = '';
-	export let channel;
+	export let channel: any;
 
 	let showEditChannelModal = false;
+	let itemElement: HTMLElement | null = null;
 
-	let itemElement;
+	const hasPublicReadGrant = (grants: any) =>
+		Array.isArray(grants) &&
+		grants.some(
+			(grant) =>
+				grant?.principal_type === 'user' &&
+				grant?.principal_id === '*' &&
+				grant?.permission === 'read'
+		);
+
+	const isPublicChannel = (ch: any): boolean => {
+		if (ch?.type === 'group') {
+			if (typeof ch?.is_private === 'boolean') return !ch.is_private;
+			return hasPublicReadGrant(ch?.access_grants);
+		}
+		return hasPublicReadGrant(ch?.access_grants);
+	};
+
+	// ✅ FIX: no TS annotations in markup; keep the handler in <script>
+	const handleSubmit = async (payload: any) => {
+		const { name, is_private, access_grants, group_ids, user_ids } = payload ?? {};
+
+		const res = await updateChannelById(localStorage.token, channel.id, {
+			name,
+			is_private,
+			access_grants,
+			group_ids,
+			user_ids
+		}).catch((error) => {
+			toast.error(error?.message ?? String(error));
+			return null;
+		});
+
+		if (res) toast.success($i18n.t('Channel updated successfully'));
+		onUpdate();
+	};
+
+	const handleChannelClick = () => {
+		// reset unread count locally
+		if ($channels) {
+			channels.set(
+				$channels.map((ch) => {
+					if (ch.id === channel.id) ch.unread_count = 0;
+					return ch;
+				})
+			);
+		}
+
+		// close sidebar on mobile
+		if ($mobile) showSidebar.set(false);
+	};
+
+	const handleCloseDm = async (e: Event) => {
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+
+		channels.update((chs) => chs.filter((ch) => ch.id !== channel.id));
+
+		await updateChannelMemberActiveStatusById(localStorage.token, channel.id, false).catch((err) => {
+			toast.error(`${err}`);
+		});
+	};
+
+	const openEditModal = (e: Event) => {
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+		showEditChannelModal = true;
+	};
 </script>
 
 <ChannelModal
@@ -32,23 +97,7 @@
 	{channel}
 	edit={true}
 	{onUpdate}
-	onSubmit={async ({ name, is_private, access_control, group_ids, user_ids }) => {
-		const res = await updateChannelById(localStorage.token, channel.id, {
-			name,
-			is_private,
-			access_control,
-			group_ids,
-			user_ids
-		}).catch((error) => {
-			toast.error(error.message);
-		});
-
-		if (res) {
-			toast.success($i18n.t('Channel updated successfully'));
-		}
-
-		onUpdate();
-	}}
+	onSubmit={handleSubmit}
 />
 
 <div
@@ -64,24 +113,7 @@
 	<a
 		class=" w-full flex justify-between"
 		href="/channels/{channel.id}"
-		on:click={() => {
-			console.log(channel);
-
-			if ($channels) {
-				channels.set(
-					$channels.map((ch) => {
-						if (ch.id === channel.id) {
-							ch.unread_count = 0;
-						}
-						return ch;
-					})
-				);
-			}
-
-			if ($mobile) {
-				showSidebar.set(false);
-			}
-		}}
+		on:click={handleChannelClick}
 		draggable="false"
 	>
 		<div class="flex items-center gap-1">
@@ -94,8 +126,7 @@
 								<img
 									src={`${WEBUI_API_BASE_URL}/users/${u.id}/profile/image`}
 									alt={u.name}
-									class=" size-5.5 rounded-full border-2 border-white dark:border-gray-900 {index ===
-									1
+									class=" size-5.5 rounded-full border-2 border-white dark:border-gray-900 {index === 1
 										? '-ml-2.5'
 										: ''}"
 								/>
@@ -123,7 +154,7 @@
 					{/if}
 				{:else}
 					<div class=" size-4 justify-center flex items-center ml-1">
-						{#if channel?.type === 'group' ? !channel?.is_private : channel?.access_control === null}
+						{#if isPublicChannel(channel)}
 							<Hashtag className="size-3.5" strokeWidth="2.5" />
 						{:else}
 							<Lock className="size-[15px]" strokeWidth="2" />
@@ -132,13 +163,9 @@
 				{/if}
 			</div>
 
-			<div
-				class=" text-left self-center overflow-hidden w-full line-clamp-1 flex-1 pr-1 flex items-center gap-2.5"
-			>
+			<div class=" text-left self-center overflow-hidden w-full line-clamp-1 flex-1 pr-1 flex items-center gap-2.5">
 				{#if channel?.name}
-					<span class="line-clamp-1">
-						{channel.name}
-					</span>
+					<span class="line-clamp-1">{channel.name}</span>
 				{:else}
 					<span class="shrink-0 line-clamp-1">
 						{channel?.users
@@ -158,9 +185,7 @@
 									</div>
 								{/if}
 
-								<div class="line-clamp-1 italic">
-									{dmUser?.status_message}
-								</div>
+								<div class="line-clamp-1 italic">{dmUser?.status_message}</div>
 							</span>
 						{/if}
 					{/if}
@@ -170,9 +195,7 @@
 
 		<div class="flex items-center">
 			{#if channel?.unread_count > 0}
-				<div
-					class="text-xs py-[1px] px-2 rounded-xl bg-gray-100 text-black dark:bg-gray-800 dark:text-white font-medium whitespace-nowrap"
-				>
+				<div class="text-xs py-[1px] px-2 rounded-xl bg-gray-100 text-black dark:bg-gray-800 dark:text-white font-medium whitespace-nowrap">
 					{new Intl.NumberFormat($i18n.locale, {
 						notation: 'compact',
 						compactDisplay: 'short'
@@ -183,45 +206,18 @@
 	</a>
 
 	{#if ['dm'].includes(channel?.type)}
-		<div
-			class="ml-0.5 mr-1 invisible group-hover:visible self-center flex items-center dark:text-gray-300"
-		>
+		<div class="ml-0.5 mr-1 invisible group-hover:visible self-center flex items-center dark:text-gray-300">
 			<button
 				type="button"
 				class="p-0.5 dark:hover:bg-gray-850 rounded-lg touch-auto"
-				on:click={async (e) => {
-					e.stopImmediatePropagation();
-					e.stopPropagation();
-
-					channels.update((chs) =>
-						chs.filter((ch) => {
-							return ch.id !== channel.id;
-						})
-					);
-
-					await updateChannelMemberActiveStatusById(localStorage.token, channel.id, false).catch(
-						(error) => {
-							toast.error(`${error}`);
-						}
-					);
-				}}
+				on:click={handleCloseDm}
 			>
 				<XMark className="size-3.5" />
 			</button>
 		</div>
 	{:else if $user?.role === 'admin' || channel.user_id === $user?.id}
-		<div
-			class="ml-0.5 mr-1 invisible group-hover:visible self-center flex items-center dark:text-gray-300"
-		>
-			<button
-				type="button"
-				class="p-0.5 dark:hover:bg-gray-850 rounded-lg touch-auto"
-				on:click={(e) => {
-					e.stopImmediatePropagation();
-					e.stopPropagation();
-					showEditChannelModal = true;
-				}}
-			>
+		<div class="ml-0.5 mr-1 invisible group-hover:visible self-center flex items-center dark:text-gray-300">
+			<button type="button" class="p-0.5 dark:hover:bg-gray-850 rounded-lg touch-auto" on:click={openEditModal}>
 				<Cog6 className="size-3.5" />
 			</button>
 		</div>

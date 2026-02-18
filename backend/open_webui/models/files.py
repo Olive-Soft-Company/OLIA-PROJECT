@@ -4,7 +4,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 from open_webui.internal.db import Base, JSONField, get_db, get_db_context
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy import BigInteger, Column, String, Text, JSON
 
 log = logging.getLogger(__name__)
@@ -26,8 +26,6 @@ class File(Base):
     data = Column(JSON, nullable=True)
     meta = Column(JSON, nullable=True)
 
-    access_control = Column(JSON, nullable=True)
-
     created_at = Column(BigInteger)
     updated_at = Column(BigInteger)
 
@@ -45,8 +43,6 @@ class FileModel(BaseModel):
     data: Optional[dict] = None
     meta: Optional[dict] = None
 
-    access_control: Optional[dict] = None
-
     created_at: Optional[int]  # timestamp in epoch
     updated_at: Optional[int]  # timestamp in epoch
 
@@ -63,6 +59,25 @@ class FileMeta(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
+    @model_validator(mode="before")
+    @classmethod
+    def sanitize_meta(cls, data):
+        """Sanitize metadata fields to handle malformed legacy data."""
+        if not isinstance(data, dict):
+            return data
+
+        # Handle content_type that may be a list like ['application/pdf', None]
+        content_type = data.get("content_type")
+        if isinstance(content_type, list):
+            # Extract first non-None string value
+            data["content_type"] = next(
+                (item for item in content_type if isinstance(item, str)), None
+            )
+        elif content_type is not None and not isinstance(content_type, str):
+            data["content_type"] = None
+
+        return data
+
 
 class FileModelResponse(BaseModel):
     id: str
@@ -74,7 +89,7 @@ class FileModelResponse(BaseModel):
     meta: FileMeta
 
     created_at: int  # timestamp in epoch
-    updated_at: int  # timestamp in epoch
+    updated_at: Optional[int] = None  # timestamp in epoch, optional for legacy files
 
     model_config = ConfigDict(extra="allow")
 
@@ -94,7 +109,6 @@ class FileForm(BaseModel):
     path: str
     data: dict = {}
     meta: dict = {}
-    access_control: Optional[dict] = None
 
 
 class FileUpdateForm(BaseModel):
@@ -121,16 +135,12 @@ class FilesTable:
                     "updated_at": int(time.time()),
                 }
             )
-
             try:
                 result = File(**file.model_dump())
                 db.add(result)
                 db.commit()
                 db.refresh(result)
-                if result:
-                    return FileModel.model_validate(result)
-                else:
-                    return None
+                return FileModel.model_validate(result) if result else None
             except Exception as e:
                 log.exception(f"Error inserting a new file: {e}")
                 return None
@@ -154,11 +164,9 @@ class FilesTable:
         with get_db_context(db) as db:
             try:
                 file = db.query(File).filter_by(id=id, user_id=user_id).first()
-                if file:
-                    return FileModel.model_validate(file)
-                else:
-                    return None
-            except Exception:
+                return FileModel.model_validate(file) if file else None
+            except Exception as e:
+                log.exception(f"Error getting file by id and user_id: {e}")
                 return None
 
     def get_file_metadata_by_id(
@@ -167,6 +175,8 @@ class FilesTable:
         with get_db_context(db) as db:
             try:
                 file = db.get(File, id)
+                if not file:
+                    return None
                 return FileMetadataResponse(
                     id=file.id,
                     hash=file.hash,
@@ -174,7 +184,8 @@ class FilesTable:
                     created_at=file.created_at,
                     updated_at=file.updated_at,
                 )
-            except Exception:
+            except Exception as e:
+                log.exception(f"Error getting file metadata by id: {e}")
                 return None
 
     def get_files(self, db: Optional[Session] = None) -> list[FileModel]:
@@ -232,6 +243,26 @@ class FilesTable:
                 FileModel.model_validate(file)
                 for file in db.query(File).filter_by(user_id=user_id).all()
             ]
+
+    def count_recent_upload_files_by_user_id(
+        self, user_id: str, time_window_seconds: int = 5
+    ) -> int:
+        try:
+            with get_db() as db:
+                threshold = int(time.time()) - time_window_seconds
+                return (
+                    db.query(File)
+                    .filter(
+                        File.user_id == user_id,
+                        File.created_at >= threshold,
+                    )
+                    .count()
+                )
+        except Exception as e:
+            log.exception(
+                f"Error counting recent uploaded files by user id: {e}"
+            )
+            return 0
 
     @staticmethod
     def _glob_to_like_pattern(glob: str) -> str:
@@ -301,21 +332,24 @@ class FilesTable:
         with get_db_context(db) as db:
             try:
                 file = db.query(File).filter_by(id=id).first()
+                if not file:
+                    return None
 
                 if form_data.hash is not None:
                     file.hash = form_data.hash
 
                 if form_data.data is not None:
-                    file.data = {**(file.data if file.data else {}), **form_data.data}
+                    file.data = {**(file.data or {}), **form_data.data}
 
                 if form_data.meta is not None:
-                    file.meta = {**(file.meta if file.meta else {}), **form_data.meta}
+                    file.meta = {**(file.meta or {}), **form_data.meta}
 
                 file.updated_at = int(time.time())
                 db.commit()
+                db.refresh(file)
                 return FileModel.model_validate(file)
             except Exception as e:
-                log.exception(f"Error updating file completely by id: {e}")
+                log.exception(f"Error updating file by id: {e}")
                 return None
 
     def update_file_hash_by_id(
@@ -324,12 +358,15 @@ class FilesTable:
         with get_db_context(db) as db:
             try:
                 file = db.query(File).filter_by(id=id).first()
+                if not file:
+                    return None
                 file.hash = hash
                 file.updated_at = int(time.time())
                 db.commit()
-
+                db.refresh(file)
                 return FileModel.model_validate(file)
-            except Exception:
+            except Exception as e:
+                log.exception(f"Error updating file hash by id: {e}")
                 return None
 
     def update_file_data_by_id(
@@ -341,9 +378,10 @@ class FilesTable:
                 file.data = {**(file.data if file.data else {}), **data}
                 file.updated_at = int(time.time())
                 db.commit()
+                db.refresh(file)
                 return FileModel.model_validate(file)
             except Exception as e:
-
+                log.exception(f"Error updating file data by id: {e}")
                 return None
 
     def update_file_metadata_by_id(
@@ -355,8 +393,10 @@ class FilesTable:
                 file.meta = {**(file.meta if file.meta else {}), **meta}
                 file.updated_at = int(time.time())
                 db.commit()
+                db.refresh(file)
                 return FileModel.model_validate(file)
-            except Exception:
+            except Exception as e:
+                log.exception(f"Error updating file metadata by id: {e}")
                 return None
 
                 return False
@@ -364,11 +404,11 @@ class FilesTable:
     def delete_file_by_id(self, id: str, db: Optional[Session] = None) -> bool:
         with get_db_context(db) as db:
             try:
-                db.query(File).filter_by(id=id).delete()
+                deleted = db.query(File).filter_by(id=id).delete()
                 db.commit()
-
-                return True
-            except Exception:
+                return bool(deleted)
+            except Exception as e:
+                log.exception(f"Error deleting file by id: {e}")
                 return False
 
     def delete_all_files(self, db: Optional[Session] = None) -> bool:
@@ -376,9 +416,9 @@ class FilesTable:
             try:
                 db.query(File).delete()
                 db.commit()
-
                 return True
-            except Exception:
+            except Exception as e:
+                log.exception(f"Error deleting all files: {e}")
                 return False
 
 
