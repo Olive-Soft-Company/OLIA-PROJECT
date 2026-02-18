@@ -8,6 +8,7 @@
 	import Cog6 from '$lib/components/icons/Cog6.svelte';
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import { WEBUI_NAME } from '$lib/stores';
 
 	export let onDelete = () => {};
 	export let onSubmit = () => {};
@@ -53,7 +54,7 @@
 <div class="flex w-full gap-2 items-center">
 	<Tooltip
 		className="w-full relative"
-		content={$i18n.t(`WebUI will make requests to "{{url}}/chat/completions"`, {
+		content={$i18n.t(`OLIA will make requests to "{{url}}/chat/completions"`, {
 			url
 		})}
 		placement="top-start"

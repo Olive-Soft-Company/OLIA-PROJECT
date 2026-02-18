@@ -279,39 +279,6 @@
 			{#if help}
 				<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
-				<!-- {$i18n.t('Help')} -->
-
-				{#if $user?.role === 'admin'}
-					<DropdownMenu.Item
-						as="a"
-						target="_blank"
-						class="flex gap-3 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-						href="https://docs.openwebui.com"
-					>
-						<QuestionMarkCircle className="size-5" />
-						<div class="flex items-center">{$i18n.t('Documentation')}</div>
-					</DropdownMenu.Item>
-
-					<!-- Releases -->
-					<DropdownMenu.Item
-						as="a"
-						target="_blank"
-						class="flex gap-3 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-						href="https://github.com/open-webui/open-webui/releases"
-					>
-						<Map className="size-5" />
-						<div class="flex items-center">{$i18n.t('Releases')}</div>
-					</DropdownMenu.Item>
-				{/if}
-
 				<DropdownMenu.Item
 					class="flex gap-3 items-center py-1.5 px-3 text-sm select-none w-full  hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition cursor-pointer"
 					id="chat-share-button"
@@ -333,7 +300,7 @@
 			<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
 			<DropdownMenu.Item
-				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
 				on:click={async () => {
 					const res = await userSignOut();
 					user.set(null);
@@ -371,15 +338,14 @@
 									<span class="relative inline-flex rounded-full size-2 bg-green-500" />
 								</span>
 							</div>
-
-							<div class=" ">
-								<span class="">
-									{$i18n.t('Active Users')}:
-								</span>
-								<span class=" font-semibold">
-									{usage?.user_count}
-								</span>
-							</div>
+								<div class=" ">
+									<span class="">
+										{$i18n.t('Active Users')}:
+									</span>
+									<span class=" font-semibold">
+										{usage?.user_count}
+									</span>
+								</div>
 						</div>
 					</Tooltip>
 				{/if}

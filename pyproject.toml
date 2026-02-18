@@ -192,7 +192,7 @@ exclude = [
     "requirements.txt",
     "start.sh",
     "start_windows.bat",
-    "webui.db",
+    "olia.db",
     "chroma.sqlite3",
 ]
 force-include = { "CHANGELOG.md" = "open_webui/CHANGELOG.md", build = "open_webui/frontend" }

@@ -20,6 +20,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Textarea from '$lib/components/common/Textarea.svelte';
+	import { WEBUI_NAME } from '$lib/stores';
 
 	const i18n = getContext('i18n');
 
@@ -143,7 +144,7 @@
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
 									</Tooltip>
-
+									<!--
 									{#if $config?.features?.enable_version_update_check}
 										<a
 											href="https://github.com/open-webui/open-webui/releases/tag/v{version.latest}"
@@ -156,8 +157,9 @@
 													: $i18n.t('(latest)')}
 										</a>
 									{/if}
+									-->
 								</div>
-
+								<!--
 								<button
 									class=" underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500"
 									type="button"
@@ -167,8 +169,9 @@
 								>
 									<div>{$i18n.t("See what's new")}</div>
 								</button>
+								-->
 							</div>
-
+							<!--
 							{#if $config?.features?.enable_version_update_check}
 								<button
 									class=" text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
@@ -180,9 +183,11 @@
 									{$i18n.t('Check for updates')}
 								</button>
 							{/if}
+							-->
 						</div>
 					</div>
 
+					<!--
 					<div class="mb-2.5">
 						<div class="flex w-full justify-between items-center">
 							<div class="text-xs pr-2">
@@ -228,7 +233,8 @@
 							</div>
 						</div>
 					</div>
-
+					-->
+				<!--
 					<div class="mb-2.5">
 						<div class="flex w-full justify-between items-center">
 							<div class="text-xs pr-2">
@@ -275,15 +281,16 @@
 								{/if}
 							</div>
 
-							<!-- <button
+							<button
 								class="flex-shrink-0 text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
 							>
 								{$i18n.t('Activate')}
-							</button> -->
+							</button> 
 						</div>
 					</div>
+				-->
 				</div>
-
+				
 				<div class="mb-3">
 					<div class=" mt-0.5 mb-2.5 text-base font-medium">{$i18n.t('Authentication')}</div>
 
@@ -403,8 +410,9 @@
 									bind:value={adminConfig.API_KEYS_ALLOWED_ENDPOINTS}
 								/>
 
+								<!--
 								<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-									<!-- https://docs.openwebui.com/getting-started/advanced-topics/api-endpoints -->
+									https://docs.openwebui.com/getting-started/advanced-topics/api-endpoints 
 									<a
 										href="https://docs.openwebui.com/getting-started/api-endpoints"
 										target="_blank"
@@ -413,6 +421,7 @@
 										{$i18n.t('To learn more about available endpoints, visit our documentation.')}
 									</a>
 								</div>
+								-->
 							</div>
 						{/if}
 					{/if}
@@ -446,13 +455,15 @@
 									<div>
 										<span class=" font-medium">{$i18n.t('Warning')}:</span>
 										<span
-											><a
+											><!--
+											<a
 												href="https://docs.openwebui.com/getting-started/env-configuration#jwt_expires_in"
 												target="_blank"
 												class=" underline"
-												>{$i18n.t('No expiration can pose security risks.')}
-											</a></span
-										>
+												>
+											</a>-->
+											{$i18n.t('No expiration can pose security risks.')}
+										</span>
 									</div>
 								</div>
 							</div>
@@ -777,7 +788,7 @@
 
 					<div class="mb-2.5 w-full justify-between">
 						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('WebUI URL')}</div>
+							<div class=" self-center text-xs font-medium">{$WEBUI_NAME} {$i18n.t('URL')}</div>
 						</div>
 
 						<div class="flex mt-2 space-x-2">
@@ -791,7 +802,7 @@
 
 						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
 							{$i18n.t(
-								'Enter the public URL of your WebUI. This URL will be used to generate links in the notifications.'
+								'Enter the public URL of your OLIA. This URL will be used to generate links in the notifications.',
 							)}
 						</div>
 					</div>
