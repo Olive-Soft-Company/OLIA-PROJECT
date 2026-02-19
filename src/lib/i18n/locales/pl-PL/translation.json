@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "Pobieranie modelu {{model}} zostało anulowane",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} zareagował(a) {{REACTION}}",
 	"{{user}}'s Chats": "Czaty użytkownika {{user}}",
-	"{{webUIName}} Backend Required": "Wymagany backend {{webUIName}}",
+	"{{olia_name}} Backend Required": "Wymagany backend {{olia_name}}",
 	"*Prompt node ID(s) are required for image generation": "*Do generowania obrazów wymagane jest ID węzła promptu",
 	"1 Source": "1 źródło",
 	"A collaboration channel where people join as members": "Kanał współpracy, do którego użytkownicy dołączają jako członkowie",

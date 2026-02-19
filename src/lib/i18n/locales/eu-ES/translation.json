@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}}-ren Txatak",
-	"{{webUIName}} Backend Required": "{{webUIName}} Backend-a Beharrezkoa",
+	"{{olia_name}} Backend Required": "{{olia_name}} Backend-a Beharrezkoa",
 	"*Prompt node ID(s) are required for image generation": "Prompt nodoaren IDa(k) beharrezkoak dira irudiak sortzeko",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

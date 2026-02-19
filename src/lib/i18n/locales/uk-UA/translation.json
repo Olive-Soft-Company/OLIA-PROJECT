@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "Чати {{user}}а",
-	"{{webUIName}} Backend Required": "Необхідно підключення бекенду {{webUIName}}",
+	"{{olia_name}} Backend Required": "Необхідно підключення бекенду {{olia_name}}",
 	"*Prompt node ID(s) are required for image generation": "*Для генерації зображення потрібно вказати ідентифікатор(и) вузла(ів)",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "การดาวน์โหลด {{model}} ถูกยกเลิกแล้ว",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "การแชทของ {{user}}",
-	"{{webUIName}} Backend Required": "ต้องใช้ Backend ของ {{webUIName}}",
+	"{{olia_name}} Backend Required": "ต้องใช้ Backend ของ {{olia_name}}",
 	"*Prompt node ID(s) are required for image generation": "*ต้องระบุ ID ของ prompt node สำหรับการสร้างภาพ",
 	"1 Source": "1 แหล่งที่มา",
 	"A collaboration channel where people join as members": "",

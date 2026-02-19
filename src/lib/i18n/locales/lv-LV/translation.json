@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "{{model}} lejupielāde ir atcelta",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} reaģēja ar {{REACTION}}",
 	"{{user}}'s Chats": "{{user}} tērzēšanas",
-	"{{webUIName}} Backend Required": "Nepieciešama {{webUIName}} aizmugursistēma",
+	"{{olia_name}} Backend Required": "Nepieciešama {{olia_name}} aizmugursistēma",
 	"*Prompt node ID(s) are required for image generation": "*Attēla ģenerēšanai nepieciešami uzvednes mezgla ID",
 	"1 Source": "1 avots",
 	"A collaboration channel where people join as members": "Sadarbības kanāls, kurā cilvēki pievienojas kā dalībnieki",

@@ -494,9 +494,9 @@ from open_webui.env import (
     ENABLE_STAR_SESSIONS_MIDDLEWARE,
     ENABLE_PUBLIC_ACTIVE_USERS_COUNT,
     # Admin Account Runtime Creation
-    WEBUI_ADMIN_EMAIL,
-    WEBUI_ADMIN_PASSWORD,
-    WEBUI_ADMIN_NAME,
+    OLIA_ADMIN_EMAIL,
+    OLIA_ADMIN_PASSWORD,
+    OLIA_ADMIN_NAME,
     ENABLE_EASTER_EGGS,
 )
 
@@ -606,8 +606,8 @@ async def lifespan(app: FastAPI):
         get_license_data(app, LICENSE_KEY)
 
     # Create admin account from env vars if specified and no users exist
-    if WEBUI_ADMIN_EMAIL and WEBUI_ADMIN_PASSWORD:
-        if create_admin_user(WEBUI_ADMIN_EMAIL, WEBUI_ADMIN_PASSWORD, WEBUI_ADMIN_NAME):
+    if OLIA_ADMIN_EMAIL and OLIA_ADMIN_PASSWORD:
+        if create_admin_user(OLIA_ADMIN_EMAIL, OLIA_ADMIN_PASSWORD, OLIA_ADMIN_NAME):
             # Disable signup since we now have an admin
             app.state.config.ENABLE_SIGNUP = False
 

@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}} ཡི་ཁ་བརྡ།",
-	"{{webUIName}} Backend Required": "{{webUIName}} རྒྱབ་སྣེ་དགོས།",
+	"{{olia_name}} Backend Required": "{{olia_name}} རྒྱབ་སྣེ་དགོས།",
 	"*Prompt node ID(s) are required for image generation": "*པར་བཟོའི་ཆེད་དུ་འགུལ་སློང་མདུད་ཚེག་གི་ ID(s) དགོས།",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

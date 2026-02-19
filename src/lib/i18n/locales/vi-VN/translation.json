@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "Các cuộc trò chuyện của {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} Yêu cầu Backend",
+	"{{olia_name}} Backend Required": "{{olia_name}} Yêu cầu Backend",
 	"*Prompt node ID(s) are required for image generation": "*ID nút Prompt là bắt buộc để tạo ảnh",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

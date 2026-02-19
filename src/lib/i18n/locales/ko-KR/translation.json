@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "{{model}} 다운로드가 취소되었습니다.",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}}의 채팅",
-	"{{webUIName}} Backend Required": "{{webUIName}} 백엔드가 필요합니다.",
+	"{{olia_name}} Backend Required": "{{olia_name}} 백엔드가 필요합니다.",
 	"*Prompt node ID(s) are required for image generation": "이미지 생성에는 프롬프트 노드 ID가 필요합니다.",
 	"1 Source": "소스1",
 	"A collaboration channel where people join as members": "",

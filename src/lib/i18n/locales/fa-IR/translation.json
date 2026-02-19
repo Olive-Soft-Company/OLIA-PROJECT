@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "دانلود {{model}} لغو شده است",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}} گفتگوهای",
-	"{{webUIName}} Backend Required": "بکند {{webUIName}} نیاز است.",
+	"{{olia_name}} Backend Required": "بکند {{olia_name}} نیاز است.",
 	"*Prompt node ID(s) are required for image generation": "*شناسه(های) گره پرامپت برای تولید تصویر مورد نیاز است",
 	"1 Source": "۱ منبع",
 	"A collaboration channel where people join as members": "",

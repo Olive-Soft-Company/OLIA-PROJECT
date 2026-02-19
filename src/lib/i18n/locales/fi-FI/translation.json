@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "{{model}} lataus peruttu",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} reagoi {{REACTION}}",
 	"{{user}}'s Chats": "{{user}}:n keskustelut",
-	"{{webUIName}} Backend Required": "{{webUIName}}-backend vaaditaan",
+	"{{olia_name}} Backend Required": "{{olia_name}}-backend vaaditaan",
 	"*Prompt node ID(s) are required for image generation": "Kuvan luomiseen vaaditaan kehote-solmun ID(t)",
 	"1 Source": "1 lähde",
 	"A collaboration channel where people join as members": "Yhteistyökanava, johon ihmiset liittyvät jäseninä",

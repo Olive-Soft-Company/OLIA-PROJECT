@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "محادثات المستخدم {{user}}",
-	"{{webUIName}} Backend Required": "يتطلب الخلفية الخاصة بـ {{webUIName}}",
+	"{{olia_name}} Backend Required": "يتطلب الخلفية الخاصة بـ {{olia_name}}",
 	"*Prompt node ID(s) are required for image generation": "*معرّف/معرّفات عقدة الموجه مطلوبة لتوليد الصور",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

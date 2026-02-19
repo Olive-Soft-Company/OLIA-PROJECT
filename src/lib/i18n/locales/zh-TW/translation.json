@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "已取消模型 {{model}} 的下載",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} 給了 {{REACTION}}",
 	"{{user}}'s Chats": "{{user}} 的對話",
-	"{{webUIName}} Backend Required": "需要提供 {{webUIName}} 後端",
+	"{{olia_name}} Backend Required": "需要提供 {{olia_name}} 後端",
 	"*Prompt node ID(s) are required for image generation": "* 產生圖片需要提示詞節點 ID",
 	"1 Source": "1 個來源",
 	"A collaboration channel where people join as members": "成員可加入的協作頻道",

@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "Download af {{model}} er blevet annulleret",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} reagerede med {{REACTION}}",
 	"{{user}}'s Chats": "{{user}}s chats",
-	"{{webUIName}} Backend Required": "{{webUIName}} Backend kræves",
+	"{{olia_name}} Backend Required": "{{olia_name}} Backend kræves",
 	"*Prompt node ID(s) are required for image generation": "*Prompt node ID(s) er påkrævet for at kunne generere billeder",
 	"1 Source": "1 kilde",
 	"A collaboration channel where people join as members": "En samarbejdskanal hvor folk tilmelder sig som medlemmer",

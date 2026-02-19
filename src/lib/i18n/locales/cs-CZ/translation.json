@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "Stažení modelu {{model}} bylo zrušeno",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "Konverzace uživatele {{user}}",
-	"{{webUIName}} Backend Required": "Je vyžadován backend {{webUIName}}",
+	"{{olia_name}} Backend Required": "Je vyžadován backend {{olia_name}}",
 	"*Prompt node ID(s) are required for image generation": "*Pro generování obrázků jsou vyžadována ID uzlů instrukce",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

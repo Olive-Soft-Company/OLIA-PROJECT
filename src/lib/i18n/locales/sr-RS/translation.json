@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "Ћаскања корисника {{user}}",
-	"{{webUIName}} Backend Required": "Захтева се {{webUIName}} позадинац",
+	"{{olia_name}} Backend Required": "Захтева се {{olia_name}} позадинац",
 	"*Prompt node ID(s) are required for image generation": "",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "Tá íoslódáil {{model}} curtha ar ceal",
 	"{{NAMES}} reacted with {{REACTION}}": "D’fhreagair {{NAMES}} le {{REACTION}}",
 	"{{user}}'s Chats": "Comhráite {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} Ceoldeireadh Riachtanach",
+	"{{olia_name}} Backend Required": "{{olia_name}} Ceoldeireadh Riachtanach",
 	"*Prompt node ID(s) are required for image generation": "* Tá ID nód leid ag teastáil chun íomhá a ghiniúint",
 	"1 Source": "1 Foinse",
 	"A collaboration channel where people join as members": "Cainéal comhoibrithe ina mbíonn daoine ag glacadh páirte mar bhaill",

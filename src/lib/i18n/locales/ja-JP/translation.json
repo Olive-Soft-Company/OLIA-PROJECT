@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "{{model}} のダウンロードがキャンセルされました",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}} のチャット",
-	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です",
+	"{{olia_name}} Backend Required": "{{olia_name}} バックエンドが必要です",
 	"*Prompt node ID(s) are required for image generation": "*画像生成にはプロンプトノードIDが必要です",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

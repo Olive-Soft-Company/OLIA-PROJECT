@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "La descàrrega del model {{model}} s'ha cancel·lat",
 	"{{NAMES}} reacted with {{REACTION}}": "{{NAMES}} han reaccionat amb {{REACTION}}",
 	"{{user}}'s Chats": "Els xats de {{user}}",
-	"{{webUIName}} Backend Required": "El Backend de {{webUIName}} és necessari",
+	"{{olia_name}} Backend Required": "El Backend de {{olia_name}} és necessari",
 	"*Prompt node ID(s) are required for image generation": "*Els identificadors de nodes d'indicacions són necessaris per a la generació d'imatges",
 	"1 Source": "1 font",
 	"A collaboration channel where people join as members": "Un canal de col·laboració on la gent s'uneix com a membres",

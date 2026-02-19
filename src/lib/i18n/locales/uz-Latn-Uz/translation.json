@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}} ning chatlari",
-	"{{webUIName}} Backend Required": "{{webUIName}} Backend talab qilinadi",
+	"{{olia_name}} Backend Required": "{{olia_name}} Backend talab qilinadi",
 	"*Prompt node ID(s) are required for image generation": "*Rasm yaratish uchun tezkor tugun identifikatorlari talab qilinadi",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

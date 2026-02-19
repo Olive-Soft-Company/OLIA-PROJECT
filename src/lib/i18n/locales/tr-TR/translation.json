@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}}'ın Sohbetleri",
-	"{{webUIName}} Backend Required": "{{webUIName}} Arka-uç Gerekli",
+	"{{olia_name}} Backend Required": "{{olia_name}} Arka-uç Gerekli",
 	"*Prompt node ID(s) are required for image generation": "*Görüntü oluşturma için düğüm kimlikleri gereklidir",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

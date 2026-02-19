@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}}'s chats",
-	"{{webUIName}} Backend Required": "{{webUIName}} Backend verplicht",
+	"{{olia_name}} Backend Required": "{{olia_name}} Backend verplicht",
 	"*Prompt node ID(s) are required for image generation": "*Prompt node ID('s) zijn vereist voor het genereren van afbeeldingen",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

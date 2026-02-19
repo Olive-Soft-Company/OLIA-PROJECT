@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "Obrolan {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} Diperlukan Backend",
+	"{{olia_name}} Backend Required": "{{olia_name}} Diperlukan Backend",
 	"*Prompt node ID(s) are required for image generation": "",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",

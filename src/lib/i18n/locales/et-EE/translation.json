@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "{{model}} allalaadimine on tühistatud",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "{{user}} vestlused",
-	"{{webUIName}} Backend Required": "{{webUIName}} taustaserver on vajalik",
+	"{{olia_name}} Backend Required": "{{olia_name}} taustaserver on vajalik",
 	"*Prompt node ID(s) are required for image generation": "*Vihje sõlme ID(d) on piltide genereerimiseks vajalikud",
 	"1 Source": "1 allikas",
 	"A collaboration channel where people join as members": "",

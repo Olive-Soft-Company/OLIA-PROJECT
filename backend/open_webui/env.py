@@ -460,9 +460,9 @@ ENABLE_SIGNUP_PASSWORD_CONFIRMATION = (
 
 # Optional env vars for creating an admin account on startup
 # Useful for headless/automated deployments
-WEBUI_ADMIN_EMAIL = os.environ.get("WEBUI_ADMIN_EMAIL", "")
-WEBUI_ADMIN_PASSWORD = os.environ.get("WEBUI_ADMIN_PASSWORD", "")
-WEBUI_ADMIN_NAME = os.environ.get("WEBUI_ADMIN_NAME", "Admin")
+OLIA_ADMIN_EMAIL = os.environ.get("OLIA_ADMIN_EMAIL", "")
+OLIA_ADMIN_PASSWORD = os.environ.get("OLIA_ADMIN_PASSWORD", "")
+OLIA_ADMIN_NAME = os.environ.get("OLIA_ADMIN_NAME", "Admin")
 
 WEBUI_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
     "WEBUI_AUTH_TRUSTED_EMAIL_HEADER", None

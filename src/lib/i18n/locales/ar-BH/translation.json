@@ -22,7 +22,7 @@
 	"{{model}} download has been canceled": "",
 	"{{NAMES}} reacted with {{REACTION}}": "",
 	"{{user}}'s Chats": "دردشات {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} مطلوب",
+	"{{olia_name}} Backend Required": "{{olia_name}} مطلوب",
 	"*Prompt node ID(s) are required for image generation": "",
 	"1 Source": "",
 	"A collaboration channel where people join as members": "",
