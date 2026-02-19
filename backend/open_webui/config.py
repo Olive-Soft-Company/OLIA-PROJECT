@@ -32,7 +32,7 @@ from open_webui.env import (
     OLIA_DIR,
     WEBUI_AUTH,
     WEBUI_FAVICON_URL,
-    WEBUI_NAME,
+    OLIA_NAME,
     log,
 )
 from open_webui.internal.db import Base, get_db
@@ -690,7 +690,7 @@ def load_oauth_providers():
                 },
             }
             # Only add redirect_uri if explicitly configured
-            # Otherwise, handle_login will construct it from WEBUI_URL
+            # Otherwise, handle_login will construct it from OLIA_URL
             if MICROSOFT_REDIRECT_URI.value:
                 register_kwargs["redirect_uri"] = MICROSOFT_REDIRECT_URI.value
             
@@ -698,7 +698,7 @@ def load_oauth_providers():
             return client
 
         OAUTH_PROVIDERS["microsoft"] = {
-            # Store None if not set, so handle_login can detect it and use WEBUI_URL
+            # Store None if not set, so handle_login can detect it and use OLIA_URL
             "redirect_uri": MICROSOFT_REDIRECT_URI.value if MICROSOFT_REDIRECT_URI.value else None,
             "picture_url": MICROSOFT_CLIENT_PICTURE_URL.value,
             "register": microsoft_oauth_register,
@@ -921,7 +921,7 @@ if CUSTOM_NAME:
                         r.raw.decode_content = True
                         shutil.copyfileobj(r.raw, f)
 
-            WEBUI_NAME = data["name"]
+            OLIA_NAME = data["name"]
     except Exception as e:
         log.exception(e)
         pass
@@ -1169,7 +1169,7 @@ TOOL_SERVER_CONNECTIONS = PersistentConfig(
 ####################################
 
 
-WEBUI_URL = PersistentConfig("WEBUI_URL", "webui.url", os.environ.get("WEBUI_URL", ""))
+OLIA_URL = PersistentConfig("OLIA_URL", "webui.url", os.environ.get("OLIA_URL", ""))
 
 
 ENABLE_SIGNUP = PersistentConfig(

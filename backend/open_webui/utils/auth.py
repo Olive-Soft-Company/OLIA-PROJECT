@@ -94,7 +94,7 @@ def get_license_data(app, key):
             elif k == "count":
                 setattr(app.state, "USER_COUNT", v)
             elif k == "name":
-                setattr(app.state, "WEBUI_NAME", v)
+                setattr(app.state, "OLIA_NAME", v)
             elif k == "metadata":
                 setattr(app.state, "LICENSE_METADATA", v)
 

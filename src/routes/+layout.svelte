@@ -14,8 +14,8 @@
 		user,
 		settings,
 		theme,
-		WEBUI_NAME,
-		WEBUI_VERSION,
+		OLIA_NAME,
+		OLIA_VERSION,
 		WEBUI_DEPLOYMENT_ID,
 		mobile,
 		socket,
@@ -123,7 +123,7 @@
 
 			if (version !== null || deploymentId !== null) {
 				if (
-					($WEBUI_VERSION !== null && version !== $WEBUI_VERSION) ||
+					($OLIA_VERSION !== null && version !== $OLIA_VERSION) ||
 					($WEBUI_DEPLOYMENT_ID !== null && deploymentId !== $WEBUI_DEPLOYMENT_ID)
 				) {
 					await unregisterServiceWorkers();
@@ -145,7 +145,7 @@
 			}
 
 			if (version !== null) {
-				WEBUI_VERSION.set(version);
+				OLIA_VERSION.set(version);
 			}
 
 			console.log('version', version);
@@ -369,7 +369,7 @@
 
 					if ($isLastActiveTab) {
 						if ($settings?.notificationEnabled ?? false) {
-							new Notification(`${title} • ${WEBUI_NAME}`, {
+							new Notification(`${title} • ${OLIA_NAME}`, {
 								body: content,
 								icon: `${WEBUI_BASE_URL}/static/favicon.png`
 							});
@@ -572,7 +572,7 @@
 
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-						new Notification(`${title} • ${WEBUI_NAME}`, {
+						new Notification(`${title} • ${OLIA_NAME}`, {
 							body: data?.content,
 							icon: `${WEBUI_API_BASE_URL}/users/${data?.user?.id}/profile/image`
 						});
@@ -780,7 +780,7 @@
 		if (backendConfig) {
 			// Save Backend Status to Store
 			await config.set(backendConfig);
-			await WEBUI_NAME.set(backendConfig.name);
+			await OLIA_NAME.set(backendConfig.name);
 
 			if ($config) {
 				await setupSocket($config.features?.enable_websocket ?? true);
@@ -869,15 +869,15 @@
 </script>
 
 <svelte:head>
-	<title>{$WEBUI_NAME}</title>
+	<title>{$OLIA_NAME}</title>
 	<link crossorigin="anonymous" rel="icon" href="{WEBUI_BASE_URL}/static/favicon.png" />
 
-	<meta name="apple-mobile-web-app-title" content={$WEBUI_NAME} />
-	<meta name="description" content={$WEBUI_NAME} />
+	<meta name="apple-mobile-web-app-title" content={$OLIA_NAME} />
+	<meta name="description" content={$OLIA_NAME} />
 	<link
 		rel="search"
 		type="application/opensearchdescription+xml"
-		title={$WEBUI_NAME}
+		title={$OLIA_NAME}
 		href="/opensearch.xml"
 		crossorigin="use-credentials"
 	/>

@@ -25,7 +25,7 @@
 		isApp,
 		models,
 		selectedFolder,
-		WEBUI_NAME,
+		OLIA_NAME,
 		sidebarWidth,
 		activeChatIds
 	} from '$lib/stores';
@@ -846,7 +846,7 @@
 						id="sidebar-webui-name"
 						class=" self-center font-medium text-gray-850 dark:text-white font-primary"
 					>
-						{$WEBUI_NAME}
+						{$OLIA_NAME}
 					</div>
 				</a>
 				<Tooltip

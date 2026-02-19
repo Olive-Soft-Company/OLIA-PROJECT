@@ -30,7 +30,7 @@
 	$: loadLocale($i18n.languages);
 
 	import { goto } from '$app/navigation';
-	import { WEBUI_NAME, config, prompts as _prompts, user } from '$lib/stores';
+	import { OLIA_NAME, config, prompts as _prompts, user } from '$lib/stores';
 	import { createNewNote, deleteNoteById, getNoteList, searchNotes } from '$lib/apis/notes';
 	import { capitalizeFirstLetter, copyToClipboard, getTimeRange } from '$lib/utils';
 	import { downloadPdf, createNoteHandler } from './utils';
@@ -301,7 +301,7 @@
 
 <svelte:head>
 	<title>
-		{$i18n.t('Notes')} • {$WEBUI_NAME}
+		{$i18n.t('Notes')} • {$OLIA_NAME}
 	</title>
 </svelte:head>
 

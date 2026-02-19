@@ -361,7 +361,7 @@ from open_webui.config import (
     YANDEX_WEB_SEARCH_CONFIG,
     # WebUI
     WEBUI_AUTH,
-    WEBUI_NAME,
+    OLIA_NAME,
     WEBUI_BANNERS,
     WEBHOOK_URL,
     ADMIN_EMAIL,
@@ -428,7 +428,7 @@ from open_webui.config import (
     CORS_ALLOW_ORIGIN,
     DEFAULT_LOCALE,
     OAUTH_PROVIDERS,
-    WEBUI_URL,
+    OLIA_URL,
     RESPONSE_WATERMARK,
     # Admin
     ENABLE_ADMIN_CHAT_ACCESS,
@@ -688,7 +688,7 @@ app.state.config = AppConfig(
 )
 app.state.redis = None
 
-app.state.WEBUI_NAME = WEBUI_NAME
+app.state.OLIA_NAME = OLIA_NAME
 app.state.LICENSE_METADATA = None
 
 
@@ -773,7 +773,7 @@ app.state.BASE_MODELS = []
 #
 ########################################
 
-app.state.config.WEBUI_URL = WEBUI_URL
+app.state.config.OLIA_URL = OLIA_URL
 app.state.config.ENABLE_SIGNUP = ENABLE_SIGNUP
 app.state.config.ENABLE_LOGIN_FORM = ENABLE_LOGIN_FORM
 
@@ -1980,7 +1980,7 @@ async def get_app_config(request: Request):
     return {
         **({"onboarding": True} if onboarding else {}),
         "status": True,
-        "name": app.state.WEBUI_NAME,
+        "name": app.state.OLIA_NAME,
         "version": VERSION,
         "default_locale": str(DEFAULT_LOCALE),
         "oauth": {
@@ -2401,9 +2401,9 @@ async def get_manifest_json():
         return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL).json()
     else:
         return {
-            "name": app.state.WEBUI_NAME,
-            "short_name": app.state.WEBUI_NAME,
-            "description": f"{app.state.WEBUI_NAME} is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
+            "name": app.state.OLIA_NAME,
+            "short_name": app.state.OLIA_NAME,
+            "description": f"{app.state.OLIA_NAME} is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
             "start_url": "/",
             "display": "standalone",
             "background_color": "#343541",
@@ -2433,12 +2433,12 @@ async def get_manifest_json():
 async def get_opensearch_xml():
     xml_content = rf"""
     <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
-    <ShortName>{app.state.WEBUI_NAME}</ShortName>
-    <Description>Search {app.state.WEBUI_NAME}</Description>
+    <ShortName>{app.state.OLIA_NAME}</ShortName>
+    <Description>Search {app.state.OLIA_NAME}</Description>
     <InputEncoding>UTF-8</InputEncoding>
-    <Image width="16" height="16" type="image/x-icon">{app.state.config.WEBUI_URL}/static/favicon.png</Image>
-    <Url type="text/html" method="get" template="{app.state.config.WEBUI_URL}/?q={"{searchTerms}"}"/>
-    <moz:SearchForm>{app.state.config.WEBUI_URL}</moz:SearchForm>
+    <Image width="16" height="16" type="image/x-icon">{app.state.config.OLIA_URL}/static/favicon.png</Image>
+    <Url type="text/html" method="get" template="{app.state.config.OLIA_URL}/?q={"{searchTerms}"}"/>
+    <moz:SearchForm>{app.state.config.OLIA_URL}</moz:SearchForm>
     </OpenSearchDescription>
     """
     return Response(content=xml_content, media_type="application/xml")

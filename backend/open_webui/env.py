@@ -87,9 +87,9 @@ if "cuda_error" in locals():
 
 SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
-WEBUI_NAME = os.environ.get("WEBUI_NAME", "OLIA")
-if WEBUI_NAME != "OLIA":
-    WEBUI_NAME += " (OLIA)"
+OLIA_NAME = os.environ.get("OLIA_NAME", "OLIA")
+if OLIA_NAME != "OLIA":
+    OLIA_NAME += " (OLIA)"
 
 WEBUI_FAVICON_URL = "https://openwebui.com/favicon.png"
 

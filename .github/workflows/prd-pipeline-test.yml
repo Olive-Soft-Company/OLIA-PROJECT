@@ -52,9 +52,9 @@ jobs:
             --build-arg ONEDRIVE_SHAREPOINT_URL=${{ vars.ONEDRIVE_SHAREPOINT_URL }} \
             --build-arg ENABLE_FORWARD_USER_INFO_HEADERS=${{ vars.ENABLE_FORWARD_USER_INFO_HEADERS }} \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
-            --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
+            --build-arg OLIA_NAME=${{ vars.OLIA_NAME }} \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
-            --build-arg WEBUI_URL=https://olia-prd.francecentral.cloudapp.azure.com \
+            --build-arg OLIA_URL=https://olia-prd.francecentral.cloudapp.azure.com \
             --build-arg ATLASSIAN_CLIENT_ID=${{ secrets.ATLASSIAN_CLIENT_ID }} \
             --build-arg ATLASSIAN_CLIENT_SECRET=${{ secrets.ATLASSIAN_CLIENT_SECRET }} \
             --build-arg ATLASSIAN_REDIRECT_URI=https://olia-prd.francecentral.cloudapp.azure.com/api/oauth/atlassian/callback \

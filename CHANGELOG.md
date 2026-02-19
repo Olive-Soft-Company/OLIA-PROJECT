@@ -1583,7 +1583,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- 🧩 **Admin Settings: OAuth Redirects Now Use WEBUI_URL**: The OAuth redirect URL is now based on the explicitly set WEBUI_URL, ensuring single sign-on and identity provider integrations always send users to the correct frontend.
+- 🧩 **Admin Settings: OAuth Redirects Now Use OLIA_URL**: The OAuth redirect URL is now based on the explicitly set OLIA_URL, ensuring single sign-on and identity provider integrations always send users to the correct frontend.
 
 ### Removed
 

@@ -717,7 +717,7 @@ async def signup_handler(
 
     if request.app.state.config.WEBHOOK_URL:
         await post_webhook(
-            request.app.state.WEBUI_NAME,
+            request.app.state.OLIA_NAME,
             request.app.state.config.WEBHOOK_URL,
             WEBHOOK_MESSAGES.USER_SIGNUP(user.name),
             {
@@ -982,7 +982,7 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
     return {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
+        "OLIA_URL": request.app.state.config.OLIA_URL,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "ENABLE_API_KEYS": request.app.state.config.ENABLE_API_KEYS,
         "ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS,
@@ -1008,7 +1008,7 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
 class AdminConfig(BaseModel):
     SHOW_ADMIN_DETAILS: bool
     ADMIN_EMAIL: Optional[str] = None
-    WEBUI_URL: str
+    OLIA_URL: str
     ENABLE_SIGNUP: bool
     ENABLE_API_KEYS: bool
     ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS: bool
@@ -1036,7 +1036,7 @@ async def update_admin_config(
 ):
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
     request.app.state.config.ADMIN_EMAIL = form_data.ADMIN_EMAIL
-    request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
+    request.app.state.config.OLIA_URL = form_data.OLIA_URL
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
 
     request.app.state.config.ENABLE_API_KEYS = form_data.ENABLE_API_KEYS
@@ -1086,7 +1086,7 @@ async def update_admin_config(
     return {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
+        "OLIA_URL": request.app.state.config.OLIA_URL,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "ENABLE_API_KEYS": request.app.state.config.ENABLE_API_KEYS,
         "ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS,

@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 
 	import {
-		WEBUI_NAME,
+		OLIA_NAME,
 		banners,
 		chatId,
 		config,

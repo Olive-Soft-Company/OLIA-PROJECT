@@ -63,7 +63,7 @@ from open_webui.config import (
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
     AIOHTTP_CLIENT_SESSION_SSL,
-    WEBUI_NAME,
+    OLIA_NAME,
     WEBUI_AUTH_COOKIE_SAME_SITE,
     WEBUI_AUTH_COOKIE_SECURE,
     ENABLE_OAUTH_ID_TOKEN_COOKIE,
@@ -348,7 +348,7 @@ async def get_oauth_client_info_with_dynamic_client_registration(
         oauth_server_metadata_url = None
 
         redirect_base_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
 
         oauth_client_metadata = OAuthClientMetadata(
@@ -908,7 +908,7 @@ class OAuthClientManager:
             )
 
         redirect_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
 
         if error_message:
@@ -1597,7 +1597,7 @@ class OAuthManager:
 
                     if auth_manager_config.WEBHOOK_URL:
                         await post_webhook(
-                            WEBUI_NAME,
+                            OLIA_NAME,
                             auth_manager_config.WEBHOOK_URL,
                             WEBHOOK_MESSAGES.USER_SIGNUP(user.name),
                             {
@@ -1641,7 +1641,7 @@ class OAuthManager:
             )
 
         redirect_base_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
         redirect_url = f"{redirect_base_url}/auth"
 

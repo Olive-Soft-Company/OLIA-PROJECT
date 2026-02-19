@@ -66,7 +66,7 @@ if [ -n "$SPACE_ID" ]; then
     kill $webui_pid
   fi
 
-  export WEBUI_URL=${SPACE_HOST}
+  export OLIA_URL=${SPACE_HOST}
 fi
 
 PYTHON_CMD=$(command -v python3 || command -v python)

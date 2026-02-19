@@ -14,7 +14,7 @@
 		WEBUI_API_BASE_URL,
 		WEBUI_BASE_URL
 	} from '$lib/constants';
-	import { WEBUI_NAME, config, user, models, settings } from '$lib/stores';
+	import { OLIA_NAME, config, user, models, settings } from '$lib/stores';
 	import { flyAndScale } from '$lib/utils/transitions';
 
 	import { chatCompletion } from '$lib/apis/openai';
