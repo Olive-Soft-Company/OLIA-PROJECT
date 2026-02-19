@@ -6,7 +6,7 @@
 	import { models, settings } from '$lib/stores';
 	import { user as _user } from '$lib/stores';
 	import { copyToClipboard as _copyToClipboard, formatDate } from '$lib/utils';
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
 
 	import Name from './Name.svelte';
 	import ProfileImage from './ProfileImage.svelte';
@@ -124,7 +124,7 @@
 	{#if !($settings?.chatBubble ?? true)}
 		<div class={`shrink-0 ltr:mr-3 rtl:ml-3 mt-1`}>
 			<ProfileImage
-				src={`${WEBUI_API_BASE_URL}/users/${user.id}/profile/image`}
+				src={`${OLIA_API_BASE_URL}/users/${user.id}/profile/image`}
 				className={'size-8 user-message-profile-image'}
 			/>
 		</div>
@@ -196,7 +196,7 @@
 							{@const fileUrl =
 								file.url?.startsWith('data') || file.url?.startsWith('http')
 									? file.url
-									: `${WEBUI_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
+									: `${OLIA_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
 							<div class={($settings?.chatBubble ?? true) ? 'self-end' : ''}>
 								{#if file.type === 'image' || (file?.content_type ?? '').startsWith('image/')}
 									<Image src={fileUrl} imageClassName=" max-h-96 rounded-lg" />
@@ -225,7 +225,7 @@
 									{@const fileUrl =
 										file.url?.startsWith('data') || file.url?.startsWith('http')
 											? file.url
-											: `${WEBUI_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
+											: `${OLIA_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
 									<div class=" relative group">
 										<div class="relative flex items-center">
 											<Image

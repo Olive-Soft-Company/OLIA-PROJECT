@@ -12,7 +12,7 @@
 	const i18n = getContext('i18n');
 
 	import { OLIA_NAME, config, mobile, models as _models, settings, user } from '$lib/stores';
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
 	import {
 		createNewModel,
 		deleteModelById,
@@ -479,7 +479,7 @@
 												: 'opacity-50 dark:opacity-50'} bg-transparent rounded-2xl"
 										>
 											<img
-												src={`${WEBUI_API_BASE_URL}/models/model/profile/image?id=${model.id}&lang=${$i18n.language}`}
+												src={`${OLIA_API_BASE_URL}/models/model/profile/image?id=${model.id}&lang=${$i18n.language}`}
 												alt="modelfile profile"
 												class=" rounded-2xl size-12 object-cover"
 											/>

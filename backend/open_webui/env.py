@@ -224,10 +224,10 @@ ENABLE_STAR_SESSIONS_MIDDLEWARE = (
 ENABLE_EASTER_EGGS = os.environ.get("ENABLE_EASTER_EGGS", "True").lower() == "true"
 
 ####################################
-# WEBUI_BUILD_HASH
+# OLIA_BUILD_HASH
 ####################################
 
-WEBUI_BUILD_HASH = os.environ.get("WEBUI_BUILD_HASH", "dev-build")
+OLIA_BUILD_HASH = os.environ.get("OLIA_BUILD_HASH", "dev-build")
 
 ####################################
 # DATA/FRONTEND BUILD DIR

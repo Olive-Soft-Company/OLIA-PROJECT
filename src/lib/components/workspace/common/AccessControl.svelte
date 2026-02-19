@@ -5,7 +5,7 @@
 
 	import { getGroups, getGroupInfoById } from '$lib/apis/groups';
 	import { getUserInfoById } from '$lib/apis/users';
-	import { WEBUI_API_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL } from '$lib/constants';
 
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Badge from '$lib/components/common/Badge.svelte';
@@ -572,7 +572,7 @@
 					<div class="flex items-center gap-2 w-full flex-1">
 						<img
 							class="rounded-full size-5 object-cover"
-							src={`${WEBUI_API_BASE_URL}/users/${u.id}/profile/image`}
+							src={`${OLIA_API_BASE_URL}/users/${u.id}/profile/image`}
 							alt={u.name ?? u.id}
 							on:error={onUserImgError}
 						/>

@@ -14,7 +14,7 @@
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import { WEBUI_BUILD_HASH, OLIA_VERSION } from '$lib/constants';
+	import { OLIA_BUILD_HASH, OLIA_VERSION } from '$lib/constants';
 	import { config, showChangelog } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
@@ -141,7 +141,7 @@
 						<div class="flex w-full justify-between items-center">
 							<div class="flex flex-col text-xs text-gray-700 dark:text-gray-200">
 								<div class="flex gap-1">
-									<Tooltip content={WEBUI_BUILD_HASH}>
+									<Tooltip content={OLIA_BUILD_HASH}>
 										v{OLIA_VERSION}
 									</Tooltip>
 									<!--

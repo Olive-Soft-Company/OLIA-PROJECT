@@ -11,7 +11,7 @@
 
 	import { showSettings, mobile, showSidebar, showShortcuts, user, config } from '$lib/stores';
 
-	import { WEBUI_API_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL } from '$lib/constants';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
@@ -95,7 +95,7 @@
 				<div class=" flex gap-3.5 w-full p-2.5 items-center">
 					<div class=" items-center flex shrink-0">
 						<img
-							src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+							src={`${OLIA_API_BASE_URL}/users/${$user?.id}/profile/image`}
 							class=" size-10 object-cover rounded-full"
 							alt="profile"
 						/>

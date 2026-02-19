@@ -55,7 +55,7 @@
 	import { getSessionUser } from '$lib/apis/auths';
 	import { getTools } from '$lib/apis/tools';
 
-	import { WEBUI_BASE_URL, WEBUI_API_BASE_URL, PASTED_TEXT_CHARACTER_LIMIT } from '$lib/constants';
+	import { OLIA_BASE_URL, OLIA_API_BASE_URL, PASTED_TEXT_CHARACTER_LIMIT } from '$lib/constants';
 
 	import { createNoteHandler } from '../notes/utils';
 	import { getSuggestionRenderer } from '../common/RichTextInput/suggestions';
@@ -1181,7 +1181,7 @@
 											<img
 												alt="model profile"
 												class="size-3.5 max-w-[28px] object-cover rounded-full"
-												src={`${WEBUI_API_BASE_URL}/models/model/profile/image?id=${$models.find((model) => model.id === atSelectedModel.id).id}&lang=${$i18n.language}`}
+												src={`${OLIA_API_BASE_URL}/models/model/profile/image?id=${$models.find((model) => model.id === atSelectedModel.id).id}&lang=${$i18n.language}`}
 											/>
 											<div class="translate-y-[0.5px]">
 												<span class="">{atSelectedModel.name}</span>
@@ -1211,7 +1211,7 @@
 											{@const fileUrl =
 												file.url.startsWith('data') || file.url.startsWith('http')
 													? file.url
-													: `${WEBUI_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
+													: `${OLIA_API_BASE_URL}/files/${file.url}${file?.content_type ? '/content' : ''}`}
 											<div class=" relative group">
 												<div class="relative flex items-center">
 													<Image

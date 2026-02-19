@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 
 	import { OLIA_NAME, config, user, showSidebar, knowledge } from '$lib/stores';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_BASE_URL } from '$lib/constants';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';

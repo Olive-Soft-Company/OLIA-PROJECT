@@ -12,7 +12,7 @@
 
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_BASE_URL } from '$lib/constants';
 
 	import {
 		chatId,
@@ -2119,7 +2119,7 @@
 						}
 					: {})
 			},
-			`${WEBUI_BASE_URL}/api`
+			`${OLIA_BASE_URL}/api`
 		).catch(async (error) => {
 			console.log(error);
 

@@ -17,7 +17,7 @@
 		updateUserTimezone
 	} from '$lib/apis/auths';
 
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
 	import { OLIA_NAME, config, user, socket } from '$lib/stores';
 
 	import { generateInitialsImage, canvasPixelTest, getUserTimezone } from '$lib/utils';
@@ -151,10 +151,10 @@
 
 			if (isDarkMode) {
 				const darkImage = new Image();
-				darkImage.src = `${WEBUI_BASE_URL}/static/favicon-dark.png`;
+				darkImage.src = `${OLIA_BASE_URL}/static/favicon-dark.png`;
 
 				darkImage.onload = () => {
-					logo.src = `${WEBUI_BASE_URL}/static/favicon-dark.png`;
+					logo.src = `${OLIA_BASE_URL}/static/favicon-dark.png`;
 					logo.style.filter = ''; // Ensure no inversion is applied if favicon-dark.png exists
 				};
 
@@ -241,7 +241,7 @@
 									<img
 										id="logo"
 										crossorigin="anonymous"
-										src="{WEBUI_BASE_URL}/static/favicon.png"
+										src="{OLIA_BASE_URL}/static/favicon.png"
 										class="size-24 rounded-full"
 										alt=""
 									/>
@@ -432,7 +432,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/google/login`;
 											}}
 										>
 											<svg
@@ -461,7 +461,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/microsoft/login`;
 											}}
 										>
 											<svg
@@ -491,7 +491,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/github/login`;
 											}}
 										>
 											<svg
@@ -511,7 +511,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/oidc/login`;
 											}}
 										>
 											<svg
@@ -540,7 +540,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/feishu/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/feishu/login`;
 											}}
 										>
 											<span>{$i18n.t('Continue with {{provider}}', { provider: 'Feishu' })}</span>
@@ -588,7 +588,7 @@
 						<img
 							id="logo"
 							crossorigin="anonymous"
-							src="{WEBUI_BASE_URL}/static/favicon.png"
+							src="{OLIA_BASE_URL}/static/favicon.png"
 							class=" w-6 rounded-full"
 							alt=""
 						/>

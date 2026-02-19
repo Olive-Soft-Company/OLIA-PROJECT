@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
 	import { OLIA_NAME, config, user as _user, showSidebar } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
@@ -216,7 +216,7 @@
 										<ProfilePreview {user} side="right" align="center" sideOffset={6}>
 											<img
 												class="rounded-2xl w-6 h-6 object-cover flex-shrink-0"
-												src={`${WEBUI_API_BASE_URL}/users/${user.id}/profile/image`}
+												src={`${OLIA_API_BASE_URL}/users/${user.id}/profile/image`}
 												alt="user"
 											/>
 										</ProfilePreview>

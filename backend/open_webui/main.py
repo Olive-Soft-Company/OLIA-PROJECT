@@ -472,7 +472,7 @@ from open_webui.env import (
     VERSION,
     DEPLOYMENT_ID,
     INSTANCE_ID,
-    WEBUI_BUILD_HASH,
+    OLIA_BUILD_HASH,
     WEBUI_SECRET_KEY,
     WEBUI_SESSION_COOKIE_SAME_SITE,
     WEBUI_SESSION_COOKIE_SECURE,
@@ -585,7 +585,7 @@ print(rf"""
 
 
 v{VERSION} - building the best AI user interface.
-{f"Commit: {WEBUI_BUILD_HASH}" if WEBUI_BUILD_HASH != "dev-build" else ""}
+{f"Commit: {OLIA_BUILD_HASH}" if OLIA_BUILD_HASH != "dev-build" else ""}
 https://github.com/open-webui/open-webui
 """)
 
