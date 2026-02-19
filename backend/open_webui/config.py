@@ -29,7 +29,7 @@ from open_webui.env import (
     REDIS_SENTINEL_PORT,
     FRONTEND_BUILD_DIR,
     OFFLINE_MODE,
-    OPEN_WEBUI_DIR,
+    OLIA_DIR,
     WEBUI_AUTH,
     WEBUI_FAVICON_URL,
     WEBUI_NAME,
@@ -59,10 +59,10 @@ def run_migrations():
         from alembic import command
         from alembic.config import Config
 
-        alembic_cfg = Config(OPEN_WEBUI_DIR / "alembic.ini")
+        alembic_cfg = Config(OLIA_DIR / "alembic.ini")
 
         # Set the script location dynamically
-        migrations_path = OPEN_WEBUI_DIR / "migrations"
+        migrations_path = OLIA_DIR / "migrations"
         alembic_cfg.set_main_option("script_location", str(migrations_path))
 
         command.upgrade(alembic_cfg, "head")
@@ -835,7 +835,7 @@ load_oauth_providers()
 # Static DIR
 ####################################
 
-STATIC_DIR = Path(os.getenv("STATIC_DIR", OPEN_WEBUI_DIR / "static")).resolve()
+STATIC_DIR = Path(os.getenv("STATIC_DIR", OLIA_DIR / "static")).resolve()
 
 try:
     if STATIC_DIR.exists():

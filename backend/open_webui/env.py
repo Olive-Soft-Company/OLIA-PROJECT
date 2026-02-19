@@ -22,11 +22,11 @@ from open_webui.constants import ERROR_MESSAGES
 # Use .resolve() to get the canonical path, removing any '..' or '.' components
 ENV_FILE_PATH = Path(__file__).resolve()
 
-# OPEN_WEBUI_DIR should be the directory where env.py resides (open_webui/)
-OPEN_WEBUI_DIR = ENV_FILE_PATH.parent
+# OLIA_DIR should be the directory where env.py resides (open_webui/)
+OLIA_DIR = ENV_FILE_PATH.parent
 
-# BACKEND_DIR is the parent of OPEN_WEBUI_DIR (backend/)
-BACKEND_DIR = OPEN_WEBUI_DIR.parent
+# BACKEND_DIR is the parent of OLIA_DIR (backend/)
+BACKEND_DIR = OLIA_DIR.parent
 
 # BASE_DIR is the parent of BACKEND_DIR (open-webui-dev/)
 BASE_DIR = BACKEND_DIR.parent
@@ -236,7 +236,7 @@ WEBUI_BUILD_HASH = os.environ.get("WEBUI_BUILD_HASH", "dev-build")
 DATA_DIR = Path(os.getenv("DATA_DIR", BACKEND_DIR / "data")).resolve()
 
 if FROM_INIT_PY:
-    NEW_DATA_DIR = Path(os.getenv("DATA_DIR", OPEN_WEBUI_DIR / "data")).resolve()
+    NEW_DATA_DIR = Path(os.getenv("DATA_DIR", OLIA_DIR / "data")).resolve()
     NEW_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     # Check if the data directory exists in the package directory
@@ -255,17 +255,17 @@ if FROM_INIT_PY:
         # Remove the old data directory
         shutil.rmtree(DATA_DIR)
 
-    DATA_DIR = Path(os.getenv("DATA_DIR", OPEN_WEBUI_DIR / "data"))
+    DATA_DIR = Path(os.getenv("DATA_DIR", OLIA_DIR / "data"))
 
-STATIC_DIR = Path(os.getenv("STATIC_DIR", OPEN_WEBUI_DIR / "static"))
+STATIC_DIR = Path(os.getenv("STATIC_DIR", OLIA_DIR / "static"))
 
-FONTS_DIR = Path(os.getenv("FONTS_DIR", OPEN_WEBUI_DIR / "static" / "fonts"))
+FONTS_DIR = Path(os.getenv("FONTS_DIR", OLIA_DIR / "static" / "fonts"))
 
 FRONTEND_BUILD_DIR = Path(os.getenv("FRONTEND_BUILD_DIR", BASE_DIR / "build")).resolve()
 
 if FROM_INIT_PY:
     FRONTEND_BUILD_DIR = Path(
-        os.getenv("FRONTEND_BUILD_DIR", OPEN_WEBUI_DIR / "frontend")
+        os.getenv("FRONTEND_BUILD_DIR", OLIA_DIR / "frontend")
     ).resolve()
 
 ####################################
