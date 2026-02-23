@@ -30,8 +30,8 @@ from open_webui.env import (
     FRONTEND_BUILD_DIR,
     OFFLINE_MODE,
     OLIA_DIR,
-    WEBUI_AUTH,
-    WEBUI_FAVICON_URL,
+    OLIA_AUTH,
+    OLIA_FAVICON_URL,
     OLIA_NAME,
     log,
 )
@@ -288,7 +288,7 @@ class AppConfig:
 
 
 ####################################
-# WEBUI_AUTH (Required for security)
+# OLIA_AUTH (Required for security)
 ####################################
 
 ENABLE_API_KEYS = PersistentConfig(
@@ -896,7 +896,7 @@ if CUSTOM_NAME:
         data = r.json()
         if r.ok:
             if "logo" in data:
-                WEBUI_FAVICON_URL = url = (
+                OLIA_FAVICON_URL = url = (
                     f"https://api.openwebui.com{data['logo']}"
                     if data["logo"][0] == "/"
                     else data["logo"]
@@ -1177,7 +1177,7 @@ ENABLE_SIGNUP = PersistentConfig(
     "ui.enable_signup",
     (
         False
-        if not WEBUI_AUTH
+        if not OLIA_AUTH
         else os.environ.get("ENABLE_SIGNUP", "True").lower() == "true"
     ),
 )

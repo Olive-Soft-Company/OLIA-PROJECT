@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 war talast, neɣ aɣerwaḍ ilaw i talast tusdidt",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' neɣ '-1' i wakud war tilas.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(amedya. `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(amedya `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(amedya. `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(amedya `sh olia.sh --api`)",
 	"(latest)": "(Lqem aneggaru)",
 	"(leave blank for to use commercial endpoint)": "",
 	"[Last] dddd [at] h:mm A": "[Aneggaru] dddd [ɣef] h:mm A",

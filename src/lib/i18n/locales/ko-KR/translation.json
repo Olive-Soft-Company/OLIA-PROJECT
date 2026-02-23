@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1은 제한 없음을 의미하며, 양의 정수는 특정 제한을 나타냅니다",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s(초)', 'm(분)', 'h(시간)', 'd(일)', 'w(주)' 또는 '-1'(만료없음) 중 하나를 사용하세요.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(예: `sh webui.sh --api --api-auth 사용자이름_비밀번호`)",
-	"(e.g. `sh webui.sh --api`)": "(예: `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(예: `sh olia.sh --api --api-auth 사용자이름_비밀번호`)",
+	"(e.g. `sh olia.sh --api`)": "(예: `sh olia.sh --api`)",
 	"(latest)": "(최신)",
 	"(leave blank for to use commercial endpoint)": "(상용 엔드포인트를 사용하시려면 비워두세요)",
 	"[Last] dddd [at] h:mm A": "[지난] dddd A h:mm",

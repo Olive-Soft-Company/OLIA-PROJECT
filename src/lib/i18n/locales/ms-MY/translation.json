@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' or '-1' untuk tiada tempoh luput.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(contoh `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(contoh `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(contoh `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(contoh `sh olia.sh --api`)",
 	"(latest)": "(terkini)",
 	"(leave blank for to use commercial endpoint)": "",
 	"[Last] dddd [at] h:mm A": "",

@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 pro žádný limit, nebo kladné celé číslo pro specifický limit",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' nebo '-1' pro žádné vypršení.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(např. `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(např. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(např. `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(např. `sh olia.sh --api`)",
 	"(latest)": "(nejnovější)",
 	"(leave blank for to use commercial endpoint)": "(ponechte prázdné pro použití komerčního koncového bodu)",
 	"[Last] dddd [at] h:mm A": "[Naposledy] dddd [v] h:mm A",

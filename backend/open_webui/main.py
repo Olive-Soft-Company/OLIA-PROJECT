@@ -360,7 +360,7 @@ from open_webui.config import (
     YANDEX_WEB_SEARCH_API_KEY,
     YANDEX_WEB_SEARCH_CONFIG,
     # WebUI
-    WEBUI_AUTH,
+    OLIA_AUTH,
     OLIA_NAME,
     WEBUI_BANNERS,
     WEBHOOK_URL,
@@ -576,17 +576,16 @@ class SPAStaticFiles(StaticFiles):
 
 
 print(rf"""
- ██████╗ ██████╗ ███████╗███╗   ██╗    ██╗    ██╗███████╗██████╗ ██╗   ██╗██╗
-██╔═══██╗██╔══██╗██╔════╝████╗  ██║    ██║    ██║██╔════╝██╔══██╗██║   ██║██║
-██║   ██║██████╔╝█████╗  ██╔██╗ ██║    ██║ █╗ ██║█████╗  ██████╔╝██║   ██║██║
-██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║    ██║███╗██║██╔══╝  ██╔══██╗██║   ██║██║
-╚██████╔╝██║     ███████╗██║ ╚████║    ╚███╔███╔╝███████╗██████╔╝╚██████╔╝██║
- ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝     ╚══╝╚══╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝
+ ██████╗ ██╗     ██╗ █████╗ 
+██╔═══██╗██║     ██║██╔══██╗
+██║   ██║██║     ██║███████║
+██║   ██║██║     ██║██╔══██║
+╚██████╔╝███████╗██║██║  ██║
+ ╚═════╝ ╚══════╝╚═╝╚═╝  ╚═╝
 
 
 v{VERSION} - building the best AI user interface.
 {f"Commit: {OLIA_BUILD_HASH}" if OLIA_BUILD_HASH != "dev-build" else ""}
-https://github.com/open-webui/open-webui
 """)
 
 
@@ -1990,7 +1989,7 @@ async def get_app_config(request: Request):
             }
         },
         "features": {
-            "auth": WEBUI_AUTH,
+            "auth": OLIA_AUTH,
             "auth_trusted_header": bool(app.state.AUTH_TRUSTED_EMAIL_HEADER),
             "enable_signup_password_confirmation": ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
             "enable_ldap": app.state.config.ENABLE_LDAP,

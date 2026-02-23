@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 för ingen gräns, eller ett positivt heltal för en specifik gräns",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' eller '-1' för inget utgångsdatum",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(t.ex. `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(t.ex. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(t.ex. `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(t.ex. `sh olia.sh --api`)",
 	"(latest)": "(senaste)",
 	"(leave blank for to use commercial endpoint)": "(lämna tomt för att använda kommersiell endpoint)",
 	"[Last] dddd [at] h:mm A": "[Senaste] dddd [kl] h:mm A",

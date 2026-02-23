@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 برای بدون محدودیت، یا یک عدد مثبت برای محدودیت مشخص",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' یا '-1' برای غیر فعال کردن انقضا.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(مثال: `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(e.g. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(مثال: `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(e.g. `sh olia.sh --api`)",
 	"(latest)": "(آخرین)",
 	"(leave blank for to use commercial endpoint)": "(برای استفاده از نقطه پایانی تجاری خالی بگذارید)",
 	"[Last] dddd [at] h:mm A": "[آخرین] dddd [در] h:mm A",

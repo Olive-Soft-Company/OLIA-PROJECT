@@ -544,6 +544,7 @@
 								</div>
 							</div>
 
+							<!--
 							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
 								{$i18n.t('Include `--api` flag when running stable-diffusion-webui')}
 								<a
@@ -551,9 +552,10 @@
 									href="https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/3734"
 									target="_blank"
 								>
-									{$i18n.t('(e.g. `sh webui.sh --api`)')}
+									{$i18n.t('(e.g. `sh olia.sh --api`)')}
 								</a>
 							</div>
+							-->
 						</div>
 
 						<div class="mb-2.5">
@@ -576,6 +578,7 @@
 								</div>
 							</div>
 
+							<!--
 							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
 								{$i18n.t('Include `--api-auth` flag when running stable-diffusion-webui')}
 								<a
@@ -584,10 +587,11 @@
 									target="_blank"
 								>
 									{$i18n
-										.t('(e.g. `sh webui.sh --api --api-auth username_password`)')
+										.t('(e.g. `sh olia.sh --api --api-auth username_password`)')
 										.replace('_', ':')}
 								</a>
 							</div>
+							-->
 						</div>
 
 						<div class="mb-2.5">

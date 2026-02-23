@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 gan teorainn, nó slánuimhir dheimhneach le haghaidh teorann sonrach",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' nó '-1' gan aon éag.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(m.sh. `sh webui.sh --api --api-auth username_password `)",
-	"(e.g. `sh webui.sh --api`)": "(m.sh. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(m.sh. `sh olia.sh --api --api-auth username_password `)",
+	"(e.g. `sh olia.sh --api`)": "(m.sh. `sh olia.sh --api`)",
 	"(latest)": "(is déanaí)",
 	"(leave blank for to use commercial endpoint)": "(fág bán le haghaidh críochphointe tráchtála a úsáid)",
 	"[Last] dddd [at] h:mm A": "[Deireanach] dddd [ag] h:mm A",

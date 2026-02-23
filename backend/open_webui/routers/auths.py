@@ -31,7 +31,7 @@ from open_webui.models.oauth_sessions import OAuthSessions
 
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
-    WEBUI_AUTH,
+    OLIA_AUTH,
     WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
     WEBUI_AUTH_TRUSTED_NAME_HEADER,
     WEBUI_AUTH_TRUSTED_GROUPS_HEADER,
@@ -624,7 +624,7 @@ async def signin(
             if group_names:
                 Groups.sync_groups_by_group_names(user.id, group_names, db=db)
 
-    elif WEBUI_AUTH == False:
+    elif OLIA_AUTH == False:
         admin_email = "admin@localhost"
         admin_password = "admin"
 
@@ -749,7 +749,7 @@ async def signup(
 ):
     has_users = Users.has_users(db=db)
 
-    if WEBUI_AUTH:
+    if OLIA_AUTH:
         if (
             not request.app.state.config.ENABLE_SIGNUP
             or not request.app.state.config.ENABLE_LOGIN_FORM

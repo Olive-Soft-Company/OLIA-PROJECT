@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' edo '-1' iraungitzerik ez izateko.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(adib. `sh webui.sh --api --api-auth erabiltzaile_pasahitza`)",
-	"(e.g. `sh webui.sh --api`)": "(adib. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(adib. `sh olia.sh --api --api-auth erabiltzaile_pasahitza`)",
+	"(e.g. `sh olia.sh --api`)": "(adib. `sh olia.sh --api`)",
 	"(latest)": "(azkena)",
 	"(leave blank for to use commercial endpoint)": "",
 	"[Last] dddd [at] h:mm A": "",

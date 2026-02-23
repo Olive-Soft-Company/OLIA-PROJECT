@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "Чексиз учун -1 ёки маълум чегара учун мусбат бутун сон",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' ёки '-1' муддати тугамаслиги учун.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(масалан, `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(масалан, `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(масалан, `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(масалан, `sh olia.sh --api`)",
 	"(latest)": "(охирги)",
 	"(leave blank for to use commercial endpoint)": "(тижорий сўнгги нуқтадан фойдаланиш учун бўш қолдиринг)",
 	"[Last] dddd [at] h:mm A": "",

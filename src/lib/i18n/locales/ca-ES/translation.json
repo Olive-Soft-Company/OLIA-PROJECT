@@ -1,8 +1,8 @@
 {
 	"-1 for no limit, or a positive integer for a specific limit": "-1 per a cap límit, o un nombre positiu per a un límit específic",
 	"'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.": "'s', 'm', 'h', 'd', 'w' o '-1' perquè no caduqui mai.",
-	"(e.g. `sh webui.sh --api --api-auth username_password`)": "(p. ex. `sh webui.sh --api --api-auth username_password`)",
-	"(e.g. `sh webui.sh --api`)": "(p. ex. `sh webui.sh --api`)",
+	"(e.g. `sh olia.sh --api --api-auth username_password`)": "(p. ex. `sh olia.sh --api --api-auth username_password`)",
+	"(e.g. `sh olia.sh --api`)": "(p. ex. `sh olia.sh --api`)",
 	"(latest)": "(últim)",
 	"(leave blank for to use commercial endpoint)": "(deixa-ho buit per utilitzar un punt d'accés comercial)",
 	"[Last] dddd [at] h:mm A": "[Darrer] dddd [a] h:mm A",

@@ -16,7 +16,7 @@
 		theme,
 		OLIA_NAME,
 		OLIA_VERSION,
-		WEBUI_DEPLOYMENT_ID,
+		OLIA_DEPLOYMENT_ID,
 		mobile,
 		socket,
 		chatId,
@@ -124,7 +124,7 @@
 			if (version !== null || deploymentId !== null) {
 				if (
 					($OLIA_VERSION !== null && version !== $OLIA_VERSION) ||
-					($WEBUI_DEPLOYMENT_ID !== null && deploymentId !== $WEBUI_DEPLOYMENT_ID)
+					($OLIA_DEPLOYMENT_ID !== null && deploymentId !== $OLIA_DEPLOYMENT_ID)
 				) {
 					await unregisterServiceWorkers();
 					location.href = location.href;
@@ -141,7 +141,7 @@
 			}, 30000);
 
 			if (deploymentId !== null) {
-				WEBUI_DEPLOYMENT_ID.set(deploymentId);
+				OLIA_DEPLOYMENT_ID.set(deploymentId);
 			}
 
 			if (version !== null) {

@@ -644,7 +644,7 @@ export const getImportOrigin = (_chats) => {
 	if ('mapping' in _chats[0]) {
 		return 'openai';
 	}
-	return 'webui';
+	return 'olia';
 };
 
 export const getUserPosition = async (raw = false) => {

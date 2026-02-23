@@ -91,7 +91,7 @@ OLIA_NAME = os.environ.get("OLIA_NAME", "OLIA")
 if OLIA_NAME != "OLIA":
     OLIA_NAME += " (OLIA)"
 
-WEBUI_FAVICON_URL = "https://openwebui.com/favicon.png"
+OLIA_FAVICON_URL = "https://openwebui.com/favicon.png"
 
 TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 
@@ -442,10 +442,10 @@ except ValueError:
     log.info(f"Invalid UVICORN_WORKERS value, defaulting to {UVICORN_WORKERS}")
 
 ####################################
-# WEBUI_AUTH (Required for security)
+# OLIA_AUTH (Required for security)
 ####################################
 
-WEBUI_AUTH = os.environ.get("WEBUI_AUTH", "True").lower() == "true"
+OLIA_AUTH = os.environ.get("OLIA_AUTH", "True").lower() == "true"
 
 ENABLE_INITIAL_ADMIN_SIGNUP = (
     os.environ.get("ENABLE_INITIAL_ADMIN_SIGNUP", "False").lower() == "true"
@@ -531,7 +531,7 @@ WEBUI_AUTH_COOKIE_SECURE = (
     == "true"
 )
 
-if WEBUI_AUTH and WEBUI_SECRET_KEY == "":
+if OLIA_AUTH and WEBUI_SECRET_KEY == "":
     raise ValueError(ERROR_MESSAGES.ENV_VAR_NOT_FOUND)
 
 ENABLE_COMPRESSION_MIDDLEWARE = (
