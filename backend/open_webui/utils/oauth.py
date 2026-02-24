@@ -63,9 +63,9 @@ from open_webui.config import (
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
     AIOHTTP_CLIENT_SESSION_SSL,
-    WEBUI_NAME,
-    WEBUI_AUTH_COOKIE_SAME_SITE,
-    WEBUI_AUTH_COOKIE_SECURE,
+    OLIA_NAME,
+    OLIA_AUTH_COOKIE_SAME_SITE,
+    OLIA_AUTH_COOKIE_SECURE,
     ENABLE_OAUTH_ID_TOKEN_COOKIE,
     ENABLE_OAUTH_EMAIL_FALLBACK,
     OAUTH_CLIENT_INFO_ENCRYPTION_KEY,
@@ -348,7 +348,7 @@ async def get_oauth_client_info_with_dynamic_client_registration(
         oauth_server_metadata_url = None
 
         redirect_base_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
 
         oauth_client_metadata = OAuthClientMetadata(
@@ -908,7 +908,7 @@ class OAuthClientManager:
             )
 
         redirect_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
 
         if error_message:
@@ -1274,7 +1274,7 @@ class OAuthManager:
         log.debug(f"User oauth groups: {user_oauth_groups}")
         log.debug(f"User's current groups: {[g.name for g in user_current_groups]}")
         log.debug(
-            f"All groups available in OpenWebUI: {[g.name for g in all_available_groups]}"
+            f"All groups available in OLIA: {[g.name for g in all_available_groups]}"
         )
 
         # Remove groups that user is no longer a part of
@@ -1597,7 +1597,7 @@ class OAuthManager:
 
                     if auth_manager_config.WEBHOOK_URL:
                         await post_webhook(
-                            WEBUI_NAME,
+                            OLIA_NAME,
                             auth_manager_config.WEBHOOK_URL,
                             WEBHOOK_MESSAGES.USER_SIGNUP(user.name),
                             {
@@ -1641,7 +1641,7 @@ class OAuthManager:
             )
 
         redirect_base_url = (
-            str(request.app.state.config.WEBUI_URL or request.base_url)
+            str(request.app.state.config.OLIA_URL or request.base_url)
         ).rstrip("/")
         redirect_url = f"{redirect_base_url}/auth"
 
@@ -1657,8 +1657,8 @@ class OAuthManager:
             key="token",
             value=jwt_token,
             httponly=False,  # Required for frontend access
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
         # Legacy cookies for compatibility with older frontend versions
@@ -1667,8 +1667,8 @@ class OAuthManager:
                 key="oauth_id_token",
                 value=token.get("id_token"),
                 httponly=True,
-                samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-                secure=WEBUI_AUTH_COOKIE_SECURE,
+                samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+                secure=OLIA_AUTH_COOKIE_SECURE,
             )
 
         try:
@@ -1696,8 +1696,8 @@ class OAuthManager:
                 key="oauth_session_id",
                 value=session.id,
                 httponly=True,
-                samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-                secure=WEBUI_AUTH_COOKIE_SECURE,
+                samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+                secure=OLIA_AUTH_COOKIE_SECURE,
             )
 
             log.info(

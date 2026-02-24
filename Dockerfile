@@ -10,7 +10,7 @@ ARG USE_CUDA_VER=cu128
 # any sentence transformer model; models to use can be found at https://huggingface.co/models?library=sentence-transformers
 # Leaderboard: https://huggingface.co/spaces/mteb/leaderboard 
 # for better performance and multilangauge support use "intfloat/multilingual-e5-large" (~2.5GB) or "intfloat/multilingual-e5-base" (~1.5GB)
-# IMPORTANT: If you change the embedding model (sentence-transformers/all-MiniLM-L6-v2) and vice versa, you aren't able to use RAG Chat with your previous documents loaded in the WebUI! You need to re-embed them.
+# IMPORTANT: If you change the embedding model (sentence-transformers/all-MiniLM-L6-v2) and vice versa, you aren't able to use RAG Chat with your previous documents loaded in the OLIA! You need to re-embed them.
 ARG USE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 ARG USE_RERANKING_MODEL=""
 ARG USE_AUXILIARY_EMBEDDING_MODEL=TaylorAI/bge-micro-v2
@@ -23,7 +23,7 @@ ARG BUILD_HASH=dev-build
 ARG UID=0
 ARG GID=0
 
-######## WebUI frontend ########
+######## OLIA frontend ########
 FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
 
@@ -42,7 +42,7 @@ COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
 RUN npm run build
 
-######## WebUI backend ########
+######## OLIA backend ########
 FROM python:3.11.14-slim-bookworm AS base
 
 # Use args
@@ -83,8 +83,8 @@ ARG OAUTH_GROUP_CLAIM
 ARG OAUTH_PROVIDER_NAME
 ARG OPENAI_API_BASE_URL
 ARG USER_PERMISSIONS_FEATURES_WEB_SEARCH
-ARG WEBUI_NAME
-ARG WEBUI_URL
+ARG OLIA_NAME
+ARG OLIA_URL
 ARG WEB_SEARCH_ENGINE
 ARG USER_PERMISSIONS_CHAT_CONTROLS
 ARG ENABLE_FORWARD_USER_INFO_HEADERS
@@ -124,12 +124,12 @@ ENV GOOGLE_DRIVE_CLIENT_ID=${GOOGLE_DRIVE_CLIENT_ID} \
     OAUTH_GROUP_CLAIM=${OAUTH_GROUP_CLAIM} \
     OAUTH_PROVIDER_NAME=${OAUTH_PROVIDER_NAME} \
     USER_PERMISSIONS_FEATURES_WEB_SEARCH=${USER_PERMISSIONS_FEATURES_WEB_SEARCH} \
-    WEBUI_NAME=${WEBUI_NAME} \
+    OLIA_NAME=${OLIA_NAME} \
     USER_PERMISSIONS_CHAT_CONTROLS=${USER_PERMISSIONS_CHAT_CONTROLS} \
     ONEDRIVE_SHAREPOINT_URL=${ONEDRIVE_SHAREPOINT_URL} \
     WEB_SEARCH_ENGINE=${WEB_SEARCH_ENGINE} \
     ENABLE_FORWARD_USER_INFO_HEADERS=${ENABLE_FORWARD_USER_INFO_HEADERS} \
-    WEBUI_URL=${WEBUI_URL} \
+    OLIA_URL=${OLIA_URL} \
     ATLASSIAN_CLIENT_ID=${ATLASSIAN_CLIENT_ID} \
     ATLASSIAN_CLIENT_SECRET=${ATLASSIAN_CLIENT_SECRET} \
     ATLASSIAN_REDIRECT_URI=${ATLASSIAN_REDIRECT_URI} \
@@ -280,7 +280,7 @@ RUN if [ "$USE_PERMISSION_HARDENING" = "true" ]; then \
 USER $UID:$GID
 
 ARG BUILD_HASH
-ENV WEBUI_BUILD_VERSION=${BUILD_HASH}
+ENV OLIA_BUILD_VERSION=${BUILD_HASH}
 ENV DOCKER=true
 
 CMD [ "bash", "start.sh"]

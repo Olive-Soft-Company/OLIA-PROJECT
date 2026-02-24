@@ -7,7 +7,7 @@
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
 
-	import { WEBUI_API_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL } from '$lib/constants';
 
 	import UserMenu from '$lib/components/layout/Sidebar/UserMenu.svelte';
 	import PencilSquare from '../icons/PencilSquare.svelte';
@@ -99,7 +99,7 @@
 								<div class="flex mr-1.5 relative">
 									{#each channelMembers.slice(0, 2) as u, index}
 										<img
-											src={`${WEBUI_API_BASE_URL}/users/${u.id}/profile/image`}
+											src={`${OLIA_API_BASE_URL}/users/${u.id}/profile/image`}
 											alt={u.name}
 											class=" size-6.5 rounded-full border-2 border-white dark:border-gray-900 {index ===
 											1
@@ -209,7 +209,7 @@
 						>
 							<div class=" self-center">
 								<img
-									src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+									src={`${OLIA_API_BASE_URL}/users/${$user?.id}/profile/image`}
 									class="size-6 object-cover rounded-full"
 									alt="User profile"
 									draggable="false"

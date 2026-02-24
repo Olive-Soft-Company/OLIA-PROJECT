@@ -5,7 +5,7 @@
 
 	import dayjs from 'dayjs';
 
-	import { settings, chatId, WEBUI_NAME, models, config } from '$lib/stores';
+	import { settings, chatId, OLIA_NAME, models, config } from '$lib/stores';
 	import { convertMessagesToHistory, createMessagesList } from '$lib/utils';
 
 	import { getChatByShareId, cloneSharedChatById } from '$lib/apis/chats';
@@ -144,8 +144,8 @@
 <svelte:head>
 	<title>
 		{title
-			? `${title.length > 30 ? `${title.slice(0, 30)}...` : title} • ${$WEBUI_NAME}`
-			: `${$WEBUI_NAME}`}
+			? `${title.length > 30 ? `${title.slice(0, 30)}...` : title} • ${$OLIA_NAME}`
+			: `${$OLIA_NAME}`}
 	</title>
 </svelte:head>
 

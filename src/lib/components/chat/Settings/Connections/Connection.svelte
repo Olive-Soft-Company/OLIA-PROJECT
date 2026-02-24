@@ -8,7 +8,7 @@
 	import Cog6 from '$lib/components/icons/Cog6.svelte';
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import { WEBUI_NAME } from '$lib/stores';
+	import { OLIA_NAME } from '$lib/stores';
 
 	export let onDelete = () => {};
 	export let onSubmit = () => {};

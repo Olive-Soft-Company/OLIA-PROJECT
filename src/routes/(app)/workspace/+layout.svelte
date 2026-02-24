@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
 	import {
-		WEBUI_NAME,
+		OLIA_NAME,
 		showSidebar,
 		functions,
 		user,
@@ -47,7 +47,7 @@
 
 <svelte:head>
 	<title>
-		{$i18n.t('Workspace')} • {$WEBUI_NAME}
+		{$i18n.t('Workspace')} • {$OLIA_NAME}
 	</title>
 </svelte:head>
 

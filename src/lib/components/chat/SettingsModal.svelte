@@ -74,8 +74,8 @@
 				'system settings',
 				'theme',
 				'translate',
-				'webuisettings',
-				'webui settings'
+				'oliasettings',
+				'olia settings'
 			]
 		},
 		{
@@ -429,7 +429,7 @@
 				'about us',
 				'aboutapp',
 				'aboutme',
-				'aboutopenwebui',
+				'aboutolia',
 				'aboutpage',
 				'aboutus',
 				'check for updates',

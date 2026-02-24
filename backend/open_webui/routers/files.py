@@ -288,10 +288,10 @@ def upload_file_handler(
             file.file,
             filename,
             {
-                "OpenWebUI-User-Email": user.email,
-                "OpenWebUI-User-Id": user.id,
-                "OpenWebUI-User-Name": user.name,
-                "OpenWebUI-File-Id": id,
+                "OLIA-User-Email": user.email,
+                "OLIA-User-Id": user.id,
+                "OLIA-User-Name": user.name,
+                "OLIA-File-Id": id,
             },
         )
 

@@ -52,7 +52,7 @@ if [ -n "$SPACE_ID" ]; then
     echo "Admin user configured, creating"
     WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
     webui_pid=$!
-    echo "Waiting for webui to start..."
+    echo "Waiting for OLIA to start..."
     while ! curl -s "http://localhost:${PORT}/health" > /dev/null; do
       sleep 1
     done
@@ -62,11 +62,11 @@ if [ -n "$SPACE_ID" ]; then
       -H "accept: application/json" \
       -H "Content-Type: application/json" \
       -d "{ \"email\": \"${ADMIN_USER_EMAIL}\", \"password\": \"${ADMIN_USER_PASSWORD}\", \"name\": \"Admin\" }"
-    echo "Shutting down webui..."
+    echo "Shutting down OLIA..."
     kill $webui_pid
   fi
 
-  export WEBUI_URL=${SPACE_HOST}
+  export OLIA_URL=${SPACE_HOST}
 fi
 
 PYTHON_CMD=$(command -v python3 || command -v python)

@@ -12,7 +12,7 @@
 
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_BASE_URL } from '$lib/constants';
 
 	import {
 		chatId,
@@ -23,7 +23,7 @@
 		tags as allTags,
 		settings,
 		showSidebar,
-		WEBUI_NAME,
+		OLIA_NAME,
 		banners,
 		user,
 		socket,
@@ -2119,7 +2119,7 @@
 						}
 					: {})
 			},
-			`${WEBUI_BASE_URL}/api`
+			`${OLIA_BASE_URL}/api`
 		).catch(async (error) => {
 			console.log(error);
 
@@ -2496,8 +2496,8 @@
 <svelte:head>
 	<title>
 		{$settings.showChatTitleInTab !== false && $chatTitle
-			? `${$chatTitle.length > 30 ? `${$chatTitle.slice(0, 30)}...` : $chatTitle} • ${$WEBUI_NAME}`
-			: `${$WEBUI_NAME}`}
+			? `${$chatTitle.length > 30 ? `${$chatTitle.slice(0, 30)}...` : $chatTitle} • ${$OLIA_NAME}`
+			: `${$OLIA_NAME}`}
 	</title>
 </svelte:head>
 

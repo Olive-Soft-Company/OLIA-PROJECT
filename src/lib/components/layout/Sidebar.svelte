@@ -25,7 +25,7 @@
 		isApp,
 		models,
 		selectedFolder,
-		WEBUI_NAME,
+		OLIA_NAME,
 		sidebarWidth,
 		activeChatIds
 	} from '$lib/stores';
@@ -44,7 +44,7 @@
 	} from '$lib/apis/chats';
 	import { createNewFolder, getFolders, updateFolderParentIdById } from '$lib/apis/folders';
 	import { checkActiveChats } from '$lib/apis/tasks';
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
 
 	import ArchivedChatsModal from './ArchivedChatsModal.svelte';
 	import UserMenu from './Sidebar/UserMenu.svelte';
@@ -640,7 +640,7 @@
 					>
 						<div class=" self-center flex items-center justify-center size-9">
 							<img
-								src="{WEBUI_BASE_URL}/static/favicon.png"
+								src="{OLIA_BASE_URL}/static/favicon.png"
 								class="sidebar-new-chat-icon size-6 rounded-full group-hover:hidden"
 								alt=""
 							/>
@@ -776,7 +776,7 @@
 							>
 								<div class="self-center relative">
 									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+										src={`${OLIA_API_BASE_URL}/users/${$user?.id}/profile/image`}
 										class=" size-7 object-cover rounded-full"
 										alt={$i18n.t('Open User Profile Menu')}
 										aria-label={$i18n.t('Open User Profile Menu')}
@@ -835,7 +835,7 @@
 				>
 					<img
 						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/favicon.png"
+						src="{OLIA_BASE_URL}/static/favicon.png"
 						class="sidebar-new-chat-icon size-6 rounded-full"
 						alt=""
 					/>
@@ -843,10 +843,10 @@
 
 				<a href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
 					<div
-						id="sidebar-webui-name"
+						id="sidebar-olia-name"
 						class=" self-center font-medium text-gray-850 dark:text-white font-primary"
 					>
-						{$WEBUI_NAME}
+						{$OLIA_NAME}
 					</div>
 				</a>
 				<Tooltip
@@ -1344,7 +1344,7 @@
 							>
 								<div class=" self-center mr-3 relative">
 									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+										src={`${OLIA_API_BASE_URL}/users/${$user?.id}/profile/image`}
 										class=" size-7 object-cover rounded-full"
 										alt={$i18n.t('Open User Profile Menu')}
 										aria-label={$i18n.t('Open User Profile Menu')}

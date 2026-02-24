@@ -17,8 +17,8 @@
 		updateUserTimezone
 	} from '$lib/apis/auths';
 
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
-	import { WEBUI_NAME, config, user, socket } from '$lib/stores';
+	import { OLIA_API_BASE_URL, OLIA_BASE_URL } from '$lib/constants';
+	import { OLIA_NAME, config, user, socket } from '$lib/stores';
 
 	import { generateInitialsImage, canvasPixelTest, getUserTimezone } from '$lib/utils';
 
@@ -151,10 +151,10 @@
 
 			if (isDarkMode) {
 				const darkImage = new Image();
-				darkImage.src = `${WEBUI_BASE_URL}/static/favicon-dark.png`;
+				darkImage.src = `${OLIA_BASE_URL}/static/favicon-dark.png`;
 
 				darkImage.onload = () => {
-					logo.src = `${WEBUI_BASE_URL}/static/favicon-dark.png`;
+					logo.src = `${OLIA_BASE_URL}/static/favicon-dark.png`;
 					logo.style.filter = ''; // Ensure no inversion is applied if favicon-dark.png exists
 				};
 
@@ -196,7 +196,7 @@
 
 <svelte:head>
 	<title>
-		{`${$WEBUI_NAME}`}
+		{`${$OLIA_NAME}`}
 	</title>
 </svelte:head>
 
@@ -225,7 +225,7 @@
 							class="flex items-center justify-center gap-3 text-xl sm:text-2xl text-center font-medium dark:text-gray-200"
 						>
 							<div>
-								{$i18n.t('Signing in to {{WEBUI_NAME}}', { WEBUI_NAME: $WEBUI_NAME })}
+								{$i18n.t('Signing in to {{OLIA_NAME}}', { OLIA_NAME: $OLIA_NAME })}
 							</div>
 
 							<div>
@@ -241,7 +241,7 @@
 									<img
 										id="logo"
 										crossorigin="anonymous"
-										src="{WEBUI_BASE_URL}/static/favicon.png"
+										src="{OLIA_BASE_URL}/static/favicon.png"
 										class="size-24 rounded-full"
 										alt=""
 									/>
@@ -257,19 +257,19 @@
 								<div class="mb-1">
 									<div class=" text-2xl font-medium">
 										{#if $config?.onboarding ?? false}
-											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Get started with {{OLIA_NAME}}`, { OLIA_NAME: $OLIA_NAME })}
 										{:else if mode === 'ldap'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{OLIA_NAME}} with LDAP`, { OLIA_NAME: $OLIA_NAME })}
 										{:else if mode === 'signin'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{OLIA_NAME}}`, { OLIA_NAME: $OLIA_NAME })}
 										{:else}
-											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign up to {{OLIA_NAME}}`, { OLIA_NAME: $OLIA_NAME })}
 										{/if}
 									</div>
 
 									{#if $config?.onboarding ?? false}
 										<div class="mt-1 text-xs font-medium text-gray-600 dark:text-gray-500">
-											ⓘ {$WEBUI_NAME}
+											ⓘ {$OLIA_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
 											)}
@@ -432,7 +432,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/google/login`;
 											}}
 										>
 											<svg
@@ -461,7 +461,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/microsoft/login`;
 											}}
 										>
 											<svg
@@ -491,7 +491,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/github/login`;
 											}}
 										>
 											<svg
@@ -511,7 +511,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/oidc/login`;
 											}}
 										>
 											<svg
@@ -540,7 +540,7 @@
 										<button
 											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
-												window.location.href = `${WEBUI_BASE_URL}/oauth/feishu/login`;
+												window.location.href = `${OLIA_BASE_URL}/oauth/feishu/login`;
 											}}
 										>
 											<span>{$i18n.t('Continue with {{provider}}', { provider: 'Feishu' })}</span>
@@ -588,7 +588,7 @@
 						<img
 							id="logo"
 							crossorigin="anonymous"
-							src="{WEBUI_BASE_URL}/static/favicon.png"
+							src="{OLIA_BASE_URL}/static/favicon.png"
 							class=" w-6 rounded-full"
 							alt=""
 						/>

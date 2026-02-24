@@ -360,8 +360,8 @@ from open_webui.config import (
     YANDEX_WEB_SEARCH_API_KEY,
     YANDEX_WEB_SEARCH_CONFIG,
     # WebUI
-    WEBUI_AUTH,
-    WEBUI_NAME,
+    OLIA_AUTH,
+    OLIA_NAME,
     WEBUI_BANNERS,
     WEBHOOK_URL,
     ADMIN_EMAIL,
@@ -428,7 +428,7 @@ from open_webui.config import (
     CORS_ALLOW_ORIGIN,
     DEFAULT_LOCALE,
     OAUTH_PROVIDERS,
-    WEBUI_URL,
+    OLIA_URL,
     RESPONSE_WATERMARK,
     # Admin
     ENABLE_ADMIN_CHAT_ACCESS,
@@ -472,13 +472,13 @@ from open_webui.env import (
     VERSION,
     DEPLOYMENT_ID,
     INSTANCE_ID,
-    WEBUI_BUILD_HASH,
+    OLIA_BUILD_HASH,
     WEBUI_SECRET_KEY,
-    WEBUI_SESSION_COOKIE_SAME_SITE,
-    WEBUI_SESSION_COOKIE_SECURE,
+    OLIA_SESSION_COOKIE_SAME_SITE,
+    OLIA_SESSION_COOKIE_SECURE,
     ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
-    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
-    WEBUI_AUTH_TRUSTED_NAME_HEADER,
+    OLIA_AUTH_TRUSTED_EMAIL_HEADER,
+    OLIA_AUTH_TRUSTED_NAME_HEADER,
     WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
     # SCIM
     ENABLE_SCIM,
@@ -494,9 +494,9 @@ from open_webui.env import (
     ENABLE_STAR_SESSIONS_MIDDLEWARE,
     ENABLE_PUBLIC_ACTIVE_USERS_COUNT,
     # Admin Account Runtime Creation
-    WEBUI_ADMIN_EMAIL,
-    WEBUI_ADMIN_PASSWORD,
-    WEBUI_ADMIN_NAME,
+    OLIA_ADMIN_EMAIL,
+    OLIA_ADMIN_PASSWORD,
+    OLIA_ADMIN_NAME,
     ENABLE_EASTER_EGGS,
 )
 
@@ -576,17 +576,16 @@ class SPAStaticFiles(StaticFiles):
 
 
 print(rf"""
- ██████╗ ██████╗ ███████╗███╗   ██╗    ██╗    ██╗███████╗██████╗ ██╗   ██╗██╗
-██╔═══██╗██╔══██╗██╔════╝████╗  ██║    ██║    ██║██╔════╝██╔══██╗██║   ██║██║
-██║   ██║██████╔╝█████╗  ██╔██╗ ██║    ██║ █╗ ██║█████╗  ██████╔╝██║   ██║██║
-██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║    ██║███╗██║██╔══╝  ██╔══██╗██║   ██║██║
-╚██████╔╝██║     ███████╗██║ ╚████║    ╚███╔███╔╝███████╗██████╔╝╚██████╔╝██║
- ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝     ╚══╝╚══╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝
+ ██████╗ ██╗     ██╗ █████╗ 
+██╔═══██╗██║     ██║██╔══██╗
+██║   ██║██║     ██║███████║
+██║   ██║██║     ██║██╔══██║
+╚██████╔╝███████╗██║██║  ██║
+ ╚═════╝ ╚══════╝╚═╝╚═╝  ╚═╝
 
 
 v{VERSION} - building the best AI user interface.
-{f"Commit: {WEBUI_BUILD_HASH}" if WEBUI_BUILD_HASH != "dev-build" else ""}
-https://github.com/open-webui/open-webui
+{f"Commit: {OLIA_BUILD_HASH}" if OLIA_BUILD_HASH != "dev-build" else ""}
 """)
 
 
@@ -606,8 +605,8 @@ async def lifespan(app: FastAPI):
         get_license_data(app, LICENSE_KEY)
 
     # Create admin account from env vars if specified and no users exist
-    if WEBUI_ADMIN_EMAIL and WEBUI_ADMIN_PASSWORD:
-        if create_admin_user(WEBUI_ADMIN_EMAIL, WEBUI_ADMIN_PASSWORD, WEBUI_ADMIN_NAME):
+    if OLIA_ADMIN_EMAIL and OLIA_ADMIN_PASSWORD:
+        if create_admin_user(OLIA_ADMIN_EMAIL, OLIA_ADMIN_PASSWORD, OLIA_ADMIN_NAME):
             # Disable signup since we now have an admin
             app.state.config.ENABLE_SIGNUP = False
 
@@ -688,7 +687,7 @@ app.state.config = AppConfig(
 )
 app.state.redis = None
 
-app.state.WEBUI_NAME = WEBUI_NAME
+app.state.OLIA_NAME = OLIA_NAME
 app.state.LICENSE_METADATA = None
 
 
@@ -773,7 +772,7 @@ app.state.BASE_MODELS = []
 #
 ########################################
 
-app.state.config.WEBUI_URL = WEBUI_URL
+app.state.config.OLIA_URL = OLIA_URL
 app.state.config.ENABLE_SIGNUP = ENABLE_SIGNUP
 app.state.config.ENABLE_LOGIN_FORM = ENABLE_LOGIN_FORM
 
@@ -865,8 +864,8 @@ app.state.config.ENABLE_LDAP_GROUP_CREATION = ENABLE_LDAP_GROUP_CREATION
 app.state.config.LDAP_ATTRIBUTE_FOR_GROUPS = LDAP_ATTRIBUTE_FOR_GROUPS
 
 
-app.state.AUTH_TRUSTED_EMAIL_HEADER = WEBUI_AUTH_TRUSTED_EMAIL_HEADER
-app.state.AUTH_TRUSTED_NAME_HEADER = WEBUI_AUTH_TRUSTED_NAME_HEADER
+app.state.AUTH_TRUSTED_EMAIL_HEADER = OLIA_AUTH_TRUSTED_EMAIL_HEADER
+app.state.AUTH_TRUSTED_NAME_HEADER = OLIA_AUTH_TRUSTED_NAME_HEADER
 app.state.WEBUI_AUTH_SIGNOUT_REDIRECT_URL = WEBUI_AUTH_SIGNOUT_REDIRECT_URL
 app.state.EXTERNAL_PWA_MANIFEST_URL = EXTERNAL_PWA_MANIFEST_URL
 
@@ -1980,7 +1979,7 @@ async def get_app_config(request: Request):
     return {
         **({"onboarding": True} if onboarding else {}),
         "status": True,
-        "name": app.state.WEBUI_NAME,
+        "name": app.state.OLIA_NAME,
         "version": VERSION,
         "default_locale": str(DEFAULT_LOCALE),
         "oauth": {
@@ -1990,7 +1989,7 @@ async def get_app_config(request: Request):
             }
         },
         "features": {
-            "auth": WEBUI_AUTH,
+            "auth": OLIA_AUTH,
             "auth_trusted_header": bool(app.state.AUTH_TRUSTED_EMAIL_HEADER),
             "enable_signup_password_confirmation": ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
             "enable_ldap": app.state.config.ENABLE_LDAP,
@@ -2239,8 +2238,8 @@ try:
             StarSessionsMiddleware,
             store=redis_session_store,
             cookie_name="owui-session",
-            cookie_same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-            cookie_https_only=WEBUI_SESSION_COOKIE_SECURE,
+            cookie_same_site=OLIA_SESSION_COOKIE_SAME_SITE,
+            cookie_https_only=OLIA_SESSION_COOKIE_SECURE,
         )
         log.info("Using Redis for session")
     else:
@@ -2250,8 +2249,8 @@ except Exception as e:
         SessionMiddleware,
         secret_key=WEBUI_SECRET_KEY,
         session_cookie="owui-session",
-        same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-        https_only=WEBUI_SESSION_COOKIE_SECURE,
+        same_site=OLIA_SESSION_COOKIE_SAME_SITE,
+        https_only=OLIA_SESSION_COOKIE_SECURE,
     )
 
 
@@ -2401,9 +2400,9 @@ async def get_manifest_json():
         return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL).json()
     else:
         return {
-            "name": app.state.WEBUI_NAME,
-            "short_name": app.state.WEBUI_NAME,
-            "description": f"{app.state.WEBUI_NAME} is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
+            "name": app.state.OLIA_NAME,
+            "short_name": app.state.OLIA_NAME,
+            "description": f"{app.state.OLIA_NAME} is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
             "start_url": "/",
             "display": "standalone",
             "background_color": "#343541",
@@ -2433,12 +2432,12 @@ async def get_manifest_json():
 async def get_opensearch_xml():
     xml_content = rf"""
     <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
-    <ShortName>{app.state.WEBUI_NAME}</ShortName>
-    <Description>Search {app.state.WEBUI_NAME}</Description>
+    <ShortName>{app.state.OLIA_NAME}</ShortName>
+    <Description>Search {app.state.OLIA_NAME}</Description>
     <InputEncoding>UTF-8</InputEncoding>
-    <Image width="16" height="16" type="image/x-icon">{app.state.config.WEBUI_URL}/static/favicon.png</Image>
-    <Url type="text/html" method="get" template="{app.state.config.WEBUI_URL}/?q={"{searchTerms}"}"/>
-    <moz:SearchForm>{app.state.config.WEBUI_URL}</moz:SearchForm>
+    <Image width="16" height="16" type="image/x-icon">{app.state.config.OLIA_URL}/static/favicon.png</Image>
+    <Url type="text/html" method="get" template="{app.state.config.OLIA_URL}/?q={"{searchTerms}"}"/>
+    <moz:SearchForm>{app.state.config.OLIA_URL}</moz:SearchForm>
     </OpenSearchDescription>
     """
     return Response(content=xml_content, media_type="application/xml")

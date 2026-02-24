@@ -31,12 +31,12 @@ from open_webui.models.oauth_sessions import OAuthSessions
 
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
-    WEBUI_AUTH,
-    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
-    WEBUI_AUTH_TRUSTED_NAME_HEADER,
-    WEBUI_AUTH_TRUSTED_GROUPS_HEADER,
-    WEBUI_AUTH_COOKIE_SAME_SITE,
-    WEBUI_AUTH_COOKIE_SECURE,
+    OLIA_AUTH,
+    OLIA_AUTH_TRUSTED_EMAIL_HEADER,
+    OLIA_AUTH_TRUSTED_NAME_HEADER,
+    OLIA_AUTH_TRUSTED_GROUPS_HEADER,
+    OLIA_AUTH_COOKIE_SAME_SITE,
+    OLIA_AUTH_COOKIE_SECURE,
     WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
     ENABLE_INITIAL_ADMIN_SIGNUP,
     ENABLE_OAUTH_TOKEN_EXCHANGE,
@@ -129,8 +129,8 @@ def create_session_response(
             value=token,
             expires=datetime_expires_at,
             httponly=True,
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
     user_permissions = get_permissions(
@@ -200,8 +200,8 @@ async def get_session_user(
                 else None
             ),
             httponly=True,  # Ensures the cookie is not accessible via JavaScript
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
     user_permissions = get_permissions(
@@ -289,7 +289,7 @@ async def update_password(
     session_user=Depends(get_current_user),
     db: Session = Depends(get_session),
 ):
-    if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
+    if OLIA_AUTH_TRUSTED_EMAIL_HEADER:
         raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
     if session_user:
         user = Auths.authenticate_user(
@@ -591,15 +591,15 @@ async def signin(
             detail=ERROR_MESSAGES.ACTION_PROHIBITED,
         )
 
-    if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
-        if WEBUI_AUTH_TRUSTED_EMAIL_HEADER not in request.headers:
+    if OLIA_AUTH_TRUSTED_EMAIL_HEADER:
+        if OLIA_AUTH_TRUSTED_EMAIL_HEADER not in request.headers:
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_TRUSTED_HEADER)
 
-        email = request.headers[WEBUI_AUTH_TRUSTED_EMAIL_HEADER].lower()
+        email = request.headers[OLIA_AUTH_TRUSTED_EMAIL_HEADER].lower()
         name = email
 
-        if WEBUI_AUTH_TRUSTED_NAME_HEADER:
-            name = request.headers.get(WEBUI_AUTH_TRUSTED_NAME_HEADER, email)
+        if OLIA_AUTH_TRUSTED_NAME_HEADER:
+            name = request.headers.get(OLIA_AUTH_TRUSTED_NAME_HEADER, email)
             try:
                 name = urllib.parse.unquote(name, encoding="utf-8")
             except Exception as e:
@@ -615,16 +615,16 @@ async def signin(
             )
 
         user = Auths.authenticate_user_by_email(email, db=db)
-        if WEBUI_AUTH_TRUSTED_GROUPS_HEADER and user and user.role != "admin":
+        if OLIA_AUTH_TRUSTED_GROUPS_HEADER and user and user.role != "admin":
             group_names = request.headers.get(
-                WEBUI_AUTH_TRUSTED_GROUPS_HEADER, ""
+                OLIA_AUTH_TRUSTED_GROUPS_HEADER, ""
             ).split(",")
             group_names = [name.strip() for name in group_names if name.strip()]
 
             if group_names:
                 Groups.sync_groups_by_group_names(user.id, group_names, db=db)
 
-    elif WEBUI_AUTH == False:
+    elif OLIA_AUTH == False:
         admin_email = "admin@localhost"
         admin_password = "admin"
 
@@ -717,7 +717,7 @@ async def signup_handler(
 
     if request.app.state.config.WEBHOOK_URL:
         await post_webhook(
-            request.app.state.WEBUI_NAME,
+            request.app.state.OLIA_NAME,
             request.app.state.config.WEBHOOK_URL,
             WEBHOOK_MESSAGES.USER_SIGNUP(user.name),
             {
@@ -749,7 +749,7 @@ async def signup(
 ):
     has_users = Users.has_users(db=db)
 
-    if WEBUI_AUTH:
+    if OLIA_AUTH:
         if (
             not request.app.state.config.ENABLE_SIGNUP
             or not request.app.state.config.ENABLE_LOGIN_FORM
@@ -982,7 +982,7 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
     return {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
+        "OLIA_URL": request.app.state.config.OLIA_URL,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "ENABLE_API_KEYS": request.app.state.config.ENABLE_API_KEYS,
         "ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS,
@@ -1008,7 +1008,7 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
 class AdminConfig(BaseModel):
     SHOW_ADMIN_DETAILS: bool
     ADMIN_EMAIL: Optional[str] = None
-    WEBUI_URL: str
+    OLIA_URL: str
     ENABLE_SIGNUP: bool
     ENABLE_API_KEYS: bool
     ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS: bool
@@ -1036,7 +1036,7 @@ async def update_admin_config(
 ):
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
     request.app.state.config.ADMIN_EMAIL = form_data.ADMIN_EMAIL
-    request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
+    request.app.state.config.OLIA_URL = form_data.OLIA_URL
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
 
     request.app.state.config.ENABLE_API_KEYS = form_data.ENABLE_API_KEYS
@@ -1086,7 +1086,7 @@ async def update_admin_config(
     return {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
+        "OLIA_URL": request.app.state.config.OLIA_URL,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "ENABLE_API_KEYS": request.app.state.config.ENABLE_API_KEYS,
         "ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS,
@@ -1281,7 +1281,7 @@ async def token_exchange(
     db: Session = Depends(get_session),
 ):
     """
-    Exchange an external OAuth provider token for an OpenWebUI JWT.
+    Exchange an external OAuth provider token for an OLIA JWT.
     This endpoint is disabled by default. Set ENABLE_OAUTH_TOKEN_EXCHANGE=True to enable.
     """
     if not ENABLE_OAUTH_TOKEN_EXCHANGE:

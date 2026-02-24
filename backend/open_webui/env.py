@@ -22,11 +22,11 @@ from open_webui.constants import ERROR_MESSAGES
 # Use .resolve() to get the canonical path, removing any '..' or '.' components
 ENV_FILE_PATH = Path(__file__).resolve()
 
-# OPEN_WEBUI_DIR should be the directory where env.py resides (open_webui/)
-OPEN_WEBUI_DIR = ENV_FILE_PATH.parent
+# OLIA_DIR should be the directory where env.py resides (open_webui/)
+OLIA_DIR = ENV_FILE_PATH.parent
 
-# BACKEND_DIR is the parent of OPEN_WEBUI_DIR (backend/)
-BACKEND_DIR = OPEN_WEBUI_DIR.parent
+# BACKEND_DIR is the parent of OLIA_DIR (backend/)
+BACKEND_DIR = OLIA_DIR.parent
 
 # BASE_DIR is the parent of BACKEND_DIR (open-webui-dev/)
 BASE_DIR = BACKEND_DIR.parent
@@ -87,11 +87,11 @@ if "cuda_error" in locals():
 
 SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
-WEBUI_NAME = os.environ.get("WEBUI_NAME", "OLIA")
-if WEBUI_NAME != "OLIA":
-    WEBUI_NAME += " (OLIA)"
+OLIA_NAME = os.environ.get("OLIA_NAME", "OLIA")
+if OLIA_NAME != "OLIA":
+    OLIA_NAME += " (OLIA)"
 
-WEBUI_FAVICON_URL = "https://openwebui.com/favicon.png"
+OLIA_FAVICON_URL = "https://openwebui.com/favicon.png"
 
 TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 
@@ -196,24 +196,24 @@ ENABLE_FORWARD_USER_INFO_HEADERS = (
 
 # Header names for user info forwarding (customizable via environment variables)
 FORWARD_USER_INFO_HEADER_USER_NAME = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_NAME", "X-OpenWebUI-User-Name"
+    "FORWARD_USER_INFO_HEADER_USER_NAME", "X-OLIA-User-Name"
 )
 FORWARD_USER_INFO_HEADER_USER_ID = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_ID", "X-OpenWebUI-User-Id"
+    "FORWARD_USER_INFO_HEADER_USER_ID", "X-OLIA-User-Id"
 )
 FORWARD_USER_INFO_HEADER_USER_EMAIL = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_EMAIL", "X-OpenWebUI-User-Email"
+    "FORWARD_USER_INFO_HEADER_USER_EMAIL", "X-OLIA-User-Email"
 )
 FORWARD_USER_INFO_HEADER_USER_ROLE = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_ROLE", "X-OpenWebUI-User-Role"
+    "FORWARD_USER_INFO_HEADER_USER_ROLE", "X-OLIA-User-Role"
 )
 
 # Header name for chat ID forwarding (customizable via environment variable)
 FORWARD_SESSION_INFO_HEADER_MESSAGE_ID = os.environ.get(
-    "FORWARD_SESSION_INFO_HEADER_MESSAGE_ID", "X-OpenWebUI-Message-Id"
+    "FORWARD_SESSION_INFO_HEADER_MESSAGE_ID", "X-OLIA-Message-Id"
 )
 FORWARD_SESSION_INFO_HEADER_CHAT_ID = os.environ.get(
-    "FORWARD_SESSION_INFO_HEADER_CHAT_ID", "X-OpenWebUI-Chat-Id"
+    "FORWARD_SESSION_INFO_HEADER_CHAT_ID", "X-OLIA-Chat-Id"
 )
 
 # Experimental feature, may be removed in future
@@ -224,10 +224,10 @@ ENABLE_STAR_SESSIONS_MIDDLEWARE = (
 ENABLE_EASTER_EGGS = os.environ.get("ENABLE_EASTER_EGGS", "True").lower() == "true"
 
 ####################################
-# WEBUI_BUILD_HASH
+# OLIA_BUILD_HASH
 ####################################
 
-WEBUI_BUILD_HASH = os.environ.get("WEBUI_BUILD_HASH", "dev-build")
+OLIA_BUILD_HASH = os.environ.get("OLIA_BUILD_HASH", "dev-build")
 
 ####################################
 # DATA/FRONTEND BUILD DIR
@@ -236,7 +236,7 @@ WEBUI_BUILD_HASH = os.environ.get("WEBUI_BUILD_HASH", "dev-build")
 DATA_DIR = Path(os.getenv("DATA_DIR", BACKEND_DIR / "data")).resolve()
 
 if FROM_INIT_PY:
-    NEW_DATA_DIR = Path(os.getenv("DATA_DIR", OPEN_WEBUI_DIR / "data")).resolve()
+    NEW_DATA_DIR = Path(os.getenv("DATA_DIR", OLIA_DIR / "data")).resolve()
     NEW_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     # Check if the data directory exists in the package directory
@@ -255,17 +255,17 @@ if FROM_INIT_PY:
         # Remove the old data directory
         shutil.rmtree(DATA_DIR)
 
-    DATA_DIR = Path(os.getenv("DATA_DIR", OPEN_WEBUI_DIR / "data"))
+    DATA_DIR = Path(os.getenv("DATA_DIR", OLIA_DIR / "data"))
 
-STATIC_DIR = Path(os.getenv("STATIC_DIR", OPEN_WEBUI_DIR / "static"))
+STATIC_DIR = Path(os.getenv("STATIC_DIR", OLIA_DIR / "static"))
 
-FONTS_DIR = Path(os.getenv("FONTS_DIR", OPEN_WEBUI_DIR / "static" / "fonts"))
+FONTS_DIR = Path(os.getenv("FONTS_DIR", OLIA_DIR / "static" / "fonts"))
 
 FRONTEND_BUILD_DIR = Path(os.getenv("FRONTEND_BUILD_DIR", BASE_DIR / "build")).resolve()
 
 if FROM_INIT_PY:
     FRONTEND_BUILD_DIR = Path(
-        os.getenv("FRONTEND_BUILD_DIR", OPEN_WEBUI_DIR / "frontend")
+        os.getenv("FRONTEND_BUILD_DIR", OLIA_DIR / "frontend")
     ).resolve()
 
 ####################################
@@ -442,10 +442,10 @@ except ValueError:
     log.info(f"Invalid UVICORN_WORKERS value, defaulting to {UVICORN_WORKERS}")
 
 ####################################
-# WEBUI_AUTH (Required for security)
+# OLIA_AUTH (Required for security)
 ####################################
 
-WEBUI_AUTH = os.environ.get("WEBUI_AUTH", "True").lower() == "true"
+OLIA_AUTH = os.environ.get("OLIA_AUTH", "True").lower() == "true"
 
 ENABLE_INITIAL_ADMIN_SIGNUP = (
     os.environ.get("ENABLE_INITIAL_ADMIN_SIGNUP", "False").lower() == "true"
@@ -460,16 +460,16 @@ ENABLE_SIGNUP_PASSWORD_CONFIRMATION = (
 
 # Optional env vars for creating an admin account on startup
 # Useful for headless/automated deployments
-WEBUI_ADMIN_EMAIL = os.environ.get("WEBUI_ADMIN_EMAIL", "")
-WEBUI_ADMIN_PASSWORD = os.environ.get("WEBUI_ADMIN_PASSWORD", "")
-WEBUI_ADMIN_NAME = os.environ.get("WEBUI_ADMIN_NAME", "Admin")
+OLIA_ADMIN_EMAIL = os.environ.get("OLIA_ADMIN_EMAIL", "")
+OLIA_ADMIN_PASSWORD = os.environ.get("OLIA_ADMIN_PASSWORD", "")
+OLIA_ADMIN_NAME = os.environ.get("OLIA_ADMIN_NAME", "Admin")
 
-WEBUI_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
-    "WEBUI_AUTH_TRUSTED_EMAIL_HEADER", None
+OLIA_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
+    "OLIA_AUTH_TRUSTED_EMAIL_HEADER", None
 )
-WEBUI_AUTH_TRUSTED_NAME_HEADER = os.environ.get("WEBUI_AUTH_TRUSTED_NAME_HEADER", None)
-WEBUI_AUTH_TRUSTED_GROUPS_HEADER = os.environ.get(
-    "WEBUI_AUTH_TRUSTED_GROUPS_HEADER", None
+OLIA_AUTH_TRUSTED_NAME_HEADER = os.environ.get("OLIA_AUTH_TRUSTED_NAME_HEADER", None)
+OLIA_AUTH_TRUSTED_GROUPS_HEADER = os.environ.get(
+    "OLIA_AUTH_TRUSTED_GROUPS_HEADER", None
 )
 
 
@@ -513,25 +513,25 @@ WEBUI_SECRET_KEY = os.environ.get(
     ),  # DEPRECATED: remove at next major version
 )
 
-WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")
+OLIA_SESSION_COOKIE_SAME_SITE = os.environ.get("OLIA_SESSION_COOKIE_SAME_SITE", "lax")
 
-WEBUI_SESSION_COOKIE_SECURE = (
-    os.environ.get("WEBUI_SESSION_COOKIE_SECURE", "false").lower() == "true"
+OLIA_SESSION_COOKIE_SECURE = (
+    os.environ.get("OLIA_SESSION_COOKIE_SECURE", "false").lower() == "true"
 )
 
-WEBUI_AUTH_COOKIE_SAME_SITE = os.environ.get(
-    "WEBUI_AUTH_COOKIE_SAME_SITE", WEBUI_SESSION_COOKIE_SAME_SITE
+OLIA_AUTH_COOKIE_SAME_SITE = os.environ.get(
+    "OLIA_AUTH_COOKIE_SAME_SITE", OLIA_SESSION_COOKIE_SAME_SITE
 )
 
-WEBUI_AUTH_COOKIE_SECURE = (
+OLIA_AUTH_COOKIE_SECURE = (
     os.environ.get(
-        "WEBUI_AUTH_COOKIE_SECURE",
-        os.environ.get("WEBUI_SESSION_COOKIE_SECURE", "false"),
+        "OLIA_AUTH_COOKIE_SECURE",
+        os.environ.get("OLIA_SESSION_COOKIE_SECURE", "false"),
     ).lower()
     == "true"
 )
 
-if WEBUI_AUTH and WEBUI_SECRET_KEY == "":
+if OLIA_AUTH and WEBUI_SECRET_KEY == "":
     raise ValueError(ERROR_MESSAGES.ENV_VAR_NOT_FOUND)
 
 ENABLE_COMPRESSION_MIDDLEWARE = (
@@ -558,7 +558,7 @@ OAUTH_SESSION_TOKEN_ENCRYPTION_KEY = os.environ.get(
 )
 
 # Token Exchange Configuration
-# Allows external apps to exchange OAuth tokens for OpenWebUI tokens
+# Allows external apps to exchange OAuth tokens for OLIA tokens
 ENABLE_OAUTH_TOKEN_EXCHANGE = (
     os.environ.get("ENABLE_OAUTH_TOKEN_EXCHANGE", "False").lower() == "true"
 )

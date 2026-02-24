@@ -23,7 +23,7 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Textarea from './common/Textarea.svelte';
-	import { WEBUI_NAME } from '$lib/stores';
+	import { OLIA_NAME } from '$lib/stores';
 
 	export let onSubmit: Function = () => {};
 	export let onDelete: Function = () => {};
@@ -581,7 +581,7 @@
 										<div
 											class={`text-xs mt-1 ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
 										>
-											{$WEBUI_NAME}{$i18n.t(`will make requests to "{{url}}"`, {
+											{$OLIA_NAME}{$i18n.t(`will make requests to "{{url}}"`, {
 												url: path.includes('://')
 													? path
 													: `${url}${path.startsWith('/') ? '' : '/'}${path}`
