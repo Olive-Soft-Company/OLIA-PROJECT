@@ -429,7 +429,7 @@
 				'about us',
 				'aboutapp',
 				'aboutme',
-				'aboutopenwebui',
+				'aboutolia',
 				'aboutpage',
 				'aboutus',
 				'check for updates',

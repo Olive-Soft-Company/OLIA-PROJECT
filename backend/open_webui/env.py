@@ -196,24 +196,24 @@ ENABLE_FORWARD_USER_INFO_HEADERS = (
 
 # Header names for user info forwarding (customizable via environment variables)
 FORWARD_USER_INFO_HEADER_USER_NAME = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_NAME", "X-OpenWebUI-User-Name"
+    "FORWARD_USER_INFO_HEADER_USER_NAME", "X-OLIA-User-Name"
 )
 FORWARD_USER_INFO_HEADER_USER_ID = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_ID", "X-OpenWebUI-User-Id"
+    "FORWARD_USER_INFO_HEADER_USER_ID", "X-OLIA-User-Id"
 )
 FORWARD_USER_INFO_HEADER_USER_EMAIL = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_EMAIL", "X-OpenWebUI-User-Email"
+    "FORWARD_USER_INFO_HEADER_USER_EMAIL", "X-OLIA-User-Email"
 )
 FORWARD_USER_INFO_HEADER_USER_ROLE = os.environ.get(
-    "FORWARD_USER_INFO_HEADER_USER_ROLE", "X-OpenWebUI-User-Role"
+    "FORWARD_USER_INFO_HEADER_USER_ROLE", "X-OLIA-User-Role"
 )
 
 # Header name for chat ID forwarding (customizable via environment variable)
 FORWARD_SESSION_INFO_HEADER_MESSAGE_ID = os.environ.get(
-    "FORWARD_SESSION_INFO_HEADER_MESSAGE_ID", "X-OpenWebUI-Message-Id"
+    "FORWARD_SESSION_INFO_HEADER_MESSAGE_ID", "X-OLIA-Message-Id"
 )
 FORWARD_SESSION_INFO_HEADER_CHAT_ID = os.environ.get(
-    "FORWARD_SESSION_INFO_HEADER_CHAT_ID", "X-OpenWebUI-Chat-Id"
+    "FORWARD_SESSION_INFO_HEADER_CHAT_ID", "X-OLIA-Chat-Id"
 )
 
 # Experimental feature, may be removed in future

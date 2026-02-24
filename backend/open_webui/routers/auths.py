@@ -615,9 +615,9 @@ async def signin(
             )
 
         user = Auths.authenticate_user_by_email(email, db=db)
-        if WEBUI_AUTH_TRUSTED_GROUPS_HEADER and user and user.role != "admin":
+        if OLIA_AUTH_TRUSTED_GROUPS_HEADER and user and user.role != "admin":
             group_names = request.headers.get(
-                WEBUI_AUTH_TRUSTED_GROUPS_HEADER, ""
+                OLIA_AUTH_TRUSTED_GROUPS_HEADER, ""
             ).split(",")
             group_names = [name.strip() for name in group_names if name.strip()]
 
@@ -1281,7 +1281,7 @@ async def token_exchange(
     db: Session = Depends(get_session),
 ):
     """
-    Exchange an external OAuth provider token for an OpenWebUI JWT.
+    Exchange an external OAuth provider token for an OLIA JWT.
     This endpoint is disabled by default. Set ENABLE_OAUTH_TOKEN_EXCHANGE=True to enable.
     """
     if not ENABLE_OAUTH_TOKEN_EXCHANGE:
