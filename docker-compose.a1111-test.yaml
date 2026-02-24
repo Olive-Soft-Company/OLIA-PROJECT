@@ -1,7 +1,7 @@
-# This is an overlay that spins up stable-diffusion-webui for integration testing
+# This is an overlay that spins up stable-diffusion-olia for integration testing
 # This is not designed to be used in production
 services:
-  stable-diffusion-webui:
+  stable-diffusion-olia:
     # Not built for ARM64
     platform: linux/amd64
     image: ghcr.io/neggles/sd-webui-docker:latest
@@ -26,6 +26,6 @@ services:
   open-webui:
     environment:
       ENABLE_IMAGE_GENERATION: "true"
-      AUTOMATIC1111_BASE_URL: http://stable-diffusion-webui:7860
+      AUTOMATIC1111_BASE_URL: http://stable-diffusion-olia:7860
       IMAGE_SIZE: "64x64"
       IMAGE_STEPS: "3"

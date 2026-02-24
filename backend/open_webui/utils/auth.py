@@ -40,7 +40,7 @@ from open_webui.env import (
     WEBUI_SECRET_KEY,
     TRUSTED_SIGNATURE_KEY,
     STATIC_DIR,
-    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
+    OLIA_AUTH_TRUSTED_EMAIL_HEADER,
 )
 
 from fastapi import BackgroundTasks, Depends, HTTPException, Request, Response, status
@@ -331,9 +331,9 @@ async def get_current_user(
                     detail=ERROR_MESSAGES.INVALID_TOKEN,
                 )
             else:
-                if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
+                if OLIA_AUTH_TRUSTED_EMAIL_HEADER:
                     trusted_email = request.headers.get(
-                        WEBUI_AUTH_TRUSTED_EMAIL_HEADER, ""
+                        OLIA_AUTH_TRUSTED_EMAIL_HEADER, ""
                     ).lower()
                     if trusted_email and user.email != trusted_email:
                         raise HTTPException(

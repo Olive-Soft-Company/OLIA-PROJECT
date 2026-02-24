@@ -464,12 +464,12 @@ OLIA_ADMIN_EMAIL = os.environ.get("OLIA_ADMIN_EMAIL", "")
 OLIA_ADMIN_PASSWORD = os.environ.get("OLIA_ADMIN_PASSWORD", "")
 OLIA_ADMIN_NAME = os.environ.get("OLIA_ADMIN_NAME", "Admin")
 
-WEBUI_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
-    "WEBUI_AUTH_TRUSTED_EMAIL_HEADER", None
+OLIA_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
+    "OLIA_AUTH_TRUSTED_EMAIL_HEADER", None
 )
-WEBUI_AUTH_TRUSTED_NAME_HEADER = os.environ.get("WEBUI_AUTH_TRUSTED_NAME_HEADER", None)
-WEBUI_AUTH_TRUSTED_GROUPS_HEADER = os.environ.get(
-    "WEBUI_AUTH_TRUSTED_GROUPS_HEADER", None
+OLIA_AUTH_TRUSTED_NAME_HEADER = os.environ.get("OLIA_AUTH_TRUSTED_NAME_HEADER", None)
+OLIA_AUTH_TRUSTED_GROUPS_HEADER = os.environ.get(
+    "OLIA_AUTH_TRUSTED_GROUPS_HEADER", None
 )
 
 
@@ -513,20 +513,20 @@ WEBUI_SECRET_KEY = os.environ.get(
     ),  # DEPRECATED: remove at next major version
 )
 
-WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")
+OLIA_SESSION_COOKIE_SAME_SITE = os.environ.get("OLIA_SESSION_COOKIE_SAME_SITE", "lax")
 
-WEBUI_SESSION_COOKIE_SECURE = (
-    os.environ.get("WEBUI_SESSION_COOKIE_SECURE", "false").lower() == "true"
+OLIA_SESSION_COOKIE_SECURE = (
+    os.environ.get("OLIA_SESSION_COOKIE_SECURE", "false").lower() == "true"
 )
 
-WEBUI_AUTH_COOKIE_SAME_SITE = os.environ.get(
-    "WEBUI_AUTH_COOKIE_SAME_SITE", WEBUI_SESSION_COOKIE_SAME_SITE
+OLIA_AUTH_COOKIE_SAME_SITE = os.environ.get(
+    "OLIA_AUTH_COOKIE_SAME_SITE", OLIA_SESSION_COOKIE_SAME_SITE
 )
 
-WEBUI_AUTH_COOKIE_SECURE = (
+OLIA_AUTH_COOKIE_SECURE = (
     os.environ.get(
-        "WEBUI_AUTH_COOKIE_SECURE",
-        os.environ.get("WEBUI_SESSION_COOKIE_SECURE", "false"),
+        "OLIA_AUTH_COOKIE_SECURE",
+        os.environ.get("OLIA_SESSION_COOKIE_SECURE", "false"),
     ).lower()
     == "true"
 )
@@ -558,7 +558,7 @@ OAUTH_SESSION_TOKEN_ENCRYPTION_KEY = os.environ.get(
 )
 
 # Token Exchange Configuration
-# Allows external apps to exchange OAuth tokens for OpenWebUI tokens
+# Allows external apps to exchange OAuth tokens for OLIA tokens
 ENABLE_OAUTH_TOKEN_EXCHANGE = (
     os.environ.get("ENABLE_OAUTH_TOKEN_EXCHANGE", "False").lower() == "true"
 )

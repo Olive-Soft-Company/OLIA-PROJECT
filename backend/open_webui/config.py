@@ -1165,11 +1165,11 @@ TOOL_SERVER_CONNECTIONS = PersistentConfig(
 )
 
 ####################################
-# WEBUI
+# OLIA
 ####################################
 
 
-OLIA_URL = PersistentConfig("OLIA_URL", "webui.url", os.environ.get("OLIA_URL", ""))
+OLIA_URL = PersistentConfig("OLIA_URL", "olia.url", os.environ.get("OLIA_URL", ""))
 
 
 ENABLE_SIGNUP = PersistentConfig(

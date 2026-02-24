@@ -64,8 +64,8 @@ from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
     AIOHTTP_CLIENT_SESSION_SSL,
     OLIA_NAME,
-    WEBUI_AUTH_COOKIE_SAME_SITE,
-    WEBUI_AUTH_COOKIE_SECURE,
+    OLIA_AUTH_COOKIE_SAME_SITE,
+    OLIA_AUTH_COOKIE_SECURE,
     ENABLE_OAUTH_ID_TOKEN_COOKIE,
     ENABLE_OAUTH_EMAIL_FALLBACK,
     OAUTH_CLIENT_INFO_ENCRYPTION_KEY,
@@ -1657,8 +1657,8 @@ class OAuthManager:
             key="token",
             value=jwt_token,
             httponly=False,  # Required for frontend access
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
         # Legacy cookies for compatibility with older frontend versions
@@ -1667,8 +1667,8 @@ class OAuthManager:
                 key="oauth_id_token",
                 value=token.get("id_token"),
                 httponly=True,
-                samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-                secure=WEBUI_AUTH_COOKIE_SECURE,
+                samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+                secure=OLIA_AUTH_COOKIE_SECURE,
             )
 
         try:
@@ -1696,8 +1696,8 @@ class OAuthManager:
                 key="oauth_session_id",
                 value=session.id,
                 httponly=True,
-                samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-                secure=WEBUI_AUTH_COOKIE_SECURE,
+                samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+                secure=OLIA_AUTH_COOKIE_SECURE,
             )
 
             log.info(

@@ -32,11 +32,11 @@ from open_webui.models.oauth_sessions import OAuthSessions
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
     OLIA_AUTH,
-    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
-    WEBUI_AUTH_TRUSTED_NAME_HEADER,
-    WEBUI_AUTH_TRUSTED_GROUPS_HEADER,
-    WEBUI_AUTH_COOKIE_SAME_SITE,
-    WEBUI_AUTH_COOKIE_SECURE,
+    OLIA_AUTH_TRUSTED_EMAIL_HEADER,
+    OLIA_AUTH_TRUSTED_NAME_HEADER,
+    OLIA_AUTH_TRUSTED_GROUPS_HEADER,
+    OLIA_AUTH_COOKIE_SAME_SITE,
+    OLIA_AUTH_COOKIE_SECURE,
     WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
     ENABLE_INITIAL_ADMIN_SIGNUP,
     ENABLE_OAUTH_TOKEN_EXCHANGE,
@@ -129,8 +129,8 @@ def create_session_response(
             value=token,
             expires=datetime_expires_at,
             httponly=True,
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
     user_permissions = get_permissions(
@@ -200,8 +200,8 @@ async def get_session_user(
                 else None
             ),
             httponly=True,  # Ensures the cookie is not accessible via JavaScript
-            samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
-            secure=WEBUI_AUTH_COOKIE_SECURE,
+            samesite=OLIA_AUTH_COOKIE_SAME_SITE,
+            secure=OLIA_AUTH_COOKIE_SECURE,
         )
 
     user_permissions = get_permissions(
@@ -289,7 +289,7 @@ async def update_password(
     session_user=Depends(get_current_user),
     db: Session = Depends(get_session),
 ):
-    if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
+    if OLIA_AUTH_TRUSTED_EMAIL_HEADER:
         raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
     if session_user:
         user = Auths.authenticate_user(
@@ -591,15 +591,15 @@ async def signin(
             detail=ERROR_MESSAGES.ACTION_PROHIBITED,
         )
 
-    if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
-        if WEBUI_AUTH_TRUSTED_EMAIL_HEADER not in request.headers:
+    if OLIA_AUTH_TRUSTED_EMAIL_HEADER:
+        if OLIA_AUTH_TRUSTED_EMAIL_HEADER not in request.headers:
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_TRUSTED_HEADER)
 
-        email = request.headers[WEBUI_AUTH_TRUSTED_EMAIL_HEADER].lower()
+        email = request.headers[OLIA_AUTH_TRUSTED_EMAIL_HEADER].lower()
         name = email
 
-        if WEBUI_AUTH_TRUSTED_NAME_HEADER:
-            name = request.headers.get(WEBUI_AUTH_TRUSTED_NAME_HEADER, email)
+        if OLIA_AUTH_TRUSTED_NAME_HEADER:
+            name = request.headers.get(OLIA_AUTH_TRUSTED_NAME_HEADER, email)
             try:
                 name = urllib.parse.unquote(name, encoding="utf-8")
             except Exception as e:

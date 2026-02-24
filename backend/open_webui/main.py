@@ -474,11 +474,11 @@ from open_webui.env import (
     INSTANCE_ID,
     OLIA_BUILD_HASH,
     WEBUI_SECRET_KEY,
-    WEBUI_SESSION_COOKIE_SAME_SITE,
-    WEBUI_SESSION_COOKIE_SECURE,
+    OLIA_SESSION_COOKIE_SAME_SITE,
+    OLIA_SESSION_COOKIE_SECURE,
     ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
-    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
-    WEBUI_AUTH_TRUSTED_NAME_HEADER,
+    OLIA_AUTH_TRUSTED_EMAIL_HEADER,
+    OLIA_AUTH_TRUSTED_NAME_HEADER,
     WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
     # SCIM
     ENABLE_SCIM,
@@ -864,8 +864,8 @@ app.state.config.ENABLE_LDAP_GROUP_CREATION = ENABLE_LDAP_GROUP_CREATION
 app.state.config.LDAP_ATTRIBUTE_FOR_GROUPS = LDAP_ATTRIBUTE_FOR_GROUPS
 
 
-app.state.AUTH_TRUSTED_EMAIL_HEADER = WEBUI_AUTH_TRUSTED_EMAIL_HEADER
-app.state.AUTH_TRUSTED_NAME_HEADER = WEBUI_AUTH_TRUSTED_NAME_HEADER
+app.state.AUTH_TRUSTED_EMAIL_HEADER = OLIA_AUTH_TRUSTED_EMAIL_HEADER
+app.state.AUTH_TRUSTED_NAME_HEADER = OLIA_AUTH_TRUSTED_NAME_HEADER
 app.state.WEBUI_AUTH_SIGNOUT_REDIRECT_URL = WEBUI_AUTH_SIGNOUT_REDIRECT_URL
 app.state.EXTERNAL_PWA_MANIFEST_URL = EXTERNAL_PWA_MANIFEST_URL
 
@@ -2238,8 +2238,8 @@ try:
             StarSessionsMiddleware,
             store=redis_session_store,
             cookie_name="owui-session",
-            cookie_same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-            cookie_https_only=WEBUI_SESSION_COOKIE_SECURE,
+            cookie_same_site=OLIA_SESSION_COOKIE_SAME_SITE,
+            cookie_https_only=OLIA_SESSION_COOKIE_SECURE,
         )
         log.info("Using Redis for session")
     else:
@@ -2249,8 +2249,8 @@ except Exception as e:
         SessionMiddleware,
         secret_key=WEBUI_SECRET_KEY,
         session_cookie="owui-session",
-        same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-        https_only=WEBUI_SESSION_COOKIE_SECURE,
+        same_site=OLIA_SESSION_COOKIE_SAME_SITE,
+        https_only=OLIA_SESSION_COOKIE_SECURE,
     )
 
 

@@ -74,8 +74,8 @@
 				'system settings',
 				'theme',
 				'translate',
-				'webuisettings',
-				'webui settings'
+				'oliasettings',
+				'olia settings'
 			]
 		},
 		{
