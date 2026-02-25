@@ -89,7 +89,7 @@ SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
 OLIA_NAME = os.environ.get("OLIA_NAME", "OLIA")
 if OLIA_NAME != "OLIA":
-    OLIA_NAME += " (OLIA)"
+    OLIA_NAME += "OLIA"
 
 OLIA_FAVICON_URL = "https://openwebui.com/favicon.png"
 

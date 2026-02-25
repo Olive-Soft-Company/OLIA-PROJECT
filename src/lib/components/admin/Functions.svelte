@@ -595,41 +595,6 @@
 				</div>
 			{/if}
 		</div>
-
-		<!-- <div class=" text-gray-500 text-xs mt-1 mb-2">
-	ⓘ {$i18n.t(
-		'Admins have access to all tools at all times; users need tools assigned per model in the workspace.'
-	)}
-</div> -->
-
-
-		<!-- Discover new function from the community 
-		{#if $config?.features.enable_community_sharing}
-			<div class=" my-16">
-				<div class=" text-xl font-medium mb-1 line-clamp-1">
-					{$i18n.t('Made by OLIA Community')}
-				</div>
-
-				<a
-					class=" flex cursor-pointer items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-850 w-full mb-2 px-3.5 py-1.5 rounded-xl transition"
-					href="https://openwebui.com/functions"
-					target="_blank"
-				>
-					<div class=" self-center">
-						<div class=" font-semibold line-clamp-1">{$i18n.t('Discover a function')}</div>
-						<div class=" text-sm line-clamp-1">
-							{$i18n.t('Discover, download, and explore custom functions')}
-						</div>
-					</div>
-
-					<div>
-						<div>
-							<ChevronRight />
-						</div>
-					</div>
-				</a>
-			</div>
-		{/if}-->
 	</div>
 
 	<DeleteConfirmDialog
