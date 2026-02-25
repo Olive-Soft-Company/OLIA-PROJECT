@@ -59,10 +59,14 @@ jobs:
             --build-arg OPENAI_API_BASE_URL="${{ vars.OPENAI_API_BASE_URL }}" \
             --build-arg ONEDRIVE_SHAREPOINT_URL="${{ vars.ONEDRIVE_SHAREPOINT_URL }}" \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH="${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }}" \
+            --build-arg LANGFUSE_SECRET_KEY="${{ secrets.LANGFUSE_SECRET_KEY }}" \
+            --build-arg LANGFUSE_PUBLIC_KEY="${{ secrets.LANGFUSE_PUBLIC_KEY }}" \
+            --build-arg LANGFUSE_BASE_URL="${{ vars.LANGFUSE_BASE_URL }}" \
+            --build-arg USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS=${{ vars.USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS }} \
             --build-arg WEBUI_NAME="${{ vars.WEBUI_NAME }}" \
             --build-arg WEB_SEARCH_ENGINE="${{ vars.WEB_SEARCH_ENGINE }}" \
             --build-arg ATLASSIAN_REDIRECT_URI="${{ vars.ATLASSIAN_REDIRECT_URI }}" \
-            --build-arg ATLASSIAN_SCOPES="${{ vars.ATLASSIAN_SCOPES }}" \
+            --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:sprint write:sprint offline_access read:jira-user" \
             --build-arg ATLASSIAN_AUDIENCE="${{ vars.ATLASSIAN_AUDIENCE }}" \
             --build-arg ATLASSIAN_POST_AUTH_REDIRECT="${{ vars.ATLASSIAN_POST_AUTH_REDIRECT }}" \
             --build-arg WEBUI_URL="${{ vars.WEBUI_URL }}" \

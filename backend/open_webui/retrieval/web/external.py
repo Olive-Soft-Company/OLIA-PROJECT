@@ -2,14 +2,15 @@ import logging
 from typing import Optional, List
 
 import requests
+
 from fastapi import Request
 
-from open_webui.env import SRC_LOG_LEVELS
+
 from open_webui.retrieval.web.main import SearchResult, get_filtered_results
 from open_webui.utils.headers import include_user_info_headers
+from open_webui.env import FORWARD_SESSION_INFO_HEADER_CHAT_ID
 
 log = logging.getLogger(__name__)
-log.setLevel(SRC_LOG_LEVELS["RAG"])
 
 
 def search_external(
@@ -22,21 +23,16 @@ def search_external(
     user=None,
 ) -> List[SearchResult]:
     try:
-        # Base headers
         headers = {
             "User-Agent": "Open WebUI (https://github.com/open-webui/open-webui) RAG Bot",
             "Authorization": f"Bearer {external_api_key}",
         }
-
-        # Add user info headers
         headers = include_user_info_headers(headers, user)
 
-        # Add Chat ID (new change you want to keep)
         chat_id = getattr(request.state, "chat_id", None)
         if chat_id:
-            headers["X-OpenWebUI-Chat-Id"] = str(chat_id)
+            headers[FORWARD_SESSION_INFO_HEADER_CHAT_ID] = str(chat_id)
 
-        # External RAG request
         response = requests.post(
             external_url,
             headers=headers,
