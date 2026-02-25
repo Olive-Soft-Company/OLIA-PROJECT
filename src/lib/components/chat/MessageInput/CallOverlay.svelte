@@ -68,7 +68,7 @@
 	};
 
 	const startCamera = async () => {
-		await getVideoInputDevices();
+		await getVideoInputDevices(); 
 
 		if (cameraStream === null) {
 			camera = true;
