@@ -12,7 +12,7 @@
 
 	import { onMount } from 'svelte';
 
-	export let char = '';
+	export let char = ''; 
 	export let query = '';
 	export let command: (payload: { id: string; label: string }) => void;
 
