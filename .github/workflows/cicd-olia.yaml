@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -77,7 +77,7 @@ jobs:
 
       - name: Deploy to Swarm VM
         run: |
-          ssh -o StrictHostKeyChecking=no azureuser@40.66.43.12 << 'EOF'
+          ssh -o StrictHostKeyChecking=no azureuser@10.2.0.6 << 'EOF'
             docker login olivesoft.azurecr.io -u olivesoft -p "${{ secrets.ACR_PASSWORD }}"
             docker pull olivesoft.azurecr.io/open-webui-custom:latest
             docker service update -d --with-registry-auth \
