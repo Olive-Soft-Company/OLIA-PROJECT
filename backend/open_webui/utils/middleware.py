@@ -1802,7 +1802,7 @@ def apply_params_to_form_data(form_data, model):
     params = form_data.pop("params", {})
     custom_params = params.pop("custom_params", {})
 
-    open_webui_params = {
+    olia_params = {
         "stream_response": bool,
         "stream_delta_chunk_size": int,
         "function_calling": str,
@@ -1811,7 +1811,7 @@ def apply_params_to_form_data(form_data, model):
     }
 
     for key in list(params.keys()):
-        if key in open_webui_params:
+        if key in olia_params:
             del params[key]
 
     if custom_params:
