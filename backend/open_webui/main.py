@@ -362,7 +362,7 @@ from open_webui.config import (
     # OLIA
     OLIA_AUTH,
     OLIA_NAME,
-    WEBUI_BANNERS,
+    OLIA_BANNERS,
     WEBHOOK_URL,
     ADMIN_EMAIL,
     SHOW_ADMIN_DETAILS,
@@ -804,7 +804,7 @@ app.state.config.RESPONSE_WATERMARK = RESPONSE_WATERMARK
 
 app.state.config.USER_PERMISSIONS = USER_PERMISSIONS
 app.state.config.WEBHOOK_URL = WEBHOOK_URL
-app.state.config.BANNERS = WEBUI_BANNERS
+app.state.config.BANNERS = OLIA_BANNERS
 
 
 app.state.config.ENABLE_FOLDERS = ENABLE_FOLDERS

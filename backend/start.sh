@@ -22,7 +22,7 @@ fi
 
 PORT="${PORT:-8080}"
 HOST="${HOST:-0.0.0.0}"
-if test "$OLIA_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
+if test "$OLIA_SECRET_KEY $OLIA_JWT_SECRET_KEY" = " "; then
   echo "Loading OLIA_SECRET_KEY from file, not provided as an environment variable."
 
   if ! [ -e "$KEY_FILE" ]; then

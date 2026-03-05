@@ -92,6 +92,7 @@ if OLIA_NAME != "OLIA":
     OLIA_NAME += "OLIA"
 
 OLIA_FAVICON_URL = "https://openwebui.com/favicon.png"
+# OLIA_FAVICON_URL = "static\static\favicon.png"
 
 TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 
@@ -509,7 +510,7 @@ OLIA_AUTH_SIGNOUT_REDIRECT_URL = os.environ.get(
 OLIA_SECRET_KEY = os.environ.get(
     "OLIA_SECRET_KEY",
     os.environ.get(
-        "WEBUI_JWT_SECRET_KEY", "t0p-s3cr3t"
+        "OLIA_JWT_SECRET_KEY", "t0p-s3cr3t"
     ),  # DEPRECATED: remove at next major version
 )
 
