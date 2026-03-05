@@ -110,7 +110,7 @@
 	const shareHandler = async (prompt) => {
 		toast.success($i18n.t('Redirecting you to OLIA Community'));
 
-		const url = 'https://openwebui.com';
+		const url = '';
 
 		const tab = await window.open(`${url}/prompts/create`, '_blank');
 		window.addEventListener(
