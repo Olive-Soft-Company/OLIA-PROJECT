@@ -143,17 +143,21 @@
 		}
 	};
 
-	const createFolder = async ({ name, data }: any) => {
+	const createFolder = async ({ name, data, parent_id }) => {
 		name = name?.trim();
 		if (!name) {
 			toast.error($i18n.t('Folder name cannot be empty.'));
 			return;
 		}
 
-		const rootFolders = Object.values(folders).filter((folder: any) => folder.parent_id === null);
-		if (rootFolders.find((folder: any) => folder.name.toLowerCase() === name.toLowerCase())) {
+		// Check for duplicate names in the same parent
+		const siblings = Object.values(folders).filter((folder) => folder.parent_id === parent_id);
+		if (siblings.find((folder) => folder.name.toLowerCase() === name.toLowerCase())) {
+			// If a folder with the same name already exists, append a number to the name
 			let i = 1;
-			while (rootFolders.find((folder: any) => folder.name.toLowerCase() === `${name} ${i}`.toLowerCase())) {
+			while (
+				siblings.find((folder) => folder.name.toLowerCase() === `${name} ${i}`.toLowerCase())
+			) {
 				i++;
 			}
 			name = `${name} ${i}`;
@@ -163,15 +167,20 @@
 		const tempId = uuidv4();
 		folders = {
 			...folders,
-			tempId: {
+			[tempId]: {
 				id: tempId,
-				name,
+				name: name,
+				parent_id: parent_id,
 				created_at: Date.now(),
 				updated_at: Date.now()
 			}
 		};
 
-		const res = await createNewFolder(localStorage.token, { name, data }).catch((error) => {
+		const res = await createNewFolder(localStorage.token, {
+			name,
+			data,
+			parent_id
+		}).catch((error) => {
 			toast.error(`${error}`);
 			return null;
 		});
@@ -369,47 +378,7 @@
 		document.documentElement.style.setProperty('--sidebar-width', `${newSidebarWidth}px`);
 	};
 
-	let unsubscribers: any[] = [];
-
-	// ✅ FIX: move TS-typed payload handler into script (templates must be JS)
-	const handleChannelSubmit = async (payload: any) => {
-		let { type, name, is_private, access_grants, group_ids, user_ids } = payload ?? {};
-		name = name?.trim();
-
-		if (type === 'dm') {
-			if (!user_ids || user_ids.length === 0) {
-				toast.error($i18n.t('Please select at least one user for Direct Message channel.'));
-				return;
-			}
-		} else {
-			if (!name) {
-				toast.error($i18n.t('Channel name cannot be empty.'));
-				return;
-			}
-		}
-
-		const res = await createNewChannel(localStorage.token, {
-			type,
-			name,
-			is_private,
-			access_grants,
-			group_ids,
-			user_ids
-		}).catch((error) => {
-			toast.error(`${error}`);
-			return null;
-		});
-
-		if (res) {
-			$socket.emit('join-channels', { auth: { token: $user?.token } });
-			await initChannels();
-			showCreateChannel = false;
-			showChannels = true;
-			goto(`/channels/${res.id}`);
-		}
-	};
-
-	onMount(async () => {
+	onMount(() => {
 		try {
 			const width = Number(localStorage.getItem('sidebarWidth'));
 			if (!Number.isNaN(width) && width >= MIN_WIDTH && width <= MAX_WIDTH) {
@@ -422,12 +391,9 @@
 			document.documentElement.style.setProperty('--sidebar-width', `${w}px`);
 		});
 
-		await showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
+		showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
 
-		// ✅ FIX: actually set dropZone so later .addEventListener doesn't crash
-		dropZone = document.getElementById('sidebar');
-
-		unsubscribers = [
+		const unsubscribers = [
 			mobile.subscribe((value) => {
 				if ($showSidebar && value) showSidebar.set(false);
 
@@ -488,12 +454,36 @@
 		window.addEventListener('focus', onFocus);
 		window.addEventListener('blur', onBlur);
 
-		dropZone?.addEventListener('dragover', onDragOver as any);
-		dropZone?.addEventListener('drop', onDrop as any);
-		dropZone?.addEventListener('dragleave', onDragLeave as any);
+		const dropZone = document.getElementById('sidebar');
+		if (dropZone) {
+			dropZone.addEventListener('dragover', onDragOver);
+			dropZone.addEventListener('drop', onDrop);
+			dropZone.addEventListener('dragleave', onDragLeave);
+		}
 
-		$socket?.off('events', chatActiveEventHandler);
-		$socket?.on('events', chatActiveEventHandler);
+		const socketInstance = $socket;
+		socketInstance?.on('events', chatActiveEventHandler);
+
+		return () => {
+			unsubscribers.forEach((unsubscriber) => unsubscriber());
+
+			window.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('keyup', onKeyUp);
+
+			window.removeEventListener('touchstart', onTouchStart);
+			window.removeEventListener('touchend', onTouchEnd);
+
+			window.removeEventListener('focus', onFocus);
+			window.removeEventListener('blur', onBlur);
+
+			if (dropZone) {
+				dropZone.removeEventListener('dragover', onDragOver);
+				dropZone.removeEventListener('drop', onDrop);
+				dropZone.removeEventListener('dragleave', onDragLeave);
+			}
+
+			socketInstance?.off('events', chatActiveEventHandler);
+		};
 	});
 
 	const chatActiveEventHandler = (event: {
@@ -511,27 +501,6 @@
 			});
 		}
 	};
-
-	onDestroy(() => {
-		if (unsubscribers && unsubscribers.length > 0) {
-			unsubscribers.forEach((unsubscriber) => unsubscriber?.());
-		}
-
-		window.removeEventListener('keydown', onKeyDown);
-		window.removeEventListener('keyup', onKeyUp);
-
-		window.removeEventListener('touchstart', onTouchStart);
-		window.removeEventListener('touchend', onTouchEnd);
-
-		window.removeEventListener('focus', onFocus);
-		window.removeEventListener('blur', onBlur);
-
-		dropZone?.removeEventListener('dragover', onDragOver as any);
-		dropZone?.removeEventListener('drop', onDrop as any);
-		dropZone?.removeEventListener('dragleave', onDragLeave as any);
-
-		$socket?.off('events', chatActiveEventHandler);
-	});
 
 	const newChatHandler = async () => {
 		selectedChatId = null;
@@ -1333,6 +1302,7 @@
 							role={$user?.role}
 							profile={$config?.features?.enable_user_status ?? true}
 							showActiveUsers={false}
+							className="max-w-[calc(var(--sidebar-width)-1rem)]"
 							on:show={(e) => {
 								if (e.detail === 'archived-chat') {
 									showArchivedChats.set(true);
