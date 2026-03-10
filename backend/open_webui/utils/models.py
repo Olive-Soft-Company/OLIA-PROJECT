@@ -342,7 +342,7 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
             if function_module and hasattr(function_module, "Valves"):
                 valves_db = all_function_valves.get(action_id)
                 valves = function_module.Valves(**(valves_db if valves_db else {}))
-                return getattr(valves, "priority", 0)
+                return int(getattr(valves, "priority", 0))
         except Exception:
             pass
         return 0
