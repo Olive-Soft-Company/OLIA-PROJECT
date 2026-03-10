@@ -40,6 +40,7 @@
 
 	export let share = true;
 	export let sharePublic = true;
+	export let shareUsers = true;
 
 	// -----------------------------
 	// State
@@ -433,7 +434,7 @@
 	});
 </script>
 
-<AddAccessModal bind:show={showAddAccessModal} onAdd={handleAddAccess} />
+<AddAccessModal bind:show={showAddAccessModal} {shareUsers} onAdd={handleAddAccess} />
 
 <div class="rounded-lg flex flex-col gap-1">
 	<div class="py-2">
@@ -481,9 +482,9 @@
 						: ''}
 				>
 					<select
-						id="visibility"
-						class="dark:bg-gray-900 outline-none bg-transparent text-sm font-medium block w-fit pr-10 max-w-full placeholder-gray-400"
-						value={!hasPublicReadGrant(normalizedGrants) ? 'private' : 'public'}
+						id="models"
+						class="outline-none bg-transparent text-sm font-medium block w-fit pr-10 max-w-full placeholder-gray-400"
+						value={!hasPublicReadGrant(accessGrants ?? []) ? 'private' : 'public'}
 						on:change={handleVisibilityChange}
 					>
 						<option class="text-gray-700" value="private">{$i18n.t('Private')}</option>
@@ -565,48 +566,53 @@
 			{/each}
 
 			<!-- Users -->
-			{#each selectedUsers as u (u.id)}
-				<div
-					class="flex items-center gap-3 justify-between text-sm w-full transition border-b border-gray-50 dark:border-gray-850 pb-2 last:border-0"
-				>
-					<div class="flex items-center gap-2 w-full flex-1">
-						<img
-							class="rounded-full size-5 object-cover"
-							src={`${WEBUI_API_BASE_URL}/users/${u.id}/profile/image`}
-							alt={u.name ?? u.id}
-							on:error={onUserImgError}
-						/>
-						<div class="w-full">
-							<Tooltip content={u.email} placement="top-start">
-								<div class="truncate text-sm">{u.name ?? u.id}</div>
-							</Tooltip>
+			{#if shareUsers}
+				{#each selectedUsers as user}
+					<div
+						class="flex items-center gap-3 justify-between text-sm w-full transition border-b border-gray-50 dark:border-gray-850 pb-2 last:border-0"
+					>
+						<div class="flex items-center gap-2 w-full flex-1">
+							<img
+								class="rounded-full size-5 object-cover"
+								src={`${WEBUI_API_BASE_URL}/users/${user.id}/profile/image`}
+								alt={user.name ?? user.id}
+							/>
+							<div class="w-full">
+								<Tooltip content={user.email} placement="top-start">
+									<div class="truncate text-sm">{user.name ?? user.id}</div>
+								</Tooltip>
+							</div>
+						</div>
+
+						<div class="w-full flex justify-end items-center gap-2">
+							<button
+								type="button"
+								on:click={() => {
+									if (accessRoles.includes('write')) {
+										togglePrincipalWrite('user', user.id);
+									}
+								}}
+							>
+								{#if writeUserIds.includes(user.id)}
+									<Badge type={'success'} content={$i18n.t('Write')} />
+								{:else}
+									<Badge type={'info'} content={$i18n.t('Read')} />
+								{/if}
+							</button>
+
+							<button
+								class=" rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+								type="button"
+								on:click={() => {
+									removePrincipal('user', user.id);
+								}}
+							>
+								<XMark className="size-4" />
+							</button>
 						</div>
 					</div>
-
-					<div class="w-full flex justify-end items-center gap-2">
-						<button
-							type="button"
-							on:click={() => {
-								if (accessRoles.includes('write')) togglePrincipalWrite('user', u.id);
-							}}
-						>
-							{#if writeUserIds.includes(u.id)}
-								<Badge type="success" content={$i18n.t('Write')} />
-							{:else}
-								<Badge type="info" content={$i18n.t('Read')} />
-							{/if}
-						</button>
-
-						<button
-							class="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
-							type="button"
-							on:click={() => removePrincipal('user', u.id)}
-						>
-							<XMark className="size-4" />
-						</button>
-					</div>
-				</div>
-			{/each}
+				{/each}
+			{/if}
 
 			{#if !hasPublicReadGrant(normalizedGrants) && accessGroups.length === 0 && selectedUsers.length === 0}
 				<div class="text-xs text-gray-500 text-center py-4">

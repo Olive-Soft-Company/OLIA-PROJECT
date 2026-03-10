@@ -19,7 +19,7 @@ from open_webui.models.skills import (
 )
 from open_webui.models.access_grants import AccessGrants
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.utils.access_control import has_access, has_permission
+from open_webui.utils.access_control import has_permission, filter_allowed_access_grants
 
 from open_webui.config import BYPASS_ADMIN_ACCESS_CONTROL
 from open_webui.constants import ERROR_MESSAGES
@@ -312,6 +312,7 @@ class SkillAccessGrantsForm(BaseModel):
 
 @router.post("/id/{id}/access/update", response_model=Optional[SkillModel])
 async def update_skill_access_by_id(
+    request: Request,
     id: str,
     form_data: SkillAccessGrantsForm,
     user=Depends(get_verified_user),
@@ -339,6 +340,14 @@ async def update_skill_access_by_id(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ERROR_MESSAGES.UNAUTHORIZED,
         )
+
+    form_data.access_grants = filter_allowed_access_grants(
+        request.app.state.config.USER_PERMISSIONS,
+        user.id,
+        user.role,
+        form_data.access_grants,
+        "sharing.public_skills",
+    )
 
     AccessGrants.set_access_grants("skill", id, form_data.access_grants, db=db)
 
