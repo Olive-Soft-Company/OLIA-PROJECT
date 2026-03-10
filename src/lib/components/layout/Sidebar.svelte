@@ -191,6 +191,18 @@
 		}
 	};
 
+	const handleChannelSubmit = async (channel) => {
+		const res = await createNewChannel(localStorage.token, channel).catch((error) => {
+			toast.error(error);
+			return null;
+		});
+
+		if (res) {
+			await initChannels();
+			showCreateChannel = false;
+		}
+	};
+
 	const initChannels = async () => {
 		const res = await getChannels(localStorage.token).catch(() => null);
 
