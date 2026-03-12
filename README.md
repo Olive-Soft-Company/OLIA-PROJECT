@@ -54,7 +54,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # Launch backend API
-uvicorn open_webui.main:app --reload --host 0.0.0.0 --port 8080
+uvicorn olia.main:app --reload --host 0.0.0.0 --port 8080
 
 # 🎨 Frontend Installation (Port 5173)
 cd frontend

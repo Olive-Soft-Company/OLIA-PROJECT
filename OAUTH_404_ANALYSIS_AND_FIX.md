@@ -2,7 +2,7 @@
 
 ## 1. Analyse Technique des Fichiers
 
-### `backend/open_webui/routers/jira_oauth.py`
+### `backend/olia/routers/jira_oauth.py`
 
 **Responsabilité:**
 - Routeur FastAPI pour le callback OAuth Atlassian/Jira
@@ -32,9 +32,9 @@ async def atlassian_oauth_callback(request: Request)
 - `redirect_uri`: Validé contre `ATLASSIAN_REDIRECT_URI` env var (lignes 73-83)
 - `state`: Format `{user_key}:{uuid}`, extrait user_key si session absente (lignes 54-57, 85-120)
 - `code`: Échangé contre token via `complete_oauth_flow()` (ligne 123)
-- `tokens`: Stockés via `set_user_record()` dans `/data/openwebui/jira_oauth/user_{safe_key}.json`
+- `tokens`: Stockés via `set_user_record()` dans `/data/olia/jira_oauth/user_{safe_key}.json`
 
-### `backend/open_webui/utils/jira_oauth.py`
+### `backend/olia/utils/jira_oauth.py`
 
 **Responsabilité:**
 - Utilitaires OAuth pour Atlassian (client OAuth, échange de tokens, stockage)
@@ -82,7 +82,7 @@ Par conséquent, quand Atlassian redirige vers `/api/oauth/atlassian/callback`, 
 **Localisation:** Après la ligne 95 (dans la section des imports de routers)
 
 ```python
-from open_webui.routers import (
+from olia.routers import (
     audio,
     images,
     ollama,
@@ -134,12 +134,12 @@ Cela correspond exactement à l'URL de redirection configurée dans Atlassian.
 
 ## 4. Code Complet des Modifications
 
-### Fichier: `backend/open_webui/main.py`
+### Fichier: `backend/olia/main.py`
 
 **Modification 1 - Ajouter l'import (ligne ~96):**
 
 ```python
-from open_webui.routers import (
+from olia.routers import (
     # ... existing imports ...
     jira_oauth,  # Add this line
 )
