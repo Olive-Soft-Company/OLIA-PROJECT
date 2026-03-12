@@ -47,16 +47,26 @@ jobs:
             --build-arg IMAGES_OPENAI_API_BASE_URL=${{ vars.IMAGES_OPENAI_API_BASE_URL }} \
             --build-arg OAUTH_CLIENT_ID=olia-ppd \
             --build-arg OAUTH_GROUP_CLAIM=${{ vars.OAUTH_GROUP_CLAIM }} \
+            --build-arg WEBUI_SECRET_KEY=${{ secrets.WEBUI_SECRET_KEY }} \
             --build-arg OAUTH_PROVIDER_NAME=${{ vars.OAUTH_PROVIDER_NAME }} \
             --build-arg OPENAI_API_BASE_URL=${{ vars.OPENAI_API_BASE_URL }} \
             --build-arg ONEDRIVE_SHAREPOINT_URL=${{ vars.ONEDRIVE_SHAREPOINT_URL }} \
             --build-arg ENABLE_FORWARD_USER_INFO_HEADERS=${{ vars.ENABLE_FORWARD_USER_INFO_HEADERS }} \
             --build-arg USER_PERMISSIONS_FEATURES_WEB_SEARCH=${{ vars.USER_PERMISSIONS_FEATURES_WEB_SEARCH }} \
             --build-arg WEBUI_NAME=${{ vars.WEBUI_NAME }} \
+            --build-arg USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS=${{ vars.USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS }} \
+            --build-arg LANGFUSE_SECRET_KEY="${{ secrets.LANGFUSE_SECRET_KEY }}" \
+            --build-arg LANGFUSE_PUBLIC_KEY="${{ secrets.LANGFUSE_PUBLIC_KEY }}" \
+            --build-arg LANGFUSE_BASE_URL="${{ vars.LANGFUSE_BASE_URL }}" \
             --build-arg WEB_SEARCH_ENGINE=${{ vars.WEB_SEARCH_ENGINE }} \
             --build-arg WEBUI_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
+            --build-arg ATLASSIAN_CLIENT_ID=${{ secrets.ATLASSIAN_CLIENT_ID }} \
+            --build-arg ATLASSIAN_CLIENT_SECRET=${{ secrets.ATLASSIAN_CLIENT_SECRET }} \
+            --build-arg ATLASSIAN_REDIRECT_URI=https://olia-ppd.francecentral.cloudapp.azure.com/api/oauth/atlassian/callback \
+            --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:sprint write:sprint offline_access read:jira-user write:sprint:jira-software read:board-scope:jira-software" \
+            --build-arg ATLASSIAN_AUDIENCE=api.atlassian.com \
+            --build-arg ATLASSIAN_POST_AUTH_REDIRECT=https://olia-ppd.francecentral.cloudapp.azure.com/ \
             -t olivesoft.azurecr.io/open-webui-custom:latest
-
 
       - name: Push Docker image to ACR
         run: |

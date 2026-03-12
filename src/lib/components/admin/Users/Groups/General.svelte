@@ -77,9 +77,9 @@
 			</div>
 
 			<div class="flex items-center gap-2 p-1">
-				<Switch
-					tooltip={true}
-					state={data?.config?.share ?? true}
+				<select
+					class="text-sm bg-transparent outline-hidden rounded-lg px-2"
+					value={data?.config?.share ?? 'members'}
 					on:change={(e) => {
 						if (data?.config?.share) {
 							data.config.share = e.detail;

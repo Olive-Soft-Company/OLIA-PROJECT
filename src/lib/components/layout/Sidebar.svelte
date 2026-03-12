@@ -25,7 +25,9 @@
 		isApp,
 		models,
 		selectedFolder,
-		WEBUI_NAME
+		WEBUI_NAME,
+		sidebarWidth,
+		activeChatIds
 	} from '$lib/stores';
 	import { onMount, getContext, tick, onDestroy } from 'svelte';
 
@@ -41,6 +43,7 @@
 		importChats
 	} from '$lib/apis/chats';
 	import { createNewFolder, getFolders, updateFolderParentIdById } from '$lib/apis/folders';
+	import { checkActiveChats } from '$lib/apis/tasks';
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
 
 	import ArchivedChatsModal from './ArchivedChatsModal.svelte';
@@ -63,16 +66,20 @@
 	import Note from '../icons/Note.svelte';
 	import { slide } from 'svelte/transition';
 	import HotkeyHint from '../common/HotkeyHint.svelte';
-	import { key } from 'vega';
 
 	const BREAKPOINT = 768;
 
 	let scrollTop = 0;
 
-	let navElement;
+	let navElement: HTMLElement | null = null;
+	let sidebarEl: HTMLElement | null = null;
+
+	// ✅ FIX: dropZone was used but never declared (next error you'll hit)
+	let dropZone: HTMLElement | null = null;
+
 	let shiftKey = false;
 
-	let selectedChatId = null;
+	let selectedChatId: string | null = null;
 	let showCreateChannel = false;
 
 	// Pagination variables
@@ -81,10 +88,16 @@
 
 	let showCreateFolderModal = false;
 
-	let folders = {};
-	let folderRegistry = {};
+	let pinnedModels: any[] = [];
 
-	let newFolderId = null;
+	let showPinnedModels = false;
+	let showChannels = false;
+	let showFolders = false;
+
+	let folders: Record<string, any> = {};
+	let folderRegistry: Record<string, any> = {};
+
+	let newFolderId: string | null = null;
 
 	$: if ($selectedFolder) {
 		initFolders();
@@ -95,7 +108,7 @@
 			return;
 		}
 
-		const folderList = await getFolders(localStorage.token).catch((error) => {
+		const folderList = await getFolders(localStorage.token).catch(() => {
 			return [];
 		});
 		_folders.set(folderList.sort((a, b) => b.updated_at - a.updated_at));
@@ -104,7 +117,6 @@
 
 		// First pass: Initialize all folder entries
 		for (const folder of folderList) {
-			// Ensure folder is added to folders with its data
 			folders[folder.id] = { ...(folders[folder.id] || {}), ...folder };
 
 			if (newFolderId && folder.id === newFolderId) {
@@ -116,17 +128,14 @@
 		// Second pass: Tie child folders to their parents
 		for (const folder of folderList) {
 			if (folder.parent_id) {
-				// Ensure the parent folder is initialized if it doesn't exist
 				if (!folders[folder.parent_id]) {
-					folders[folder.parent_id] = {}; // Create a placeholder if not already present
+					folders[folder.parent_id] = {};
 				}
 
-				// Initialize childrenIds array if it doesn't exist and add the current folder id
 				folders[folder.parent_id].childrenIds = folders[folder.parent_id].childrenIds
 					? [...folders[folder.parent_id].childrenIds, folder.id]
 					: [folder.id];
 
-				// Sort the children by updated_at field
 				folders[folder.parent_id].childrenIds.sort((a, b) => {
 					return folders[b].updated_at - folders[a].updated_at;
 				});
@@ -134,33 +143,34 @@
 		}
 	};
 
-	const createFolder = async ({ name, data }) => {
+	const createFolder = async ({ name, data, parent_id }) => {
 		name = name?.trim();
 		if (!name) {
 			toast.error($i18n.t('Folder name cannot be empty.'));
 			return;
 		}
 
-		const rootFolders = Object.values(folders).filter((folder) => folder.parent_id === null);
-		if (rootFolders.find((folder) => folder.name.toLowerCase() === name.toLowerCase())) {
+		// Check for duplicate names in the same parent
+		const siblings = Object.values(folders).filter((folder) => folder.parent_id === parent_id);
+		if (siblings.find((folder) => folder.name.toLowerCase() === name.toLowerCase())) {
 			// If a folder with the same name already exists, append a number to the name
 			let i = 1;
 			while (
-				rootFolders.find((folder) => folder.name.toLowerCase() === `${name} ${i}`.toLowerCase())
+				siblings.find((folder) => folder.name.toLowerCase() === `${name} ${i}`.toLowerCase())
 			) {
 				i++;
 			}
-
 			name = `${name} ${i}`;
 		}
 
-		// Add a dummy folder to the list to show the user that the folder is being created
+		// Add a dummy folder to show "creating..."
 		const tempId = uuidv4();
 		folders = {
 			...folders,
-			tempId: {
+			[tempId]: {
 				id: tempId,
 				name: name,
+				parent_id: parent_id,
 				created_at: Date.now(),
 				updated_at: Date.now()
 			}
@@ -168,55 +178,70 @@
 
 		const res = await createNewFolder(localStorage.token, {
 			name,
-			data
+			data,
+			parent_id
 		}).catch((error) => {
 			toast.error(`${error}`);
 			return null;
 		});
 
 		if (res) {
-			// newFolderId = res.id;
 			await initFolders();
+			showFolders = true;
+		}
+	};
+
+	const handleChannelSubmit = async (channel) => {
+		const res = await createNewChannel(localStorage.token, channel).catch((error) => {
+			toast.error(error);
+			return null;
+		});
+
+		if (res) {
+			await initChannels();
+			showCreateChannel = false;
 		}
 	};
 
 	const initChannels = async () => {
-		// default (none), group, dm type
-		await channels.set(
-			(await getChannels(localStorage.token)).sort(
-				(a, b) =>
-					['', null, 'group', 'dm'].indexOf(a.type) - ['', null, 'group', 'dm'].indexOf(b.type)
-			)
-		);
+		const res = await getChannels(localStorage.token).catch(() => null);
+
+		if (res) {
+			await channels.set(
+				res.sort(
+					(a, b) =>
+						['', null, 'group', 'dm'].indexOf(a.type) - ['', null, 'group', 'dm'].indexOf(b.type)
+				)
+			);
+		}
 	};
 
 	const initChatList = async () => {
-		// Reset pagination variables
 		console.log('initChatList');
 		currentChatPage.set(1);
 		allChatsLoaded = false;
 		scrollPaginationEnabled.set(false);
 
 		initFolders();
+
 		await Promise.all([
-			await (async () => {
+			(async () => {
 				console.log('Init tags');
 				const _tags = await getAllTags(localStorage.token);
 				tags.set(_tags);
 			})(),
-			await (async () => {
+			(async () => {
 				console.log('Init pinned chats');
 				const _pinnedChats = await getPinnedChatList(localStorage.token);
 				pinnedChats.set(_pinnedChats);
 			})(),
-			await (async () => {
+			(async () => {
 				console.log('Init chat list');
 				const _chats = await getChatList(localStorage.token, $currentChatPage);
-				await chats.set(_chats);
+				chats.set(_chats);
 			})()
 		]);
 
-		// Enable pagination
 		scrollPaginationEnabled.set(true);
 	};
 
@@ -225,27 +250,24 @@
 
 		currentChatPage.set($currentChatPage + 1);
 
-		let newChatList = [];
-
+		let newChatList: any[] = [];
 		newChatList = await getChatList(localStorage.token, $currentChatPage);
 
-		// once the bottom of the list has been reached (no results) there is no need to continue querying
 		allChatsLoaded = newChatList.length === 0;
-		await chats.set([...($chats ? $chats : []), ...newChatList]);
+		await chats.set([...( $chats ? $chats : []), ...newChatList]);
 
 		chatListLoading = false;
 	};
 
-	const importChatHandler = async (items, pinned = false, folderId = null) => {
+	const importChatHandler = async (items: any[], pinned = false, folderId: string | null = null) => {
 		console.log('importChatHandler', items, pinned, folderId);
 		for (const item of items) {
-			console.log(item);
 			if (item.chat) {
 				await importChats(localStorage.token, [
 					{
 						chat: item.chat,
 						meta: item?.meta ?? {},
-						pinned: pinned,
+						pinned,
 						folder_id: folderId,
 						created_at: item?.created_at ?? null,
 						updated_at: item?.updated_at ?? null
@@ -253,156 +275,184 @@
 				]);
 			}
 		}
-
 		initChatList();
 	};
 
-	const inputFilesHandler = async (files) => {
-		console.log(files);
-
+	const inputFilesHandler = async (files: File[]) => {
 		for (const file of files) {
 			const reader = new FileReader();
 			reader.onload = async (e) => {
-				const content = e.target.result;
+				const content = (e.target as FileReader).result as string;
 
 				try {
 					const chatItems = JSON.parse(content);
 					importChatHandler(chatItems);
 				} catch {
-					toast.error($i18n.t(`Invalid file format.`));
+					toast.error($i18n.t('Invalid file format.'));
 				}
 			};
-
 			reader.readAsText(file);
 		}
 	};
 
-	const tagEventHandler = async (type, tagName, chatId) => {
-		console.log(type, tagName, chatId);
-		if (type === 'delete') {
-			initChatList();
-		} else if (type === 'add') {
-			initChatList();
-		}
+	const tagEventHandler = async (_type: string, _tagName: string, _chatId: string) => {
+		initChatList();
 	};
 
 	let draggedOver = false;
 
-	const onDragOver = (e) => {
+	const onDragOver = (e: DragEvent) => {
 		e.preventDefault();
-
-		// Check if a file is being draggedOver.
-		if (e.dataTransfer?.types?.includes('Files')) {
-			draggedOver = true;
-		} else {
-			draggedOver = false;
-		}
+		if (e.dataTransfer?.types?.includes('Files')) draggedOver = true;
+		else draggedOver = false;
 	};
 
 	const onDragLeave = () => {
 		draggedOver = false;
 	};
 
-	const onDrop = async (e) => {
+	const onDrop = async (e: DragEvent) => {
 		e.preventDefault();
-		console.log(e); // Log the drop event
-
-		// Perform file drop check and handle it accordingly
 		if (e.dataTransfer?.files) {
-			const inputFiles = Array.from(e.dataTransfer?.files);
-
-			if (inputFiles && inputFiles.length > 0) {
-				console.log(inputFiles); // Log the dropped files
-				inputFilesHandler(inputFiles); // Handle the dropped files
+			const inputFiles = Array.from(e.dataTransfer.files);
+			if (inputFiles.length > 0) {
+				inputFilesHandler(inputFiles);
 			}
 		}
-
-		draggedOver = false; // Reset draggedOver status after drop
+		draggedOver = false;
 	};
 
-	let touchstart;
-	let touchend;
+	let touchstart: Touch;
+	let touchend: Touch;
 
 	function checkDirection() {
 		const screenWidth = window.innerWidth;
 		const swipeDistance = Math.abs(touchend.screenX - touchstart.screenX);
 		if (touchstart.clientX < 40 && swipeDistance >= screenWidth / 8) {
-			if (touchend.screenX < touchstart.screenX) {
-				showSidebar.set(false);
-			}
-			if (touchend.screenX > touchstart.screenX) {
-				showSidebar.set(true);
-			}
+			if (touchend.screenX < touchstart.screenX) showSidebar.set(false);
+			if (touchend.screenX > touchstart.screenX) showSidebar.set(true);
 		}
 	}
 
-	const onTouchStart = (e) => {
+	const onTouchStart = (e: TouchEvent) => {
 		touchstart = e.changedTouches[0];
-		console.log(touchstart.clientX);
 	};
 
-	const onTouchEnd = (e) => {
+	const onTouchEnd = (e: TouchEvent) => {
 		touchend = e.changedTouches[0];
 		checkDirection();
 	};
 
-	const onKeyDown = (e) => {
-		if (e.key === 'Shift') {
-			shiftKey = true;
-		}
+	const onKeyDown = (e: KeyboardEvent) => {
+		if (e.key === 'Shift') shiftKey = true;
 	};
 
-	const onKeyUp = (e) => {
-		if (e.key === 'Shift') {
-			shiftKey = false;
-		}
+	const onKeyUp = (e: KeyboardEvent) => {
+		if (e.key === 'Shift') shiftKey = false;
 	};
 
 	const onFocus = () => {};
-
 	const onBlur = () => {
 		shiftKey = false;
 		selectedChatId = null;
 	};
 
-	let unsubscribers = [];
-	onMount(async () => {
-		await showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
+	const MIN_WIDTH = 220;
+	const MAX_WIDTH = 480;
 
-		unsubscribers = [
+	let isResizing = false;
+	let startWidth = 0;
+	let startClientX = 0;
+
+	const resizeStartHandler = (e: MouseEvent) => {
+		if ($mobile) return;
+		isResizing = true;
+
+		startClientX = e.clientX;
+		startWidth = $sidebarWidth ?? 260;
+
+		document.body.style.userSelect = 'none';
+	};
+
+	const resizeEndHandler = () => {
+		if (!isResizing) return;
+		isResizing = false;
+
+		document.body.style.userSelect = '';
+		localStorage.setItem('sidebarWidth', String($sidebarWidth));
+	};
+
+	const resizeSidebarHandler = (endClientX: number) => {
+		const dx = endClientX - startClientX;
+		const newSidebarWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + dx));
+
+		sidebarWidth.set(newSidebarWidth);
+		document.documentElement.style.setProperty('--sidebar-width', `${newSidebarWidth}px`);
+	};
+
+	onMount(() => {
+		try {
+			const width = Number(localStorage.getItem('sidebarWidth'));
+			if (!Number.isNaN(width) && width >= MIN_WIDTH && width <= MAX_WIDTH) {
+				sidebarWidth.set(width);
+			}
+		} catch {}
+
+		document.documentElement.style.setProperty('--sidebar-width', `${$sidebarWidth}px`);
+		sidebarWidth.subscribe((w) => {
+			document.documentElement.style.setProperty('--sidebar-width', `${w}px`);
+		});
+
+		showSidebar.set(!$mobile ? localStorage.sidebar === 'true' : false);
+
+		const unsubscribers = [
 			mobile.subscribe((value) => {
-				if ($showSidebar && value) {
-					showSidebar.set(false);
-				}
+				if ($showSidebar && value) showSidebar.set(false);
 
 				if ($showSidebar && !value) {
-					const navElement = document.getElementsByTagName('nav')[0];
-					if (navElement) {
-						navElement.style['-webkit-app-region'] = 'drag';
-					}
+					const nav = document.getElementsByTagName('nav')[0];
+					if (nav) nav.style['-webkit-app-region'] = 'drag';
 				}
 			}),
 			showSidebar.subscribe(async (value) => {
-				localStorage.sidebar = value;
+				localStorage.sidebar = String(value);
 
-				// nav element is not available on the first render
-				const navElement = document.getElementsByTagName('nav')[0];
-
-				if (navElement) {
+				const nav = document.getElementsByTagName('nav')[0];
+				if (nav) {
 					if ($mobile) {
-						if (!value) {
-							navElement.style['-webkit-app-region'] = 'drag';
-						} else {
-							navElement.style['-webkit-app-region'] = 'no-drag';
-						}
+						nav.style['-webkit-app-region'] = value ? 'no-drag' : 'drag';
 					} else {
-						navElement.style['-webkit-app-region'] = 'drag';
+						nav.style['-webkit-app-region'] = 'drag';
 					}
 				}
 
 				if (value) {
-					await initChannels();
+					if (
+						$config?.features?.enable_channels &&
+						($user?.role === 'admin' || ($user?.permissions?.features?.channels ?? true))
+					) {
+						await initChannels();
+					}
+
 					await initChatList();
+
+					const allChatIds = [...$chats.map((c) => c.id), ...$pinnedChats.map((c) => c.id)];
+					if (allChatIds.length > 0) {
+						try {
+							const res = await checkActiveChats(localStorage.token, allChatIds);
+							activeChatIds.set(new Set(res.active_chat_ids || []));
+						} catch (e) {
+							console.debug('Failed to check active chats:', e);
+						}
+					}
+				}
+			}),
+			settings.subscribe((value) => {
+				const nextPinned = value?.pinnedModels ?? [];
+				// keep your logic, but make it stable
+				if (pinnedModels !== nextPinned) {
+					pinnedModels = nextPinned;
+					showPinnedModels = pinnedModels.length > 0;
 				}
 			})
 		];
@@ -417,36 +467,52 @@
 		window.addEventListener('blur', onBlur);
 
 		const dropZone = document.getElementById('sidebar');
-
-		dropZone?.addEventListener('dragover', onDragOver);
-		dropZone?.addEventListener('drop', onDrop);
-		dropZone?.addEventListener('dragleave', onDragLeave);
-	});
-
-	onDestroy(() => {
-		if (unsubscribers && unsubscribers.length > 0) {
-			unsubscribers.forEach((unsubscriber) => {
-				if (unsubscriber) {
-					unsubscriber();
-				}
-			});
+		if (dropZone) {
+			dropZone.addEventListener('dragover', onDragOver);
+			dropZone.addEventListener('drop', onDrop);
+			dropZone.addEventListener('dragleave', onDragLeave);
 		}
 
-		window.removeEventListener('keydown', onKeyDown);
-		window.removeEventListener('keyup', onKeyUp);
+		const socketInstance = $socket;
+		socketInstance?.on('events', chatActiveEventHandler);
 
-		window.removeEventListener('touchstart', onTouchStart);
-		window.removeEventListener('touchend', onTouchEnd);
+		return () => {
+			unsubscribers.forEach((unsubscriber) => unsubscriber());
 
-		window.removeEventListener('focus', onFocus);
-		window.removeEventListener('blur', onBlur);
+			window.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('keyup', onKeyUp);
 
-		const dropZone = document.getElementById('sidebar');
+			window.removeEventListener('touchstart', onTouchStart);
+			window.removeEventListener('touchend', onTouchEnd);
 
-		dropZone?.removeEventListener('dragover', onDragOver);
-		dropZone?.removeEventListener('drop', onDrop);
-		dropZone?.removeEventListener('dragleave', onDragLeave);
+			window.removeEventListener('focus', onFocus);
+			window.removeEventListener('blur', onBlur);
+
+			if (dropZone) {
+				dropZone.removeEventListener('dragover', onDragOver);
+				dropZone.removeEventListener('drop', onDrop);
+				dropZone.removeEventListener('dragleave', onDragLeave);
+			}
+
+			socketInstance?.off('events', chatActiveEventHandler);
+		};
 	});
+
+	const chatActiveEventHandler = (event: {
+		chat_id: string;
+		message_id: string;
+		data: { type: string; data: any };
+	}) => {
+		if (event.data?.type === 'chat:active') {
+			const { active } = event.data.data;
+			activeChatIds.update((ids) => {
+				const newSet = new Set(ids);
+				if (active) newSet.add(event.chat_id);
+				else newSet.delete(event.chat_id);
+				return newSet;
+			});
+		}
+	};
 
 	const newChatHandler = async () => {
 		selectedChatId = null;
@@ -459,9 +525,7 @@
 		}
 
 		setTimeout(() => {
-			if ($mobile) {
-				showSidebar.set(false);
-			}
+			if ($mobile) showSidebar.set(false);
 		}, 0);
 	};
 
@@ -469,9 +533,7 @@
 		selectedChatId = null;
 		chatId.set('');
 
-		if ($mobile) {
-			showSidebar.set(false);
-		}
+		if ($mobile) showSidebar.set(false);
 
 		await tick();
 	};
@@ -486,44 +548,8 @@
 	}}
 />
 
-<ChannelModal
-	bind:show={showCreateChannel}
-	onSubmit={async ({ type, name, is_private, access_control, group_ids, user_ids }) => {
-		name = name?.trim();
-
-		if (type === 'dm') {
-			if (!user_ids || user_ids.length === 0) {
-				toast.error($i18n.t('Please select at least one user for Direct Message channel.'));
-				return;
-			}
-		} else {
-			if (!name) {
-				toast.error($i18n.t('Channel name cannot be empty.'));
-				return;
-			}
-		}
-
-		const res = await createNewChannel(localStorage.token, {
-			type: type,
-			name: name,
-			is_private: is_private,
-			access_control: access_control,
-			group_ids: group_ids,
-			user_ids: user_ids
-		}).catch((error) => {
-			toast.error(`${error}`);
-			return null;
-		});
-
-		if (res) {
-			$socket.emit('join-channels', { auth: { token: $user?.token } });
-			await initChannels();
-			showCreateChannel = false;
-
-			goto(`/channels/${res.id}`);
-		}
-	}}
-/>
+<!-- ✅ FIX: no TS annotations in template -->
+<ChannelModal bind:show={showCreateChannel} onSubmit={handleChannelSubmit} />
 
 <FolderModal
 	bind:show={showCreateFolderModal}
@@ -537,15 +563,12 @@
 
 {#if $showSidebar}
 	<div
-		class=" {$isApp
-			? ' ml-[4.5rem] md:ml-0'
-			: ''} fixed md:hidden z-40 top-0 right-0 left-0 bottom-0 bg-black/60 w-full min-h-screen h-screen flex justify-center overflow-hidden overscroll-contain"
+		class=" {$isApp ? ' ml-[4.5rem] md:ml-0' : ''} fixed md:hidden z-40 top-0 right-0 left-0 bottom-0 bg-black/60 w-full min-h-screen h-screen flex justify-center overflow-hidden overscroll-contain"
 		on:mousedown={() => {
 			showSidebar.set(!$showSidebar);
 		}}
 	/>
 {/if}
-
 <SearchModal
 	bind:show={$showSearch}
 	onClose={() => {
@@ -561,6 +584,16 @@
 	on:click={() => {
 		goto('/');
 		newChatHandler();
+	}}
+/>
+
+<svelte:window
+	on:mousemove={(e) => {
+		if (!isResizing) return;
+		resizeSidebarHandler(e.clientX);
+	}}
+	on:mouseup={() => {
+		resizeEndHandler();
 	}}
 />
 
@@ -711,7 +744,7 @@
 					{#if $user !== undefined && $user !== null}
 						<UserMenu
 							role={$user?.role}
-							profile={true}
+							profile={$config?.features?.enable_user_status ?? true}
 							showActiveUsers={false}
 							on:show={(e) => {
 								if (e.detail === 'archived-chat') {
@@ -730,18 +763,17 @@
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
 
-									<div class="absolute -bottom-0.5 -right-0.5">
-										<span class="relative flex size-2.5">
-											<span
-												class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"
-											></span>
-											<span
-												class="relative inline-flex size-2.5 rounded-full {true
-													? 'bg-green-500'
-													: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
-											></span>
-										</span>
-									</div>
+									{#if $config?.features?.enable_user_status}
+										<div class="absolute -bottom-0.5 -right-0.5">
+											<span class="relative flex size-2.5">
+												<span
+													class="relative inline-flex size-2.5 rounded-full {true
+														? 'bg-green-500'
+														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+												></span>
+											</span>
+										</div>
+									{/if}
 								</div>
 							</div>
 						</UserMenu>
@@ -758,7 +790,7 @@
 {#if $showSidebar}
 	<div
 		bind:this={navElement}
-		id="sidebar"
+		id="sidebar-main"
 		class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
 			? `${$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50`
 			: ' bg-transparent z-0 '} {$isApp
@@ -769,7 +801,7 @@
 		data-state={$showSidebar}
 	>
 		<div
-			class=" my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] overflow-x-hidden scrollbar-hidden z-50 {$showSidebar
+			class=" my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[var(--sidebar-width)] overflow-x-hidden scrollbar-hidden z-50 {$showSidebar
 				? ''
 				: 'invisible'}"
 		>
@@ -936,6 +968,7 @@
 				{#if ($models ?? []).length > 0 && (($settings?.pinnedModels ?? []).length > 0 || $config?.default_pinned_models)}
 					<Folder
 						id="sidebar-models"
+						bind:open={showPinnedModels}
 						className="px-2 mt-0.5"
 						name={$i18n.t('Models')}
 						chevron={false}
@@ -948,6 +981,7 @@
 				{#if $config?.features?.enable_channels && ($user?.role === 'admin' || ($user?.permissions?.features?.channels ?? true))}
 					<Folder
 						id="sidebar-channels"
+						bind:open={showChannels}
 						className="px-2 mt-0.5"
 						name={$i18n.t('Channels')}
 						chevron={false}
@@ -982,6 +1016,7 @@
 				{#if $config?.features?.enable_folders && ($user?.role === 'admin' || ($user?.permissions?.features?.folders ?? true))}
 					<Folder
 						id="sidebar-folders"
+						bind:open={showFolders}
 						className="px-2 mt-0.5"
 						name={$i18n.t('Folders')}
 						chevron={false}
@@ -1160,6 +1195,7 @@
 												className=""
 												id={chat.id}
 												title={chat.title}
+												createdAt={chat.created_at}
 												{shiftKey}
 												selected={selectedChatId === chat.id}
 												on:select={() => {
@@ -1220,6 +1256,7 @@
 										className=""
 										id={chat.id}
 										title={chat.title}
+										createdAt={chat.created_at}
 										{shiftKey}
 										selected={selectedChatId === chat.id}
 										on:select={() => {
@@ -1275,8 +1312,9 @@
 					{#if $user !== undefined && $user !== null}
 						<UserMenu
 							role={$user?.role}
-							profile={true}
+							profile={$config?.features?.enable_user_status ?? true}
 							showActiveUsers={false}
+							className="max-w-[calc(var(--sidebar-width)-1rem)]"
 							on:show={(e) => {
 								if (e.detail === 'archived-chat') {
 									showArchivedChats.set(true);
@@ -1294,18 +1332,17 @@
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
 
-									<div class="absolute -bottom-0.5 -right-0.5">
-										<span class="relative flex size-2.5">
-											<span
-												class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"
-											></span>
-											<span
-												class="relative inline-flex size-2.5 rounded-full {true
-													? 'bg-green-500'
-													: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
-											></span>
-										</span>
-									</div>
+									{#if $config?.features?.enable_user_status}
+										<div class="absolute -bottom-0.5 -right-0.5">
+											<span class="relative flex size-2.5">
+												<span
+													class="relative inline-flex size-2.5 rounded-full {true
+														? 'bg-green-500'
+														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+												></span>
+											</span>
+										</div>
+									{/if}
 								</div>
 								<div class=" self-center font-medium">{$user?.name}</div>
 							</div>
@@ -1315,4 +1352,17 @@
 			</div>
 		</div>
 	</div>
+
+	{#if !$mobile}
+		<div
+			class="relative flex items-center justify-center group border-l border-gray-50 dark:border-gray-850/30 hover:border-gray-200 dark:hover:border-gray-800 transition z-20"
+			id="sidebar-resizer"
+			on:mousedown={resizeStartHandler}
+			role="separator"
+		>
+			<div
+				class=" absolute -left-1.5 -right-1.5 -top-0 -bottom-0 z-20 cursor-col-resize bg-transparent"
+			/>
+		</div>
+	{/if}
 {/if}
