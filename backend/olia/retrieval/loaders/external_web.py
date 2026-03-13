@@ -30,7 +30,7 @@ class ExternalWebLoader(BaseLoader):
                 response = requests.post(
                     self.external_url,
                     headers={
-                        "User-Agent": "OLIA (https://github.com/open-webui/open-webui) External Web Loader",
+                        "User-Agent": "OLIA (https://olia.olivesoft.fr) External Web Loader",
                         "Authorization": f"Bearer {self.external_api_key}",
                     },
                     json={

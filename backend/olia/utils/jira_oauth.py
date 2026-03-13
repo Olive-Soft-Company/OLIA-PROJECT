@@ -17,7 +17,7 @@ BASE_TOKEN_DIR = os.getenv("JIRA_OAUTH_TOKEN_DIR", str(_DEFAULT_TOKEN_DIR))
 _TOKEN_LOCK = threading.Lock()
 
 import logging
-logger = logging.getLogger("openwebui.jira_oauth")
+logger = logging.getLogger("olia.jira_oauth")
 
 
 class JiraOAuthError(Exception):

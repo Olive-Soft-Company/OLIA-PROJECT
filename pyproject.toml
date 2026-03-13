@@ -1,5 +1,5 @@
 [project]
-name = "open-webui"
+name = "olia"
 description = "OLIA"
 authors = [
     { name = "Olia Team", email = "olia@olivesoft.fr" }
@@ -163,7 +163,7 @@ all = [
 ]
 
 [project.scripts]
-open-webui = "olia:app"
+olia = "olia:app"
 
 [build-system]
 requires = ["hatchling"]

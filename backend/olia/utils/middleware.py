@@ -399,7 +399,7 @@ def serialize_output(output: list) -> str:
             else:
                 content = f'{content}<details type="reasoning" done="false">\n<summary>Thinking…</summary>\n{display}\n</details>\n'
 
-        elif item_type == "open_webui:code_interpreter":
+        elif item_type == "olia:code_interpreter":
             content_stripped, original_whitespace = split_content_and_whitespace(
                 content
             )
@@ -2967,7 +2967,7 @@ async def streaming_chat_response_handler(response, ctx):
                 output_type_map = {
                     "reasoning": "reasoning",
                     "solution": "message",  # solution tags just produce text
-                    "code_interpreter": "open_webui:code_interpreter",
+                    "code_interpreter": "olia:code_interpreter",
                 }
                 output_item_type = output_type_map.get(content_type, content_type)
 
@@ -3024,10 +3024,10 @@ async def streaming_chat_response_handler(response, ctx):
                                         "started_at": time.time(),
                                     }
                                 )
-                            elif output_item_type == "open_webui:code_interpreter":
+                            elif output_item_type == "olia:code_interpreter":
                                 output.append(
                                     {
-                                        "type": "open_webui:code_interpreter",
+                                        "type": "olia:code_interpreter",
                                         "id": output_id("ci"),
                                         "status": "in_progress",
                                         "start_tag": start_tag,
@@ -3064,7 +3064,7 @@ async def streaming_chat_response_handler(response, ctx):
                                     output[-1]["content"] = [
                                         {"type": "output_text", "text": after_tag}
                                     ]
-                                elif output_item_type == "open_webui:code_interpreter":
+                                elif output_item_type == "olia:code_interpreter":
                                     output[-1]["code"] = after_tag
                                 else:
                                     set_last_text(output, after_tag)
@@ -3078,7 +3078,7 @@ async def streaming_chat_response_handler(response, ctx):
                 elif (
                     (last_type == "reasoning" and content_type == "reasoning")
                     or (
-                        last_type == "open_webui:code_interpreter"
+                        last_type == "olia:code_interpreter"
                         and content_type == "code_interpreter"
                     )
                     or (
@@ -3104,7 +3104,7 @@ async def streaming_chat_response_handler(response, ctx):
                             block_content = ""
                             if parts and parts[-1].get("type") == "output_text":
                                 block_content = parts[-1].get("text", "")
-                        elif last_type == "open_webui:code_interpreter":
+                        elif last_type == "olia:code_interpreter":
                             block_content = item.get("code", "")
                         else:
                             block_content = get_last_text(output)
@@ -3140,7 +3140,7 @@ async def streaming_chat_response_handler(response, ctx):
                                     item["ended_at"] - item["started_at"]
                                 )
                                 item["status"] = "completed"
-                            elif last_type == "open_webui:code_interpreter":
+                            elif last_type == "olia:code_interpreter":
                                 item["code"] = block_content
                                 item["ended_at"] = time.time()
                                 item["duration"] = int(
@@ -4099,7 +4099,7 @@ async def streaming_chat_response_handler(response, ctx):
 
                     while (
                         output
-                        and output[-1].get("type") == "open_webui:code_interpreter"
+                        and output[-1].get("type") == "olia:code_interpreter"
                         and retries < MAX_RETRIES
                     ):
 

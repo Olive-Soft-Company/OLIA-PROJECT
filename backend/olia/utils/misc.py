@@ -229,7 +229,7 @@ def convert_output_to_messages(output: list, raw: bool = False) -> list[dict]:
                     pending_content.append(f"{start_tag}{reasoning_text}{end_tag}")
             # else: skip reasoning blocks for normal LLM messages
 
-        elif item_type == "open_webui:code_interpreter":
+        elif item_type == "olia:code_interpreter":
             if raw:
                 # Include code interpreter content for LLM re-processing
                 code = item.get("code", "")
@@ -250,7 +250,7 @@ def convert_output_to_messages(output: list, raw: bool = False) -> list[dict]:
                         pending_content.append(f"Output:\n{output_text}")
             # else: skip extension types
 
-        elif item_type.startswith("open_webui:"):
+        elif item_type.startswith("olia:"):
             # Skip other extension types
             pass
 

@@ -14,7 +14,7 @@ from olia.utils.jira_oauth import (
 
 router = APIRouter()
 
-logger = logging.getLogger("openwebui.jira_oauth")
+logger = logging.getLogger("olia.jira_oauth")
 logger.setLevel(logging.INFO)
 
 def _html_page(title: str, body: str, status_code: int = 200) -> HTMLResponse:
