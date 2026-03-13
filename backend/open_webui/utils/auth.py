@@ -37,7 +37,7 @@ from open_webui.env import (
     PASSWORD_VALIDATION_REGEX_PATTERN,
     REDIS_KEY_PREFIX,
     pk,
-    WEBUI_SECRET_KEY,
+    OLIA_SECRET_KEY,
     TRUSTED_SIGNATURE_KEY,
     STATIC_DIR,
     OLIA_AUTH_TRUSTED_EMAIL_HEADER,
@@ -48,7 +48,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 log = logging.getLogger(__name__)
 
-SESSION_SECRET = WEBUI_SECRET_KEY
+SESSION_SECRET = OLIA_SECRET_KEY
 ALGORITHM = "HS256"
 
 ##############

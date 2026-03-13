@@ -37,7 +37,7 @@ from open_webui.env import (
     OLIA_AUTH_TRUSTED_GROUPS_HEADER,
     OLIA_AUTH_COOKIE_SAME_SITE,
     OLIA_AUTH_COOKIE_SECURE,
-    WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
+    OLIA_AUTH_SIGNOUT_REDIRECT_URL,
     ENABLE_INITIAL_ADMIN_SIGNUP,
     ENABLE_OAUTH_TOKEN_EXCHANGE,
     AIOHTTP_CLIENT_SESSION_SSL,
@@ -842,8 +842,8 @@ async def signout(
                                         "status": True,
                                         "redirect_url": f"{logout_url}?id_token_hint={oauth_id_token}"
                                         + (
-                                            f"&post_logout_redirect_uri={WEBUI_AUTH_SIGNOUT_REDIRECT_URL}"
-                                            if WEBUI_AUTH_SIGNOUT_REDIRECT_URL
+                                            f"&post_logout_redirect_uri={OLIA_AUTH_SIGNOUT_REDIRECT_URL}"
+                                            if OLIA_AUTH_SIGNOUT_REDIRECT_URL
                                             else ""
                                         ),
                                     },
@@ -860,12 +860,12 @@ async def signout(
                     headers=response.headers,
                 )
 
-    if WEBUI_AUTH_SIGNOUT_REDIRECT_URL:
+    if OLIA_AUTH_SIGNOUT_REDIRECT_URL:
         return JSONResponse(
             status_code=200,
             content={
                 "status": True,
-                "redirect_url": WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
+                "redirect_url": OLIA_AUTH_SIGNOUT_REDIRECT_URL,
             },
             headers=response.headers,
         )

@@ -35,7 +35,7 @@ jobs:
             --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
             --build-arg OPENID_PROVIDER_URL=https://olia-ppd.francecentral.cloudapp.azure.com:8443/realms/OliveSoft/.well-known/openid-configuration \
             --build-arg OPENID_REDIRECT_URI=https://olia-ppd.francecentral.cloudapp.azure.com/oauth/oidc/callback \
-            --build-arg WEBUI_AUTH_SIGNOUT_REDIRECT_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
+            --build-arg OLIA_AUTH_SIGNOUT_REDIRECT_URL=https://olia-ppd.francecentral.cloudapp.azure.com \
             --build-arg ENABLE_IMAGE_PROMPT_GENERATION=${{ vars.ENABLE_IMAGE_PROMPT_GENERATION }} \
             --build-arg USER_PERMISSIONS_CHAT_CONTROLS=${{ vars.USER_PERMISSIONS_CHAT_CONTROLS }} \
             --build-arg ENABLE_OAUTH_GROUP_CREATION=${{ vars.ENABLE_OAUTH_GROUP_CREATION }} \
@@ -47,7 +47,7 @@ jobs:
             --build-arg IMAGES_OPENAI_API_BASE_URL=${{ vars.IMAGES_OPENAI_API_BASE_URL }} \
             --build-arg OAUTH_CLIENT_ID=olia-ppd \
             --build-arg OAUTH_GROUP_CLAIM=${{ vars.OAUTH_GROUP_CLAIM }} \
-            --build-arg WEBUI_SECRET_KEY=${{ secrets.WEBUI_SECRET_KEY }} \
+            --build-arg OLIA_SECRET_KEY=${{ secrets.OLIA_SECRET_KEY }} \
             --build-arg OAUTH_PROVIDER_NAME=${{ vars.OAUTH_PROVIDER_NAME }} \
             --build-arg OPENAI_API_BASE_URL=${{ vars.OPENAI_API_BASE_URL }} \
             --build-arg ONEDRIVE_SHAREPOINT_URL=${{ vars.ONEDRIVE_SHAREPOINT_URL }} \

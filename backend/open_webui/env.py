@@ -22,13 +22,13 @@ from open_webui.constants import ERROR_MESSAGES
 # Use .resolve() to get the canonical path, removing any '..' or '.' components
 ENV_FILE_PATH = Path(__file__).resolve()
 
-# OLIA_DIR should be the directory where env.py resides (open_webui/)
+# OLIA_DIR should be the directory where env.py resides (olia/)
 OLIA_DIR = ENV_FILE_PATH.parent
 
 # BACKEND_DIR is the parent of OLIA_DIR (backend/)
 BACKEND_DIR = OLIA_DIR.parent
 
-# BASE_DIR is the parent of BACKEND_DIR (open-webui-dev/)
+# BASE_DIR is the parent of BACKEND_DIR (olia-dev/)
 BASE_DIR = BACKEND_DIR.parent
 
 try:
@@ -92,6 +92,7 @@ if OLIA_NAME != "OLIA":
     OLIA_NAME += "OLIA"
 
 OLIA_FAVICON_URL = "https://openwebui.com/favicon.png"
+# OLIA_FAVICON_URL = "static\static\favicon.png"
 
 TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 
@@ -276,7 +277,7 @@ if FROM_INIT_PY:
 if os.path.exists(f"{DATA_DIR}/ollama.db"):
     # Rename the file
     os.rename(f"{DATA_DIR}/ollama.db", f"{DATA_DIR}/olia.db")
-    log.info("Database migrated from Ollama-WebUI successfully.")
+    log.info("Database migrated from Ollama-Olia successfully.")
 else:
     pass
 
@@ -498,18 +499,18 @@ BYPASS_MODEL_ACCESS_CONTROL = (
     os.environ.get("BYPASS_MODEL_ACCESS_CONTROL", "False").lower() == "true"
 )
 
-WEBUI_AUTH_SIGNOUT_REDIRECT_URL = os.environ.get(
-    "WEBUI_AUTH_SIGNOUT_REDIRECT_URL", None
+OLIA_AUTH_SIGNOUT_REDIRECT_URL = os.environ.get(
+    "OLIA_AUTH_SIGNOUT_REDIRECT_URL", None
 )
 
 ####################################
-# WEBUI_SECRET_KEY
+# OLIA_SECRET_KEY
 ####################################
 
-WEBUI_SECRET_KEY = os.environ.get(
-    "WEBUI_SECRET_KEY",
+OLIA_SECRET_KEY = os.environ.get(
+    "OLIA_SECRET_KEY",
     os.environ.get(
-        "WEBUI_JWT_SECRET_KEY", "t0p-s3cr3t"
+        "OLIA_JWT_SECRET_KEY", "t0p-s3cr3t"
     ),  # DEPRECATED: remove at next major version
 )
 
@@ -531,7 +532,7 @@ OLIA_AUTH_COOKIE_SECURE = (
     == "true"
 )
 
-if OLIA_AUTH and WEBUI_SECRET_KEY == "":
+if OLIA_AUTH and OLIA_SECRET_KEY == "":
     raise ValueError(ERROR_MESSAGES.ENV_VAR_NOT_FOUND)
 
 ENABLE_COMPRESSION_MIDDLEWARE = (
@@ -550,11 +551,11 @@ ENABLE_OAUTH_ID_TOKEN_COOKIE = (
 )
 
 OAUTH_CLIENT_INFO_ENCRYPTION_KEY = os.environ.get(
-    "OAUTH_CLIENT_INFO_ENCRYPTION_KEY", WEBUI_SECRET_KEY
+    "OAUTH_CLIENT_INFO_ENCRYPTION_KEY", OLIA_SECRET_KEY
 )
 
 OAUTH_SESSION_TOKEN_ENCRYPTION_KEY = os.environ.get(
-    "OAUTH_SESSION_TOKEN_ENCRYPTION_KEY", WEBUI_SECRET_KEY
+    "OAUTH_SESSION_TOKEN_ENCRYPTION_KEY", OLIA_SECRET_KEY
 )
 
 # Token Exchange Configuration

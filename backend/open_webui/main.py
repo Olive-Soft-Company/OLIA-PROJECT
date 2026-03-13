@@ -359,10 +359,10 @@ from open_webui.config import (
     YANDEX_WEB_SEARCH_URL,
     YANDEX_WEB_SEARCH_API_KEY,
     YANDEX_WEB_SEARCH_CONFIG,
-    # WebUI
+    # OLIA
     OLIA_AUTH,
     OLIA_NAME,
-    WEBUI_BANNERS,
+    OLIA_BANNERS,
     WEBHOOK_URL,
     ADMIN_EMAIL,
     SHOW_ADMIN_DETAILS,
@@ -393,7 +393,7 @@ from open_webui.config import (
     DEFAULT_ARENA_MODEL,
     MODEL_ORDER_LIST,
     EVALUATION_ARENA_MODELS,
-    # WebUI (OAuth)
+    # OLIA (OAuth)
     ENABLE_OAUTH_ROLE_MANAGEMENT,
     OAUTH_ROLES_CLAIM,
     OAUTH_EMAIL_CLAIM,
@@ -401,7 +401,7 @@ from open_webui.config import (
     OAUTH_USERNAME_CLAIM,
     OAUTH_ALLOWED_ROLES,
     OAUTH_ADMIN_ROLES,
-    # WebUI (LDAP)
+    # OLIA (LDAP)
     ENABLE_LDAP,
     LDAP_SERVER_LABEL,
     LDAP_SERVER_HOST,
@@ -473,13 +473,13 @@ from open_webui.env import (
     DEPLOYMENT_ID,
     INSTANCE_ID,
     OLIA_BUILD_HASH,
-    WEBUI_SECRET_KEY,
+    OLIA_SECRET_KEY,
     OLIA_SESSION_COOKIE_SAME_SITE,
     OLIA_SESSION_COOKIE_SECURE,
     ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
     OLIA_AUTH_TRUSTED_EMAIL_HEADER,
     OLIA_AUTH_TRUSTED_NAME_HEADER,
-    WEBUI_AUTH_SIGNOUT_REDIRECT_URL,
+    OLIA_AUTH_SIGNOUT_REDIRECT_URL,
     # SCIM
     ENABLE_SCIM,
     SCIM_TOKEN,
@@ -768,7 +768,7 @@ app.state.BASE_MODELS = []
 
 ########################################
 #
-# WEBUI
+# OLIA
 #
 ########################################
 
@@ -804,7 +804,7 @@ app.state.config.RESPONSE_WATERMARK = RESPONSE_WATERMARK
 
 app.state.config.USER_PERMISSIONS = USER_PERMISSIONS
 app.state.config.WEBHOOK_URL = WEBHOOK_URL
-app.state.config.BANNERS = WEBUI_BANNERS
+app.state.config.BANNERS = OLIA_BANNERS
 
 
 app.state.config.ENABLE_FOLDERS = ENABLE_FOLDERS
@@ -866,7 +866,7 @@ app.state.config.LDAP_ATTRIBUTE_FOR_GROUPS = LDAP_ATTRIBUTE_FOR_GROUPS
 
 app.state.AUTH_TRUSTED_EMAIL_HEADER = OLIA_AUTH_TRUSTED_EMAIL_HEADER
 app.state.AUTH_TRUSTED_NAME_HEADER = OLIA_AUTH_TRUSTED_NAME_HEADER
-app.state.WEBUI_AUTH_SIGNOUT_REDIRECT_URL = WEBUI_AUTH_SIGNOUT_REDIRECT_URL
+app.state.OLIA_AUTH_SIGNOUT_REDIRECT_URL = OLIA_AUTH_SIGNOUT_REDIRECT_URL
 app.state.EXTERNAL_PWA_MANIFEST_URL = EXTERNAL_PWA_MANIFEST_URL
 
 app.state.USER_COUNT = None
@@ -1286,7 +1286,7 @@ app.state.config.VOICE_MODE_PROMPT_TEMPLATE = VOICE_MODE_PROMPT_TEMPLATE
 
 ########################################
 #
-# WEBUI
+# OLIA
 #
 ########################################
 
@@ -2247,7 +2247,7 @@ try:
 except Exception as e:
     app.add_middleware(
         SessionMiddleware,
-        secret_key=WEBUI_SECRET_KEY,
+        secret_key=OLIA_SECRET_KEY,
         session_cookie="owui-session",
         same_site=OLIA_SESSION_COOKIE_SAME_SITE,
         https_only=OLIA_SESSION_COOKIE_SECURE,

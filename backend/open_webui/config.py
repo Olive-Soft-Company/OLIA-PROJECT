@@ -1750,13 +1750,13 @@ class BannerModel(BaseModel):
 
 
 try:
-    banners = json.loads(os.environ.get("WEBUI_BANNERS", "[]"))
+    banners = json.loads(os.environ.get("OLIA_BANNERS", "[]"))
     banners = [BannerModel(**banner) for banner in banners]
 except Exception as e:
-    log.exception(f"Error loading WEBUI_BANNERS: {e}")
+    log.exception(f"Error loading OLIA_BANNERS: {e}")
     banners = []
 
-WEBUI_BANNERS = PersistentConfig("WEBUI_BANNERS", "ui.banners", banners)
+OLIA_BANNERS = PersistentConfig("OLIA_BANNERS", "ui.banners", banners)
 
 
 SHOW_ADMIN_DETAILS = PersistentConfig(

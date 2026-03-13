@@ -40,7 +40,7 @@ jobs:
             --build-arg OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             --build-arg OPENID_PROVIDER_URL="${{ secrets.OPENID_PROVIDER_URL }}" \
             --build-arg OPENID_REDIRECT_URI="${{ secrets.OPENID_REDIRECT_URI }}" \
-            --build-arg WEBUI_AUTH_SIGNOUT_REDIRECT_URL="${{ secrets.WEBUI_AUTH_SIGNOUT_REDIRECT_URL }}" \
+            --build-arg OLIA_AUTH_SIGNOUT_REDIRECT_URL="${{ secrets.OLIA_AUTH_SIGNOUT_REDIRECT_URL }}" \
             --build-arg ATLASSIAN_CLIENT_ID="${{ secrets.ATLASSIAN_CLIENT_ID }}" \
             --build-arg ATLASSIAN_CLIENT_SECRET="${{ secrets.ATLASSIAN_CLIENT_SECRET }}" \
             --build-arg ENABLE_IMAGE_PROMPT_GENERATION="${{ vars.ENABLE_IMAGE_PROMPT_GENERATION }}" \

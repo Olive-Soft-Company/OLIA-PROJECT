@@ -187,7 +187,7 @@ sources = ["backend"]
 exclude = [
     ".dockerignore",
     ".gitignore",
-    ".webui_secret_key",
+    ".OLIA_SECRET_KEY",
     "dev.sh",
     "requirements.txt",
     "start.sh",

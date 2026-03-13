@@ -9,4 +9,4 @@ Pipfile
 !/data
 /data/*
 /open_webui/data/*
-.webui_secret_key
+.OLIA_SECRET_KEY
