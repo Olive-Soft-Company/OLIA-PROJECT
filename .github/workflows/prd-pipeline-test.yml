@@ -16,7 +16,7 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.AZURE_VM_SSH_KEY_PPD }}
+          ssh-private-key: ${{ secrets.AZURE_VM_SSH_KEY_PRD }}
       - name: Login to Azure Container Registry
         run: |
           echo ${{ secrets.ACR_PASSWORD }} | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
@@ -28,7 +28,7 @@ jobs:
             --build-arg GOOGLE_PSE_API_KEY=${{ secrets.GOOGLE_PSE_API_KEY }} \
             --build-arg GOOGLE_PSE_ENGINE_ID=${{ secrets.GOOGLE_PSE_ENGINE_ID }} \
             --build-arg IMAGES_OPENAI_API_KEY=${{ secrets.IMAGES_OPENAI_API_KEY }} \
-            --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET_PPD }} \
+            --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET_PRD }} \
             --build-arg ONEDRIVE_CLIENT_ID_BUSINESS=${{ secrets.ONEDRIVE_CLIENT_ID_BUSINESS }} \
             --build-arg ONEDRIVE_CLIENT_ID_PERSONAL=${{ secrets.ONEDRIVE_CLIENT_ID_PERSONAL }} \
             --build-arg ONEDRIVE_SHAREPOINT_TENANT_ID=${{ secrets.ONEDRIVE_SHAREPOINT_TENANT_ID }} \
@@ -61,9 +61,19 @@ jobs:
             --build-arg ATLASSIAN_SCOPES="read:jira-work write:jira-work read:jira-user offline_access" \
             --build-arg ATLASSIAN_AUDIENCE=api.atlassian.com \
             --build-arg ATLASSIAN_POST_AUTH_REDIRECT=https://olia-prd.francecentral.cloudapp.azure.com/ \
-            -t olivesoft.azurecr.io/open-webui-custom:prd-1.0
+            -t olivesoft.azurecr.io/open-webui-custom:prd-1.1
 
       - name: Push Docker image to ACR
         run: |
-          docker push olivesoft.azurecr.io/open-webui-custom:prd-1.0
+          docker push olivesoft.azurecr.io/open-webui-custom:prd-1.1
+
+      - name: Deploy to Swarm VM
+        run: |
+          ssh -o StrictHostKeyChecking=no azureuser@4.233.139.147 "
+            docker login olivesoft.azurecr.io -u olivesoft -p ${{ secrets.ACR_PASSWORD }}
+            docker pull olivesoft.azurecr.io/open-webui-custom:prd-1.1
+            docker service update -d --update-order start-first --with-registry-auth --image olivesoft.azurecr.io/open-webui-custom:prd-1.1 olia_olia
+          "  
+        
+
      
