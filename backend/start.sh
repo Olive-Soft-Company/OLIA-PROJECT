@@ -50,7 +50,7 @@ if [ -n "$SPACE_ID" ]; then
   echo "Configuring for HuggingFace Space deployment"
   if [ -n "$ADMIN_USER_EMAIL" ] && [ -n "$ADMIN_USER_PASSWORD" ]; then
     echo "Admin user configured, creating"
-    OLIA_SECRET_KEY="$OLIA_SECRET_KEY" uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
+    OLIA_SECRET_KEY="$OLIA_SECRET_KEY" uvicorn olia.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
     webui_pid=$!
     echo "Waiting for OLIA to start..."
     while ! curl -s "http://localhost:${PORT}/health" > /dev/null; do
@@ -80,7 +80,7 @@ else
 fi
 
 # Run uvicorn
-OLIA_SECRET_KEY="$OLIA_SECRET_KEY" exec "$PYTHON_CMD" -m uvicorn open_webui.main:app \
+OLIA_SECRET_KEY="$OLIA_SECRET_KEY" exec "$PYTHON_CMD" -m uvicorn olia.main:app \
     --host "$HOST" \
     --port "$PORT" \
     --forwarded-allow-ips '*' \

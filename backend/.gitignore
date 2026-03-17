@@ -8,5 +8,5 @@ _test
 Pipfile
 !/data
 /data/*
-/open_webui/data/*
+/olia/data/*
 .OLIA_SECRET_KEY
