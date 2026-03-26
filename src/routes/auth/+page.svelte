@@ -190,6 +190,12 @@
 			await signInHandler();
 		} else {
 			onboarding = $config?.onboarding ?? false;
+			if (!onboarding && !error && !form) {
+				const providers = Object.keys($config?.oauth?.providers ?? {});
+				if (providers.length === 1) {
+					window.location.href = `${OLIA_BASE_URL}/oauth/${providers[0]}/login`;
+				}
+			}
 		}
 	});
 </script>
