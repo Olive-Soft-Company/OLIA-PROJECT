@@ -190,7 +190,10 @@
 
 			if (!onboarding && !error && !form) {
 				const providers = Object.keys($config?.oauth?.providers ?? {});
-				if (providers.length > 0) {
+				if (providers.includes('oidc')) {
+					window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
+					return;
+				} else if (providers.length > 0) {
 					window.location.href = `${WEBUI_BASE_URL}/oauth/${providers[0]}/login`;
 					return;
 				}
