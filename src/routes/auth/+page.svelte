@@ -187,7 +187,18 @@
 			await signInHandler();
 		} else {
 			onboarding = $config?.onboarding ?? false;
+
+			if (!onboarding && !error && !form) {
+				const providers = Object.keys($config?.oauth?.providers ?? {});
+				if (providers.length > 0) {
+					window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
+					return;
+				}
+			}
 		}
+
+		loaded = true;
+		setLogoImage();
 	});
 </script>
 
