@@ -79,6 +79,8 @@ else
     ARGS=(--workers "$UVICORN_WORKERS")
 fi
 
+WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" "$PYTHON_CMD" -m pip install -r requirements.txt
+
 # Run uvicorn
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec "$PYTHON_CMD" -m uvicorn open_webui.main:app \
     --host "$HOST" \
