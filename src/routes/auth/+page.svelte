@@ -187,18 +187,7 @@
 			await signInHandler();
 		} else {
 			onboarding = $config?.onboarding ?? false;
-
-			if (!onboarding && !error && !form) {
-				const providers = Object.keys($config?.oauth?.providers ?? {});
-				if (providers.length > 0) {
-					window.location.href = `${OLIA_BASE_URL}/oauth/${providers[0]}/login`;
-					return;
-				}
-			}
 		}
-
-		loaded = true;
-		setLogoImage();
 	});
 </script>
 
