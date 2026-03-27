@@ -124,7 +124,7 @@
 
 		const token = getCookie('token');
 		if (!token) {
-			return false;
+			return;
 		}
 
 		const sessionUser = await getSessionUser(token).catch((error) => {
@@ -133,12 +133,11 @@
 		});
 
 		if (!sessionUser) {
-			return false;
+			return;
 		}
 
 		localStorage.token = token;
 		await setSessionUser(sessionUser, localStorage.getItem('redirectPath') || null);
-		return true;
 	};
 
 	let onboarding = false;
@@ -168,9 +167,8 @@
 
 	onMount(async () => {
 		const redirectPath = $page.url.searchParams.get('redirect');
-		if ($user) {
-			goto(redirectPath || '/');
-			return;
+		if ($user !== undefined) {
+			goto('/');
 		} else {
 			if (redirectPath) {
 				localStorage.setItem('redirectPath', redirectPath);
@@ -182,11 +180,7 @@
 			toast.error(error);
 		}
 
-		const isOauthSuccess = await oauthCallbackHandler();
-		if (isOauthSuccess) {
-			return;
-		}
-		
+		await oauthCallbackHandler();
 		form = $page.url.searchParams.get('form');
 
 		if (($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false) {
