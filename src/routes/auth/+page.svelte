@@ -124,7 +124,7 @@
 
 		const token = getCookie('token');
 		if (!token) {
-			return;
+			return false;
 		}
 
 		const sessionUser = await getSessionUser(token).catch((error) => {
@@ -133,11 +133,12 @@
 		});
 
 		if (!sessionUser) {
-			return;
+			return false;
 		}
 
 		localStorage.token = token;
 		await setSessionUser(sessionUser, localStorage.getItem('redirectPath') || null);
+		return true;
 	};
 
 	let onboarding = false;
@@ -167,8 +168,9 @@
 
 	onMount(async () => {
 		const redirectPath = $page.url.searchParams.get('redirect');
-		if ($user !== undefined) {
+		if ($user) {
 			goto(redirectPath || '/');
+			return;
 		} else {
 			if (redirectPath) {
 				localStorage.setItem('redirectPath', redirectPath);
@@ -180,17 +182,32 @@
 			toast.error(error);
 		}
 
-		await oauthCallbackHandler();
+		const isOauthSuccess = await oauthCallbackHandler();
+		if (isOauthSuccess) {
+			return;
+		}
+		
 		form = $page.url.searchParams.get('form');
-
-		loaded = true;
-		setLogoImage();
 
 		if (($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false) {
 			await signInHandler();
 		} else {
 			onboarding = $config?.onboarding ?? false;
+
+			if (!onboarding && !error && !form) {
+				const providers = Object.keys($config?.oauth?.providers ?? {});
+				if (providers.includes('oidc')) {
+					window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
+					return;
+				} else if (providers.length > 0) {
+					window.location.href = `${WEBUI_BASE_URL}/oauth/${providers[0]}/login`;
+					return;
+				}
+			}
 		}
+
+		loaded = true;
+		setLogoImage();
 	});
 </script>
 
@@ -243,7 +260,7 @@
 										crossorigin="anonymous"
 										src="{WEBUI_BASE_URL}/static/favicon.png"
 										class="size-24 rounded-full"
-										alt=""
+										alt="{$WEBUI_NAME} logo"
 									/>
 								</div>
 							{/if}
@@ -342,8 +359,9 @@
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
-												screenReader={false}
+												screenReader={true}
 												required
+												aria-required="true"
 											/>
 										</div>
 
@@ -439,6 +457,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 48 48"
 												class="size-6 mr-3"
+												aria-hidden="true"
 											>
 												<path
 													fill="#EA4335"
@@ -468,6 +487,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 21 21"
 												class="size-6 mr-3"
+												aria-hidden="true"
 											>
 												<rect x="1" y="1" width="9" height="9" fill="#f25022" /><rect
 													x="1"
@@ -498,6 +518,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 24 24"
 												class="size-6 mr-3"
+												aria-hidden="true"
 											>
 												<path
 													fill="currentColor"
@@ -521,6 +542,7 @@
 												stroke-width="1.5"
 												stroke="currentColor"
 												class="size-6 mr-3"
+												aria-hidden="true"
 											>
 												<path
 													stroke-linecap="round"
