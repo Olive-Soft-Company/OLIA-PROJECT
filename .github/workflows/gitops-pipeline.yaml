@@ -1,0 +1,59 @@
+name: CI/CD AKS GitOps (PPD)
+on:
+  push:
+    branches:
+      - gitops-ci
+
+env:
+   ACR_LOGIN_SERVER: olivesoft.azurecr.io
+   IMAGE_NAME: open-webui-custom
+   GITOPS_REPO: Olive-Soft-Company/OLIA-GITOPS
+   GITOPS_FILE: helm-values/env/dev/olia-values.yaml # Path in the GitOps repo
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+  
+      - name: Login to Azure Container Registry
+        run: |
+          echo ${{ secrets.ACR_PASSWORD }} | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
+
+      - name: Build Docker image
+        run: |
+         docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+                --push .
+    
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      
+      # Checkout the GitOps Repository using a Personal Access Token (PAT
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v3
+        with:
+              repository: ${{ env.GITOPS_REPO }}
+              token: ${{ secrets.GITOPS_PAT }}
+              path: gitops-repo
+        
+      - name: Update Image Tag in Helm 
+        run: |
+          cd gitops-repo
+          sed -i 's/tag: .*/tag: "${{ github.sha }}"/g' ${{ env.GITOPS_FILE }}
+
+      - name: Commit and Push
+        run: |
+          cd gitops-repo
+          git config user.name "GitHub Actions Bot"
+          git config user.email "chaden.benammar@olivesoft.fr"
+          git add ${{ env.GITOPS_FILE }}
+          git commit -m "Deploy : Update Olia image to ${{ github.sha }}"
+          git push origin main
+          
+             
