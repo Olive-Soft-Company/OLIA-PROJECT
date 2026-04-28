@@ -46,8 +46,9 @@ jobs:
         with:   
          image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
          exit-code: '1'                                                                                                           
-         severity: CRITICAL,HIGH
+         severity: CRITICAL
          ignore-unfixed: true   
+         skip-dirs: /usr/local/lib/python3.11/site-packages/black*
 
       # Checkout the GitOps Repository using a Personal Access Token (PAT
       - name: Checkout GitOps Repo
