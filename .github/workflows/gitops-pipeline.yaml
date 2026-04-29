@@ -61,6 +61,11 @@ jobs:
         run: |
           sed -i 's|^\(\s*tag:\s*\).*|\1"${{ github.sha }}"|' gitops-repo/${{ env.GITOPS_FILE }}
       
+      - name: Set up Helm                                                                                                                
+        uses: azure/setup-helm@v4
+        with:                                                                                                                            
+         version: '3.17.0'
+         
       - name: Validate Helm values
         run: |
            helm lint ./chart
