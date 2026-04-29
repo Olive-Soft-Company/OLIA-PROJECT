@@ -65,10 +65,10 @@ jobs:
         uses: azure/setup-helm@v4
         with:                                                                                                                            
          version: '3.17.0'
-         
+
       - name: Validate Helm values
         run: |
-           helm lint ./chart
+           helm lint gitops-repo/charts/olia
 
 
       - name: Commit and Push
