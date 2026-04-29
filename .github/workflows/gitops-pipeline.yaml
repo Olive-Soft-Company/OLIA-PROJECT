@@ -18,10 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Compute short SHA                                                                                                    
-        id: sha
-        run: echo "short=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"  
 
       - name: Login to Azure Container Registry
         run: |
@@ -35,7 +31,6 @@ jobs:
          docker buildx build \
            --platform linux/amd64,linux/arm64 \
            -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-           -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }} \
            --cache-from type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache \
            --cache-to type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache,mode=max \
            --push \
@@ -69,7 +64,6 @@ jobs:
       - name: Validate Helm values
         run: |
            helm lint gitops-repo/charts/olia
-
 
       - name: Commit and Push
         run: |
