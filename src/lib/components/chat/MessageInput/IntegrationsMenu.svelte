@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { DropdownMenu } from 'bits-ui';
-	import { getContext, tick } from 'svelte';
+	import { getContext, onMount, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { flyAndScale } from '$lib/utils/transitions';
 
 	import {
 		config,
@@ -15,7 +13,10 @@
 	} from '$lib/stores';
 
 	import { getOAuthClientAuthorizationUrl } from '$lib/apis/configs';
+	import { deleteOAuthSession } from '$lib/apis/auths';
 	import { getTools } from '$lib/apis/tools';
+
+	import { toast } from 'svelte-sonner';
 
 	import Knobs from '$lib/components/icons/Knobs.svelte';
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
@@ -30,6 +31,7 @@
 
 	// ✅ You were using these in the "tab === 'tools'" branch but they were missing
 	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
+	import LinkSlash from '$lib/components/icons/LinkSlash.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -187,8 +189,10 @@
 
 <Dropdown
 	bind:show
-	on:change={(e) => {
-		if (e.detail === false) onClose?.();
+	onOpenChange={(state) => {
+		if (state === false) {
+			onClose();
+		}
 	}}
 >
 	<Tooltip content={$i18n.t('Integrations')} placement="top">
@@ -196,13 +200,8 @@
 	</Tooltip>
 
 	<div slot="content">
-		<DropdownMenu.Content
-			class="w-full max-w-70 rounded-2xl px-1 py-1 border border-gray-100 dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg max-h-72 overflow-y-auto overflow-x-hidden scrollbar-thin"
-			sideOffset={4}
-			alignOffset={-6}
-			side="bottom"
-			align="start"
-			transition={flyAndScale}
+		<div
+			class="min-w-70 max-w-70 rounded-2xl px-1 py-1 border border-gray-100 dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg max-h-72 overflow-y-auto overflow-x-hidden scrollbar-thin"
 		>
 			{#if tab === ''}
 				<!-- ✅ main list -->
@@ -443,8 +442,31 @@
 					{#each Object.keys(tools) as toolId (toolId)}
 						<button
 							class="relative flex w-full justify-between gap-2 items-center px-3 py-1.5 text-sm cursor-pointer rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50"
-							type="button"
-							on:click={(e) => toggleToolExclusive(toolId, e)}
+							on:click={async (e) => {
+								if (!(tools[toolId]?.authenticated ?? true)) {
+									e.preventDefault();
+
+									let parts = toolId.split(':');
+									let serverId = parts?.at(-1) ?? toolId;
+
+									// Persist the tool ID so we can re-enable it after OAuth redirect
+									sessionStorage.setItem('pendingOAuthToolId', toolId);
+
+									const authUrl = getOAuthClientAuthorizationUrl(serverId, 'mcp');
+									window.open(authUrl, '_self', 'noopener');
+								} else {
+									tools[toolId].enabled = !tools[toolId].enabled;
+
+									const state = tools[toolId].enabled;
+									await tick();
+
+									if (state) {
+										selectedToolIds = [...selectedToolIds, toolId];
+									} else {
+										selectedToolIds = selectedToolIds.filter((id) => id !== toolId);
+									}
+								}
+							}}
 						>
 							{#if !(tools[toolId]?.authenticated ?? true)}
 								<div class="absolute inset-0 opacity-50 rounded-xl cursor-pointer z-10" />
@@ -459,9 +481,41 @@
 								</div>
 							</div>
 
-							{#if tools[toolId]?.has_user_valves &&
-							($user?.role === 'admin' || ($user?.permissions?.chat?.valves ?? true))}
+							{#if (tools[toolId]?.authenticated ?? true) && toolId.startsWith('server:mcp:')}
 								<div class="shrink-0">
+									<Tooltip content={$i18n.t('Disconnect OAuth')}>
+										<button
+											class="self-center w-fit text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition rounded-full"
+											type="button"
+											on:click={async (e) => {
+												e.stopPropagation();
+												e.preventDefault();
+
+												const parts = toolId.split(':');
+												const serverId = parts.at(-1) ?? toolId;
+												const provider = `mcp:${serverId}`;
+
+												try {
+													await deleteOAuthSession(localStorage.token, provider);
+													toast.success($i18n.t('OAuth session disconnected'));
+
+													// Refresh tools to update authenticated state
+													_tools.set(await getTools(localStorage.token));
+													selectedToolIds = selectedToolIds.filter((id) => id !== toolId);
+													await init();
+												} catch (err) {
+													toast.error(err ?? $i18n.t('Failed to disconnect'));
+												}
+											}}
+										>
+											<LinkSlash className="size-3.5" />
+										</button>
+									</Tooltip>
+								</div>
+							{/if}
+
+							{#if tools[toolId]?.has_user_valves && ($user?.role === 'admin' || ($user?.permissions?.chat?.valves ?? true))}
+								<div class=" shrink-0">
 									<Tooltip content={$i18n.t('Valves')}>
 										<button
 											class="self-center w-fit text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition rounded-full"
@@ -485,6 +539,6 @@
 					{/each}
 				</div>
 			{/if}
-		</DropdownMenu.Content>
+		</div>
 	</div>
 </Dropdown>
