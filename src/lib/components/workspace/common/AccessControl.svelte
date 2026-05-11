@@ -12,6 +12,7 @@
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import AddAccessModal from './AddAccessModal.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import Switch from '$lib/components/common/Switch.svelte';
 
 	// -----------------------------
 	// Types
@@ -80,17 +81,10 @@
 		return Array.from(map.values());
 	};
 
-	const stableStringify = (value: any): string => {
-		try {
-			return JSON.stringify(value ?? null);
-		} catch {
-			return '';
-		}
-	};
-
 	const hasPublicReadGrant = (grants: AccessGrant[]): boolean =>
 		grants.some(
-			(g) => g.principal_type === 'user' && g.principal_id === '*' && g.permission === 'read'
+			(grant) =>
+				grant.principal_type === 'user' && grant.principal_id === '*' && grant.permission === 'read'
 		);
 
 	const legacyAccessControlToGrants = (value: any): AccessGrant[] => {
@@ -158,62 +152,24 @@
 		return [];
 	};
 
-	// -----------------------------
-	// ✅ Safe sync (NO reactive assignment cycles)
-	// -----------------------------
-	let lastAccessControlSig = '';
-	let lastAccessGrantsSig = '';
-	const sig = (v: any) => stableStringify(v);
-
-	// parent legacy -> grants
-	const syncFromAccessControl = async () => {
-		if (accessControl === undefined) return;
-
-		const s = sig(accessControl);
-		if (s === lastAccessControlSig) return;
-		lastAccessControlSig = s;
-
-		const grantsFromAC = normalizeInputToGrants(accessControl);
-
-		if (sig(grantsFromAC) !== sig(accessGrants)) {
-			accessGrants = grantsFromAC;
-			lastAccessGrantsSig = sig(accessGrants);
+	const stableStringify = (value: any): string => {
+		try {
+			return JSON.stringify(value ?? null);
+		} catch {
+			return '';
 		}
-
-		await tick();
 	};
 
-	// grants -> legacy (only if legacy prop exists)
-	const syncToAccessControl = async () => {
-		if (accessControl === undefined) return;
+	const hasPublicWriteGrant = (grants: AccessGrant[]): boolean =>
+		grants.some(
+			(grant) =>
+				grant.principal_type === 'user' &&
+				grant.principal_id === '*' &&
+				grant.permission === 'write'
+		);
 
-		const s = sig(accessGrants);
-		if (s === lastAccessGrantsSig) return;
-		lastAccessGrantsSig = s;
-
-		const normalized = dedupeAccessGrants(Array.isArray(accessGrants) ? accessGrants : []);
-		const nextAccessControl = grantsToLegacyAccessControl(normalized);
-
-		if (sig(nextAccessControl) !== sig(accessControl)) {
-			accessControl = nextAccessControl;
-			lastAccessControlSig = sig(accessControl);
-		}
-
-		await tick();
-	};
-
-	// If your parent can change accessControl AFTER mount,
-	// keep a *one-way* watcher but DO NOT write accessControl inside it.
-	$: if (accessControl !== undefined) {
-		void syncFromAccessControl();
-	}
-
-	// -----------------------------
-	// ✅ Read-only derived snapshot
-	// -----------------------------
-	$: normalizedGrants = dedupeAccessGrants(
-		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : []
-	);
+	const currentGrants = (): AccessGrant[] =>
+		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : [];
 
 	const getPrincipalIdsByPermissionFrom = (
 		grants: AccessGrant[],
@@ -248,8 +204,9 @@
 	};
 
 	const setPublic = (isPublic: boolean) => {
-		const filtered = normalizedGrants.filter(
-			(g) => !(g.principal_type === 'user' && g.principal_id === '*' && g.permission === 'read')
+		// Remove all user:* grants
+		const filtered = currentGrants().filter(
+			(grant) => !(grant.principal_type === 'user' && grant.principal_id === '*')
 		);
 
 		if (isPublic) {
@@ -259,10 +216,22 @@
 		commitAccessGrants(filtered);
 	};
 
-	function handleVisibilityChange(e: Event) {
-		const select = e.currentTarget as HTMLSelectElement | null;
-		setPublic((select?.value ?? 'private') === 'public');
-	}
+	const togglePublicWrite = () => {
+		let next = [...currentGrants()];
+		if (hasPublicWriteGrant(next)) {
+			next = next.filter(
+				(grant) =>
+					!(
+						grant.principal_type === 'user' &&
+						grant.principal_id === '*' &&
+						grant.permission === 'write'
+					)
+			);
+		} else {
+			next = upsertPrincipalGrant('user', '*', 'write', next);
+		}
+		commitAccessGrants(next);
+	};
 
 	const upsertPrincipalGrant = (
 		principalType: 'user' | 'group',
@@ -503,6 +472,20 @@
 				</div>
 			</div>
 		</div>
+
+		{#if hasPublicReadGrant(accessGrants ?? []) && accessRoles.includes('write')}
+			<div class="flex w-full justify-between mt-2 ml-0.5">
+				<div class="self-center text-xs">
+					{$i18n.t('Allow public write access')}
+				</div>
+				<Switch
+					state={hasPublicWriteGrant(accessGrants ?? [])}
+					on:change={() => {
+						togglePublicWrite();
+					}}
+				/>
+			</div>
+		{/if}
 	</div>
 
 	{#if share}

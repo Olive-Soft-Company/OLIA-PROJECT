@@ -84,7 +84,7 @@ class OneDriveConfig {
 				auth: {
 					authority: `https://login.microsoftonline.com/${authorityEndpoint}`,
 					clientId: clientId,
-					redirectUri: baseRedirectUri
+					redirectUri: window.location.origin
 				}
 			};
 
