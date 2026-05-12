@@ -81,10 +81,17 @@
 		return Array.from(map.values());
 	};
 
+	const stableStringify = (value: any): string => {
+		try {
+			return JSON.stringify(value ?? null);
+		} catch {
+			return '';
+		}
+	};
+
 	const hasPublicReadGrant = (grants: AccessGrant[]): boolean =>
 		grants.some(
-			(grant) =>
-				grant.principal_type === 'user' && grant.principal_id === '*' && grant.permission === 'read'
+			(g) => g.principal_type === 'user' && g.principal_id === '*' && g.permission === 'read'
 		);
 
 	const legacyAccessControlToGrants = (value: any): AccessGrant[] => {
@@ -152,13 +159,34 @@
 		return [];
 	};
 
-	const stableStringify = (value: any): string => {
-		try {
-			return JSON.stringify(value ?? null);
-		} catch {
-			return '';
+	// -----------------------------
+	// ✅ Safe sync (NO reactive assignment cycles)
+	// -----------------------------
+	let lastAccessControlSig = '';
+	let lastAccessGrantsSig = '';
+	const sig = (v: any) => stableStringify(v);
+
+	// parent legacy -> grants
+	const syncFromAccessControl = async () => {
+		if (accessControl === undefined) return;
+
+		const s = sig(accessControl);
+		if (s === lastAccessControlSig) return;
+		lastAccessControlSig = s;
+
+		const grantsFromAC = normalizeInputToGrants(accessControl);
+
+		if (sig(grantsFromAC) !== sig(accessGrants)) {
+			accessGrants = grantsFromAC;
+			lastAccessGrantsSig = sig(accessGrants);
 		}
+
+		await tick();
 	};
+
+	// grants -> legacy (only if legacy prop exists)
+	const syncToAccessControl = async () => {
+		if (accessControl === undefined) return;
 
 	const hasPublicWriteGrant = (grants: AccessGrant[]): boolean =>
 		grants.some(
@@ -170,6 +198,30 @@
 
 	const currentGrants = (): AccessGrant[] =>
 		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : [];
+
+		const normalized = dedupeAccessGrants(Array.isArray(accessGrants) ? accessGrants : []);
+		const nextAccessControl = grantsToLegacyAccessControl(normalized);
+
+		if (sig(nextAccessControl) !== sig(accessControl)) {
+			accessControl = nextAccessControl;
+			lastAccessControlSig = sig(accessControl);
+		}
+
+		await tick();
+	};
+
+	// If your parent can change accessControl AFTER mount,
+	// keep a *one-way* watcher but DO NOT write accessControl inside it.
+	$: if (accessControl !== undefined) {
+		void syncFromAccessControl();
+	}
+
+	// -----------------------------
+	// ✅ Read-only derived snapshot
+	// -----------------------------
+	$: normalizedGrants = dedupeAccessGrants(
+		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : []
+	);
 
 	const getPrincipalIdsByPermissionFrom = (
 		grants: AccessGrant[],
