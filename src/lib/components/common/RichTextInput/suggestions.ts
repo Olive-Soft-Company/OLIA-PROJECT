@@ -1,5 +1,5 @@
-// import { mount, unmount } from 'svelte';
-// import { createClassComponent } from 'svelte/legacy';
+import { mount, unmount } from 'svelte';
+import { createClassComponent } from 'svelte/legacy';
 
 import tippy from 'tippy.js';
 
@@ -17,14 +17,16 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 				container.className = 'suggestion-list-container';
 				document.body.appendChild(container);
 
-				// mount Svelte component using standard syntax (no legacy API)
-				component = new Component({
+				// mount Svelte component
+				component = createClassComponent({
+					component: Component,
 					target: container,
 					props: {
 						char: props?.text?.charAt(0),
 						query: props?.query,
-						command: (item) =>
-							props.command({ id: item.id, label: item.label }),
+						command: (item) => {
+							props.command({ id: item.id, label: item.label });
+						},
 						...ComponentProps
 					},
 					context: new Map<string, any>([['i18n', ComponentProps?.i18n]])
@@ -57,8 +59,8 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 							{
 								name: 'preventOverflow',
 								options: {
-									boundary: 'viewport',
-									altAxis: true,
+									boundary: 'viewport', // keep within the viewport
+									altAxis: true, // also prevent overflow on the cross axis (X)
 									tether: true,
 									padding: 8
 								}
@@ -70,9 +72,11 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 									fallbackPlacements: ['top-end', 'bottom-start', 'bottom-end']
 								}
 							},
+							// Ensure transforms don’t cause layout widening in some browsers
 							{ name: 'computeStyles', options: { adaptive: true } }
 						]
 					},
+					// Helps avoid accidental focus/hover “linking” from far away elements
 					interactiveBorder: 8
 				});
 				popup?.show();
@@ -83,8 +87,9 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 
 				component.$set({
 					query: props.query,
-					command: (item) =>
-						props.command({ id: item.id, label: item.label })
+					command: (item) => {
+						props.command({ id: item.id, label: item.label });
+					}
 				});
 
 				if (props.clientRect && popup) {
@@ -94,6 +99,7 @@ export function getSuggestionRenderer(Component: any, ComponentProps = {}) {
 
 			onKeyDown: (props: any) => {
 				// forward to the Svelte component’s handler
+				// (expose this from component as `export function onKeyDown(evt)`)
 				// @ts-ignore
 				return component?._onKeyDown?.(props.event) ?? false;
 			},
