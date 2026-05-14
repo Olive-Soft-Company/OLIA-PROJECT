@@ -335,7 +335,7 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
             for action_id in set(model.pop('action_ids', [])) | global_action_ids
             if action_id in enabled_action_ids
         ]
-        action_ids.sort(key=lambda aid: (int(get_action_priority(aid) or 0), str(aid)))
+        action_ids.sort(key=lambda aid: (get_action_priority(aid), aid))
 
         filter_ids = [
             filter_id
