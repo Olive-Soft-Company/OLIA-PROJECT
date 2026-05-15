@@ -508,6 +508,7 @@
 										class="text-xs text-gray-700 dark:text-gray-300 bg-transparent outline-hidden"
 									>
 										<option value="">{$i18n.t('Default')}</option>
+										<option value="OpenAI">{$i18n.t('OpenAI')}</option>
 										<option value="azure">{$i18n.t('Azure OpenAI')}</option>
 										<option value="llama.cpp">{$i18n.t('llama.cpp')}</option>
 									</select>
