@@ -1,22 +1,19 @@
 <script lang="ts">
-	import { getContext, onMount, tick } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 
 	const i18n = getContext('i18n');
 
-	import { getGroups, getGroupInfoById } from '$lib/apis/groups';
+	import { getGroups, getGroupById, getGroupInfoById } from '$lib/apis/groups';
 	import { getUserInfoById } from '$lib/apis/users';
 	import { WEBUI_API_BASE_URL } from '$lib/constants';
-
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Badge from '$lib/components/common/Badge.svelte';
+	import GlobeAlt from '$lib/components/icons/GlobeAlt.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import AddAccessModal from './AddAccessModal.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 
-	// -----------------------------
-	// Types
-	// -----------------------------
 	type AccessGrant = {
 		id?: string;
 		principal_type: 'user' | 'group';
@@ -29,47 +26,30 @@
 		write: { group_ids: string[]; user_ids: string[] };
 	};
 
-	// -----------------------------
-	// Props
-	// -----------------------------
-	export let onChange: (grants: AccessGrant[]) => void = () => {};
+	export let onChange: Function = () => {};
 
-	export let accessRoles: Array<'read' | 'write'> = ['read'];
+	export let accessRoles = ['read'];
 	export let accessGrants: AccessGrant[] | any = [];
-	// legacy (optional): null => public read, object => read/write lists, undefined => ignore
 	export let accessControl: any = undefined;
 
 	export let share = true;
 	export let sharePublic = true;
 	export let shareUsers = true;
 
-	// -----------------------------
-	// State
-	// -----------------------------
 	let groups: any[] = [];
-	let accessGroups: any[] = [];
-
-	let userById: Record<string, any> = {};
-	let selectedUsers: any[] = [];
-
-	let showAddAccessModal = false;
-	let selectedUserIds: string[] = [];
-
 	const resolvingGroupIds = new Set<string>();
+	let userById: Record<string, any> = {};
 	const resolvingUserIds = new Set<string>();
 
-	// -----------------------------
-	// Helpers
-	// -----------------------------
+	let showAddAccessModal = false;
+
 	const dedupeAccessGrants = (grants: AccessGrant[] | null | undefined): AccessGrant[] => {
 		if (!Array.isArray(grants)) return [];
 		const map = new Map<string, AccessGrant>();
-
 		for (const grant of grants) {
 			if (!grant) continue;
-			if (!grant.principal_type || !grant.principal_id || !grant.permission) continue;
-
 			const key = `${grant.principal_type}:${grant.principal_id}:${grant.permission}`;
+			if (!grant.principal_type || !grant.principal_id || !grant.permission) continue;
 			map.set(key, {
 				id: grant.id,
 				principal_type: grant.principal_type,
@@ -77,39 +57,40 @@
 				permission: grant.permission
 			});
 		}
-
 		return Array.from(map.values());
 	};
 
-	const stableStringify = (value: any): string => {
-		try {
-			return JSON.stringify(value ?? null);
-		} catch {
-			return '';
-		}
-	};
-
-	const hasPublicReadGrant = (grants: AccessGrant[]): boolean =>
-		grants.some(
-			(g) => g.principal_type === 'user' && g.principal_id === '*' && g.permission === 'read'
-		);
-
-	const legacyAccessControlToGrants = (value: any): AccessGrant[] => {
-		// Convention: accessControl === null => public read
-		if (value === null) {
-			return [{ principal_type: 'user', principal_id: '*', permission: 'read' }];
+	const legacyAccessControlToGrants = (accessControl: any): AccessGrant[] => {
+		if (accessControl === null) {
+			return [
+				{
+					principal_type: 'user',
+					principal_id: '*',
+					permission: 'read'
+				}
+			];
 		}
 
-		if (!value || typeof value !== 'object') return [];
+		if (!accessControl || typeof accessControl !== 'object') {
+			return [];
+		}
 
 		const grants: AccessGrant[] = [];
 		for (const permission of ['read', 'write'] as const) {
-			const entry = value?.[permission] ?? {};
+			const entry = accessControl?.[permission] ?? {};
 			for (const groupId of entry?.group_ids ?? []) {
-				grants.push({ principal_type: 'group', principal_id: groupId, permission });
+				grants.push({
+					principal_type: 'group',
+					principal_id: groupId,
+					permission
+				});
 			}
 			for (const userId of entry?.user_ids ?? []) {
-				grants.push({ principal_type: 'user', principal_id: userId, permission });
+				grants.push({
+					principal_type: 'user',
+					principal_id: userId,
+					permission
+				});
 			}
 		}
 
@@ -118,9 +99,9 @@
 
 	const grantsToLegacyAccessControl = (grants: AccessGrant[]): null | LegacyAccessControl => {
 		const normalized = dedupeAccessGrants(grants);
-
-		// If public read => represent as null
-		if (hasPublicReadGrant(normalized)) return null;
+		if (hasPublicReadGrant(normalized)) {
+			return null;
+		}
 
 		const result: LegacyAccessControl = {
 			read: { group_ids: [], user_ids: [] },
@@ -128,7 +109,9 @@
 		};
 
 		for (const grant of normalized) {
-			if (grant.permission !== 'read' && grant.permission !== 'write') continue;
+			if (!['read', 'write'].includes(grant.permission)) {
+				continue;
+			}
 
 			if (grant.principal_type === 'group') {
 				if (!result[grant.permission].group_ids.includes(grant.principal_id)) {
@@ -151,42 +134,31 @@
 	};
 
 	const normalizeInputToGrants = (value: any): AccessGrant[] => {
-		if (value === null) return legacyAccessControlToGrants(null);
-		if (Array.isArray(value)) return dedupeAccessGrants(value);
+		if (value === null) {
+			return legacyAccessControlToGrants(null);
+		}
+		if (Array.isArray(value)) {
+			return dedupeAccessGrants(value);
+		}
 		if (value && typeof value === 'object' && ('read' in value || 'write' in value)) {
 			return legacyAccessControlToGrants(value);
 		}
 		return [];
 	};
 
-	// -----------------------------
-	// ✅ Safe sync (NO reactive assignment cycles)
-	// -----------------------------
-	let lastAccessControlSig = '';
-	let lastAccessGrantsSig = '';
-	const sig = (v: any) => stableStringify(v);
-
-	// parent legacy -> grants
-	const syncFromAccessControl = async () => {
-		if (accessControl === undefined) return;
-
-		const s = sig(accessControl);
-		if (s === lastAccessControlSig) return;
-		lastAccessControlSig = s;
-
-		const grantsFromAC = normalizeInputToGrants(accessControl);
-
-		if (sig(grantsFromAC) !== sig(accessGrants)) {
-			accessGrants = grantsFromAC;
-			lastAccessGrantsSig = sig(accessGrants);
+	const stableStringify = (value: any): string => {
+		try {
+			return JSON.stringify(value ?? null);
+		} catch {
+			return '';
 		}
-
-		await tick();
 	};
 
-	// grants -> legacy (only if legacy prop exists)
-	const syncToAccessControl = async () => {
-		if (accessControl === undefined) return;
+	const hasPublicReadGrant = (grants: AccessGrant[]): boolean =>
+		grants.some(
+			(grant) =>
+				grant.principal_type === 'user' && grant.principal_id === '*' && grant.permission === 'read'
+		);
 
 	const hasPublicWriteGrant = (grants: AccessGrant[]): boolean =>
 		grants.some(
@@ -199,60 +171,35 @@
 	const currentGrants = (): AccessGrant[] =>
 		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : [];
 
-		const normalized = dedupeAccessGrants(Array.isArray(accessGrants) ? accessGrants : []);
-		const nextAccessControl = grantsToLegacyAccessControl(normalized);
-
-		if (sig(nextAccessControl) !== sig(accessControl)) {
-			accessControl = nextAccessControl;
-			lastAccessControlSig = sig(accessControl);
-		}
-
-		await tick();
-	};
-
-	// If your parent can change accessControl AFTER mount,
-	// keep a *one-way* watcher but DO NOT write accessControl inside it.
-	$: if (accessControl !== undefined) {
-		void syncFromAccessControl();
-	}
-
-	// -----------------------------
-	// ✅ Read-only derived snapshot
-	// -----------------------------
-	$: normalizedGrants = dedupeAccessGrants(
-		Array.isArray(accessGrants) ? (accessGrants as AccessGrant[]) : []
-	);
-
-	const getPrincipalIdsByPermissionFrom = (
-		grants: AccessGrant[],
+	const getPrincipalIdsByPermission = (
 		principalType: 'user' | 'group',
 		permission: 'read' | 'write'
-	): string[] => {
-		const ids = grants
-			.filter((g) => g.principal_type === principalType && g.permission === permission)
-			.map((g) => g.principal_id);
-		return Array.from(new Set(ids));
-	};
+	): string[] =>
+		Array.from(
+			new Set(
+				currentGrants()
+					.filter(
+						(grant) => grant.principal_type === principalType && grant.permission === permission
+					)
+					.map((grant) => grant.principal_id)
+			)
+		);
 
 	const hasPrincipalGrant = (
 		principalType: 'user' | 'group',
 		principalId: string,
 		permission: 'read' | 'write'
 	): boolean =>
-		normalizedGrants.some(
-			(g) =>
-				g.principal_type === principalType &&
-				g.principal_id === principalId &&
-				g.permission === permission
+		currentGrants().some(
+			(grant) =>
+				grant.principal_type === principalType &&
+				grant.principal_id === principalId &&
+				grant.permission === permission
 		);
 
-	const commitAccessGrants = (next: AccessGrant[]) => {
-		const deduped = dedupeAccessGrants(next);
-		accessGrants = deduped;
-		onChange(deduped);
-
-		// keep legacy accessControl prop in sync without reactive $:
-		void syncToAccessControl();
+	const commitAccessGrants = (nextGrants: AccessGrant[]) => {
+		accessGrants = dedupeAccessGrants(nextGrants);
+		onChange(accessGrants);
 	};
 
 	const setPublic = (isPublic: boolean) => {
@@ -260,11 +207,13 @@
 		const filtered = currentGrants().filter(
 			(grant) => !(grant.principal_type === 'user' && grant.principal_id === '*')
 		);
-
 		if (isPublic) {
-			filtered.push({ principal_type: 'user', principal_id: '*', permission: 'read' });
+			filtered.push({
+				principal_type: 'user',
+				principal_id: '*',
+				permission: 'read'
+			});
 		}
-
 		commitAccessGrants(filtered);
 	};
 
@@ -291,14 +240,24 @@
 		permission: 'read' | 'write',
 		grants: AccessGrant[]
 	): AccessGrant[] => {
-		const exists = grants.some(
-			(g) =>
-				g.principal_type === principalType &&
-				g.principal_id === principalId &&
-				g.permission === permission
-		);
-		if (exists) return grants;
-		return [...grants, { principal_type: principalType, principal_id: principalId, permission }];
+		if (
+			grants.some(
+				(grant) =>
+					grant.principal_type === principalType &&
+					grant.principal_id === principalId &&
+					grant.permission === permission
+			)
+		) {
+			return grants;
+		}
+		return [
+			...grants,
+			{
+				principal_type: principalType,
+				principal_id: principalId,
+				permission
+			}
+		];
 	};
 
 	const removePrincipalGrant = (
@@ -308,161 +267,189 @@
 		grants: AccessGrant[]
 	): AccessGrant[] =>
 		grants.filter(
-			(g) =>
+			(grant) =>
 				!(
-					g.principal_type === principalType &&
-					g.principal_id === principalId &&
-					g.permission === permission
+					grant.principal_type === principalType &&
+					grant.principal_id === principalId &&
+					grant.permission === permission
 				)
 		);
 
 	const removePrincipal = (principalType: 'user' | 'group', principalId: string) => {
-		let next = [...normalizedGrants];
+		let next = [...currentGrants()];
 		next = removePrincipalGrant(principalType, principalId, 'read', next);
 		next = removePrincipalGrant(principalType, principalId, 'write', next);
 		commitAccessGrants(next);
 	};
 
 	const togglePrincipalWrite = (principalType: 'user' | 'group', principalId: string) => {
-		let next = [...normalizedGrants];
+		let next = [...currentGrants()];
 		const hasWrite = hasPrincipalGrant(principalType, principalId, 'write');
-
 		if (hasWrite) {
 			next = removePrincipalGrant(principalType, principalId, 'write', next);
 		} else {
-			// if write => ensure read too
 			next = upsertPrincipalGrant(principalType, principalId, 'read', next);
 			next = upsertPrincipalGrant(principalType, principalId, 'write', next);
 		}
-
 		commitAccessGrants(next);
 	};
 
 	const ensureUsersByIds = async (userIds: string[]) => {
-		const pending = userIds.filter((id) => !userById[id] && !resolvingUserIds.has(id));
-		if (!pending.length) return;
+		const pendingIds = userIds.filter((id) => !userById[id] && !resolvingUserIds.has(id));
+		if (!pendingIds.length) return;
 
-		pending.forEach((id) => resolvingUserIds.add(id));
+		for (const id of pendingIds) {
+			resolvingUserIds.add(id);
+		}
 
 		const fetched = await Promise.all(
-			pending.map(async (id) => {
-				const u = await getUserInfoById(localStorage.token, id).catch((err) => {
-					console.error(err);
+			pendingIds.map(async (id) => {
+				const user = await getUserInfoById(localStorage.token, id).catch((error) => {
+					console.error(error);
 					return null;
 				});
-				return { id, user: u };
+				return { id, user };
 			})
 		);
 
-		const next = { ...userById };
+		const nextUserById = { ...userById };
 		for (const item of fetched) {
-			if (item.user?.id) next[item.id] = item.user;
+			if (item.user?.id) {
+				nextUserById[item.id] = item.user;
+			}
 			resolvingUserIds.delete(item.id);
 		}
-
-		userById = next;
-	};
-
-	const ensureGroupsByIds = async (groupIds: string[]) => {
-		const pending = groupIds.filter(
-			(id) => !groups.find((g) => g.id === id) && !resolvingGroupIds.has(id)
-		);
-		if (!pending.length) return;
-
-		pending.forEach((id) => resolvingGroupIds.add(id));
-
-		const fetched = await Promise.all(
-			pending.map(async (id) => {
-				const g = await getGroupInfoById(localStorage.token, id).catch((err) => {
-					console.error(err);
-					return null;
-				});
-				return g;
-			})
-		);
-
-		const newGroups = fetched.filter(Boolean);
-		if (newGroups.length) {
-			groups = [...groups, ...newGroups].filter(
-				(g, idx, self) => idx === self.findIndex((t) => t.id === g.id)
-			);
-		}
-
-		pending.forEach((id) => resolvingGroupIds.delete(id));
+		userById = nextUserById;
 	};
 
 	const handleAddAccess = ({ userIds, groupIds }: { userIds: string[]; groupIds: string[] }) => {
-		let next = [...normalizedGrants];
+		let next = [...currentGrants()];
 
-		for (const gid of groupIds) {
-			next = upsertPrincipalGrant('group', gid, 'read', next);
+		for (const groupId of groupIds) {
+			next = upsertPrincipalGrant('group', groupId, 'read', next);
 		}
-		for (const uid of userIds) {
-			next = upsertPrincipalGrant('user', uid, 'read', next);
+		for (const userId of userIds) {
+			next = upsertPrincipalGrant('user', userId, 'read', next);
 		}
-
 		commitAccessGrants(next);
 	};
 
-	function onUserImgError(e: Event) {
-		const img = e.currentTarget as HTMLImageElement | null;
-		if (img) img.src = '/user.png';
+	// NOTE: We must reference `accessGrants` directly in each reactive
+	// expression so Svelte tracks the dependency.
+	const ensureGroupsByIds = async (groupIds: string[]) => {
+		const pendingIds = groupIds.filter(
+			(id) => !groups.find((g) => g.id === id) && !resolvingGroupIds.has(id)
+		);
+		if (!pendingIds.length) return;
+
+		for (const id of pendingIds) {
+			resolvingGroupIds.add(id);
+		}
+
+		const fetched = await Promise.all(
+			pendingIds.map(async (id) => {
+				const group = await getGroupInfoById(localStorage.token, id).catch((error) => {
+					console.error(error);
+					return null;
+				});
+				return group;
+			})
+		);
+
+		const newGroups = fetched.filter((g) => g);
+		if (newGroups.length > 0) {
+			groups = [...groups, ...newGroups].filter(
+				(g, index, self) => index === self.findIndex((t) => t.id === g.id)
+			);
+		}
+
+		for (const id of pendingIds) {
+			resolvingGroupIds.delete(id);
+		}
+	};
+
+	$: if (readGroupIds.length > 0 || writeGroupIds.length > 0) {
+		void ensureGroupsByIds([...readGroupIds, ...writeGroupIds]);
 	}
-
-	// -----------------------------
-	// Derived values
-	// -----------------------------
-	$: readGroupIds = getPrincipalIdsByPermissionFrom(normalizedGrants, 'group', 'read');
-	$: writeGroupIds = getPrincipalIdsByPermissionFrom(normalizedGrants, 'group', 'write');
-
-	$: readUserIds = getPrincipalIdsByPermissionFrom(normalizedGrants, 'user', 'read').filter(
-		(id) => id !== '*'
-	);
-	$: writeUserIds = getPrincipalIdsByPermissionFrom(normalizedGrants, 'user', 'write').filter(
-		(id) => id !== '*'
-	);
+	$: readGroupIds = (accessGrants, getPrincipalIdsByPermission('group', 'read'));
+	$: writeGroupIds = (accessGrants, getPrincipalIdsByPermission('group', 'write'));
+	$: readUserIds =
+		(accessGrants, getPrincipalIdsByPermission('user', 'read').filter((id) => id !== '*'));
+	$: writeUserIds =
+		(accessGrants, getPrincipalIdsByPermission('user', 'write').filter((id) => id !== '*'));
 
 	$: selectedUserIds = Array.from(new Set([...readUserIds, ...writeUserIds]));
 
 	$: selectedUsers = selectedUserIds
-		.map((id) => userById[id] ?? { id, name: id, email: '' })
-		.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+		.map((id) => {
+			return userById[id] ?? { id, name: id, email: '' };
+		})
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	$: accessGroups = groups
-		.filter((g) => readGroupIds.includes(g.id) || writeGroupIds.includes(g.id))
-		.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+		.filter((group) => readGroupIds.includes(group.id) || writeGroupIds.includes(group.id))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
-	$: if (selectedUserIds.length > 0) void ensureUsersByIds(selectedUserIds);
-	$: if (readGroupIds.length > 0 || writeGroupIds.length > 0) {
-		void ensureGroupsByIds(Array.from(new Set([...readGroupIds, ...writeGroupIds])));
+	$: if (selectedUserIds.length > 0) {
+		void ensureUsersByIds(selectedUserIds);
 	}
 
-	// -----------------------------
-	// Mount
-	// -----------------------------
-	onMount(async () => {
-		// initial sync from parent accessControl -> accessGrants
-		await syncFromAccessControl();
+	$: {
+		if (accessControl !== undefined) {
+			const normalizedGrants = normalizeInputToGrants(accessControl);
+			if (stableStringify(normalizedGrants) !== stableStringify(accessGrants)) {
+				accessGrants = normalizedGrants;
+			}
+		}
+	}
 
-		const res = await getGroups(localStorage.token, true).catch((err) => {
-			console.error(err);
+	$: {
+		const normalizedGrants = normalizeInputToGrants(accessGrants);
+		if (stableStringify(normalizedGrants) !== stableStringify(accessGrants)) {
+			accessGrants = normalizedGrants;
+		}
+
+		if (accessControl !== undefined) {
+			const nextAccessControl = grantsToLegacyAccessControl(normalizedGrants);
+			if (stableStringify(nextAccessControl) !== stableStringify(accessControl)) {
+				accessControl = nextAccessControl;
+			}
+		}
+	}
+
+	onMount(async () => {
+		console.log('AccessControl mounted', { accessGrants, accessControl });
+		const res = await getGroups(localStorage.token, true).catch((error) => {
+			console.error(error);
 			return [];
 		});
 
+		console.log('getGroups res', res);
+
 		groups = [...groups, ...res].filter(
-			(g, idx, self) => idx === self.findIndex((t) => t.id === g.id)
+			(g, index, self) => index === self.findIndex((t) => t.id === g.id)
 		);
+	});
+
+	$: console.log('AccessControl state', {
+		accessGrants,
+		readGroupIds,
+		writeGroupIds,
+		selectedUserIds,
+		groups,
+		accessGroups,
+		selectedUsers
 	});
 </script>
 
 <AddAccessModal bind:show={showAddAccessModal} {shareUsers} onAdd={handleAddAccess} />
 
-<div class="rounded-lg flex flex-col gap-1">
+<div class=" rounded-lg flex flex-col gap-1">
 	<div class="py-2">
 		<div class="flex gap-2.5 items-center">
 			<div>
-				<div class="p-2 bg-black/5 dark:bg-white/5 rounded-full">
-					{#if !hasPublicReadGrant(normalizedGrants)}
+				<div class=" p-2 bg-black/5 dark:bg-white/5 rounded-full">
+					{#if !hasPublicReadGrant(accessGrants ?? [])}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -498,7 +485,7 @@
 
 			<div>
 				<Tooltip
-					content={!(share && sharePublic) && !hasPublicReadGrant(normalizedGrants)
+					content={!(share && sharePublic) && !hasPublicReadGrant(accessGrants ?? [])
 						? $i18n.t('You do not have permission to make this public')
 						: ''}
 				>
@@ -506,17 +493,19 @@
 						id="models"
 						class="outline-none bg-transparent text-sm font-medium block w-fit pr-10 max-w-full placeholder-gray-400"
 						value={!hasPublicReadGrant(accessGrants ?? []) ? 'private' : 'public'}
-						on:change={handleVisibilityChange}
+						on:change={(e) => {
+							setPublic((e.target as HTMLSelectElement).value === 'public');
+						}}
 					>
-						<option class="text-gray-700" value="private">{$i18n.t('Private')}</option>
-						{#if (share && sharePublic) || hasPublicReadGrant(normalizedGrants)}
-							<option class="text-gray-700" value="public">{$i18n.t('Public')}</option>
+						<option class=" text-gray-700" value="private">{$i18n.t('Private')}</option>
+						{#if (share && sharePublic) || hasPublicReadGrant(accessGrants ?? [])}
+							<option class=" text-gray-700" value="public">{$i18n.t('Public')}</option>
 						{/if}
 					</select>
 				</Tooltip>
 
-				<div class="text-xs text-gray-400 font-medium">
-					{#if !hasPublicReadGrant(normalizedGrants)}
+				<div class=" text-xs text-gray-400 font-medium">
+					{#if !hasPublicReadGrant(accessGrants ?? [])}
 						{$i18n.t('Only select users and groups with permission can access')}
 					{:else}
 						{$i18n.t('Accessible to all users')}
@@ -542,13 +531,16 @@
 
 	{#if share}
 		<div class="flex items-center justify-between text-xs font-medium text-gray-500 my-1">
-			<div>{$i18n.t('Access List')}</div>
-
+			<div>
+				{$i18n.t('Access List')}
+			</div>
 			<div class="flex gap-1">
 				<button
 					class="px-2 py-1 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition text-xs font-medium flex items-center gap-1"
 					type="button"
-					on:click={() => (showAddAccessModal = true)}
+					on:click={() => {
+						showAddAccessModal = true;
+					}}
 				>
 					<Plus className="size-3" />
 					{$i18n.t('Add Access')}
@@ -556,22 +548,24 @@
 			</div>
 		</div>
 
+		<!-- List -->
 		<div class="flex flex-col gap-2">
 			<!-- Groups -->
-			{#each accessGroups as group (group.id)}
+			{#each accessGroups as group}
 				<div class="flex items-center gap-3 justify-between text-sm w-full transition pb-1">
 					<div class="flex items-center gap-2 w-full flex-1">
+						<!-- Placeholder for group icon vs user icon -->
 						<div
 							class="size-5 rounded-full bg-gray-100 dark:bg-gray-850 flex items-center justify-center text-xs"
 						>
-							{(group.name ?? '').charAt(0).toUpperCase()}
+							{group.name.charAt(0).toUpperCase()}
 						</div>
 
 						<div class="truncate text-sm flex items-center gap-2">
 							{group.name}
-							<span class="text-xs text-gray-400 font-normal">
-								{group?.member_count} {$i18n.t('members')}
-							</span>
+							<span class="text-xs text-gray-400 font-normal"
+								>{group?.member_count} {$i18n.t('members')}</span
+							>
 						</div>
 					</div>
 
@@ -579,20 +573,24 @@
 						<button
 							type="button"
 							on:click={() => {
-								if (accessRoles.includes('write')) togglePrincipalWrite('group', group.id);
+								if (accessRoles.includes('write')) {
+									togglePrincipalWrite('group', group.id);
+								}
 							}}
 						>
 							{#if writeGroupIds.includes(group.id)}
-								<Badge type="success" content={$i18n.t('Write')} />
+								<Badge type={'success'} content={$i18n.t('Write')} />
 							{:else}
-								<Badge type="info" content={$i18n.t('Read')} />
+								<Badge type={'info'} content={$i18n.t('Read')} />
 							{/if}
 						</button>
 
 						<button
-							class="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+							class=" rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
 							type="button"
-							on:click={() => removePrincipal('group', group.id)}
+							on:click={() => {
+								removePrincipal('group', group.id);
+							}}
 						>
 							<XMark className="size-4" />
 						</button>
@@ -649,7 +647,7 @@
 				{/each}
 			{/if}
 
-			{#if !hasPublicReadGrant(normalizedGrants) && accessGroups.length === 0 && selectedUsers.length === 0}
+			{#if !hasPublicReadGrant(accessGrants ?? []) && accessGroups.length === 0 && selectedUsers.length === 0}
 				<div class="text-xs text-gray-500 text-center py-4">
 					{$i18n.t('No access grants. Private to you.')}
 				</div>
