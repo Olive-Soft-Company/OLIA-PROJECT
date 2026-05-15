@@ -338,6 +338,10 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
             for action_id in set(model.pop('action_ids', [])) | global_action_ids
             if action_id in enabled_action_ids
         ]
+        print("========== DEBUG /api/models action_ids ==========")
+        print("action_ids =", action_ids)
+        print("action_ids types =", [(aid, type(aid).__name__) for aid in action_ids])
+        print("==================================================")
         action_ids.sort(key=lambda aid: (get_action_priority(aid), aid))
 
         filter_ids = [
