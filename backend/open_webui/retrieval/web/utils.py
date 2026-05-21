@@ -509,30 +509,69 @@ class SafeWebBaseLoader(WebBaseLoader):
         async with aiohttp.ClientSession(trust_env=self.trust_env) as session:
             for i in range(retries):
                 try:
+                    request_kwargs = dict(self.requests_kwargs or {})
+
+                    # Très important : on retire allow_redirects de request_kwargs
+                    # pour ne pas le passer deux fois à session.get()
+                    allow_redirects = request_kwargs.pop(
+                        "allow_redirects",
+                        AIOHTTP_CLIENT_ALLOW_REDIRECTS,
+                    )
+
                     kwargs: Dict = dict(
-                        headers=self.session.headers,
+                        headers={
+                            **dict(self.session.headers or {}),
+                            "User-Agent": (
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                "Chrome/120.0.0.0 Safari/537.36"
+                            ),
+                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                            "Accept-Language": "en-US,en;q=0.9",
+                        },
                         cookies=self.session.cookies.get_dict(),
                     )
+
                     if not self.session.verify:
-                        kwargs['ssl'] = False
+                        kwargs["ssl"] = False
                     else:
-                        kwargs['ssl'] = AIOHTTP_CLIENT_SESSION_SSL
+                        kwargs["ssl"] = AIOHTTP_CLIENT_SESSION_SSL
 
                     async with session.get(
                         url,
-                        **(self.requests_kwargs | kwargs),
-                        allow_redirects=AIOHTTP_CLIENT_ALLOW_REDIRECTS,
+                        **(request_kwargs | kwargs),
+                        allow_redirects=allow_redirects,
                     ) as response:
                         if self.raise_for_status:
                             response.raise_for_status()
-                        return await response.text()
-                except aiohttp.ClientConnectionError as e:
+
+                        text = await response.text(errors="ignore")
+
+                        if not text or not text.strip():
+                            location = response.headers.get("location")
+                            #raise ValueError(f"Empty response body for {url}")
+                            log.warning(
+                                f"[WEB_LOADER_DEBUG] Empty body for {url} | "
+                                f"status={response.status} | "
+                                f"content_type={response.headers.get('content-type')} | "
+                                f"location={response.headers.get('location')}"
+                            )
+                            return ""
+                        return text
+
+                except Exception as e:
                     if i == retries - 1:
+                        log.exception(
+                            f"[WEB_LOADER_DEBUG] Failed fetching {url}: {repr(e)}"
+                        )
                         raise
-                    else:
-                        log.warning(f'Error fetching {url} with attempt {i + 1}/{retries}: {e}. Retrying...')
-                        await asyncio.sleep(cooldown * backoff**i)
-        raise ValueError('retry count exceeded')
+
+                    log.warning(
+                        f"[WEB_LOADER_DEBUG] Error fetching {url} with attempt {i + 1}/{retries}: {repr(e)}. Retrying..."
+                    )
+                    await asyncio.sleep(cooldown * backoff**i)
+
+        raise ValueError("retry count exceeded")
 
     def _unpack_fetch_results(self, results: Any, urls: List[str], parser: Union[str, None] = None) -> List[Any]:
         """Unpack fetch results into BeautifulSoup objects."""
