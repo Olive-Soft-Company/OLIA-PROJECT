@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Gitleaks results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() && hashFiles('gitleaks.sarif') != ''
         with:
           sarif_file: gitleaks.sarif
@@ -80,7 +80,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload SCA results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-fs.sarif
@@ -141,7 +141,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload image scan results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-image.sarif
@@ -197,17 +197,27 @@ jobs:
 
       # Scan rendered K8s manifests for security misconfigurations
       - name: Kubernetes manifest scan (Checkov)
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          file: rendered-manifests.yaml
-          framework: kubernetes
-          output_format: sarif
-          output_file_path: checkov.sarif
-          soft_fail: true  # set to false to hard-block on policy violations
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/repo" \
+            bridgecrew/checkov:3.2.527 \
+            --file /repo/rendered-manifests.yaml \
+            --framework kubernetes \
+            --output sarif \
+            --output-file-path /repo \
+            --soft-fail
+          
+          # Checkov creates results_sarif.sarif in the output path. Move it to a standard name.
+          if [ -f "results_sarif.sarif" ]; then
+            mv results_sarif.sarif checkov.sarif
+          else
+            echo "::warning::Checkov did not produce results_sarif.sarif. Creating empty SARIF."
+            echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json","version":"2.1.0","runs":[]}' > checkov.sarif
+          fi
 
       - name: Upload Checkov results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('checkov.sarif') != ''
         with:
           sarif_file: checkov.sarif
           category: checkov-helm
