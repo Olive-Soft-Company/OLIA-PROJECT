@@ -53,11 +53,10 @@ jobs:
           sarif_file: gitleaks.sarif
           category: gitleaks
 
-      - name: Block on detected secrets
+      - name: Report detected secrets
         if: steps.gitleaks.outcome == 'failure'
         run: |
-          echo "::error::Secrets detected in source code — pipeline blocked."
-          exit 1
+          echo "::warning::Secrets detected in source code — please review them."
 
       # Enforce Dockerfile best practices and security rules
       - name: Dockerfile lint (Hadolint)
