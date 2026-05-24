@@ -35,25 +35,37 @@ jobs:
 
       # Detect hardcoded secrets and credentials in source code
       - name: Secret detection (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: gitleaks
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/repo" \
+            zricethezav/gitleaks:v8.18.4 \
+            detect --source /repo \
+            --report-format sarif \
+            --report-path /repo/gitleaks.sarif \
+            --exit-code 1
+        continue-on-error: true
+
+      - name: Upload Gitleaks results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('gitleaks.sarif') != ''
+        with:
+          sarif_file: gitleaks.sarif
+          category: gitleaks
+
+      - name: Block on detected secrets
+        if: steps.gitleaks.outcome == 'failure'
+        run: |
+          echo "::error::Secrets detected in source code — pipeline blocked."
+          exit 1
 
       # Enforce Dockerfile best practices and security rules
       - name: Dockerfile lint (Hadolint)
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile
-          failure-threshold: warning
-          format: sarif
-          output-file: hadolint.sarif
-
-      - name: Upload Hadolint results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: hadolint.sarif
-          category: hadolint
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/repo" \
+            hadolint/hadolint:v2.12.0 \
+            hadolint --failure-threshold warning /repo/Dockerfile
 
       # Scan source dependencies (SCA) before the image is built
       - name: Dependency vulnerability scan (Trivy filesystem)
