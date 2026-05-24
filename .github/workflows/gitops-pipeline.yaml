@@ -69,7 +69,7 @@ jobs:
 
       # Scan source dependencies (SCA) before the image is built
       - name: Dependency vulnerability scan (Trivy filesystem)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -131,7 +131,7 @@ jobs:
 
     steps:
       - name: Trivy image scan (CRITICAL + HIGH)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: sarif
@@ -149,7 +149,7 @@ jobs:
 
       # Generate a Software Bill of Materials for audit/compliance
       - name: Generate SBOM (CycloneDX)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: cyclonedx
