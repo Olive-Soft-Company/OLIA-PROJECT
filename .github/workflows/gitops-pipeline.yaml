@@ -1,78 +1,233 @@
 name: CI/CD AKS GitOps (PPD)
+
 on:
   push:
     branches:
       - gitops-ci
 
-env:
-   ACR_LOGIN_SERVER: olivesoft.azurecr.io
-   IMAGE_NAME: open-webui-custom
-   GITOPS_REPO: Olive-Soft-Company/OLIA-GITOPS
-   GITOPS_FILE: helm-values/env/dev/olia-values.yaml # Path in the GitOps repo
+# Cancel in-flight runs for the same branch on new push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+env:
+  ACR_LOGIN_SERVER: olivesoft.azurecr.io
+  IMAGE_NAME: open-webui-custom
+  GITOPS_REPO: Olive-Soft-Company/OLIA-GITOPS
+  GITOPS_FILE: helm-values/env/dev/olia-values.yaml
+
+# ── Job 1: Pre-build Security Gate ────────────────────────────────────────────
+# Secrets, Dockerfile quality, and dependency vulnerabilities are caught here
+# before any image is built or pushed.
 jobs:
-  deploy:
+  pre-build-security:
+    name: Pre-build Security Gate
     runs-on: self-hosted
-    env:
-      DOCKER_BUILDKIT: 1
+    permissions:
+      contents: read
+      security-events: write  # required to upload SARIF to GitHub Security tab
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history needed for accurate secret scanning
+
+      # Detect hardcoded secrets and credentials in source code
+      - name: Secret detection (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Enforce Dockerfile best practices and security rules
+      - name: Dockerfile lint (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning
+          format: sarif
+          output-file: hadolint.sarif
+
+      - name: Upload Hadolint results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: hadolint.sarif
+          category: hadolint
+
+      # Scan source dependencies (SCA) before the image is built
+      - name: Dependency vulnerability scan (Trivy filesystem)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Upload SCA results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-filesystem
+
+  # ── Job 2: Build & Push ──────────────────────────────────────────────────────
+  # Runs only after the pre-build security gate passes.
+  build-push:
+    name: Build & Push Image
+    runs-on: self-hosted
+    needs: pre-build-security
+    permissions:
+      contents: read
+    env:
+      DOCKER_BUILDKIT: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Login to Azure Container Registry
         run: |
-          echo ${{ secrets.ACR_PASSWORD }} | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ env.ACR_LOGIN_SERVER }} -u olivesoft --password-stdin
 
-      - name: Set up Docker Buildx                                                                                                 
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
-      - name:  Build and push 
+
+      - name: Build and push
         run: |
-         docker buildx build \
-           --platform linux/amd64,linux/arm64 \
-           -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-           --cache-from type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache \
-           --cache-to type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache,mode=max \
-           --push \
-           .
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --cache-from type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache \
+            --cache-to type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:cache,mode=max \
+            --push \
+            .
 
-      - name: Scan for critical vulnerabilities
-        uses: aquasecurity/trivy-action@master                                                                                     
-        with:   
-         image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-         exit-code: '1'                                                                                                           
-         severity: CRITICAL
-         ignore-unfixed: true   
+  # ── Job 3: Image Scan ────────────────────────────────────────────────────────
+  # Scans the built image for OS/package CVEs and generates an SBOM.
+  # Blocks the deploy if CRITICAL or HIGH unfixed CVEs are found.
+  image-scan:
+    name: Container Image Scan & SBOM
+    runs-on: self-hosted
+    needs: build-push
+    permissions:
+      contents: read
+      security-events: write
 
-      # Checkout the GitOps Repository using a Personal Access Token (PAT
-      - name: Checkout GitOps Repo
-        uses: actions/checkout@v3
+    steps:
+      - name: Trivy image scan (CRITICAL + HIGH)
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-              repository: ${{ env.GITOPS_REPO }}
-              token: ${{ secrets.GITOPS_PAT }}
-              path: gitops-repo
-        
-      - name: Update Image Tag in Helm 
+          image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: sarif
+          output: trivy-image.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Upload image scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image
+
+      # Generate a Software Bill of Materials for audit/compliance
+      - name: Generate SBOM (CycloneDX)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: cyclonedx
+          output: sbom.cdx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ github.sha }}
+          path: sbom.cdx.json
+          retention-days: 90
+
+  # ── Job 4: Helm Security Validation ─────────────────────────────────────────
+  # Lints the Helm chart, renders manifests, and scans them for misconfigurations.
+  # Runs in parallel with image-scan after build-push succeeds.
+  helm-security:
+    name: Helm Lint & Policy Check
+    runs-on: self-hosted
+    needs: build-push
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops-repo
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: '3.17.0'
+
+      - name: Helm lint
+        run: helm lint gitops-repo/charts/olia
+
+      - name: Render Helm templates
+        run: |
+          helm template olia gitops-repo/charts/olia \
+            -f gitops-repo/${{ env.GITOPS_FILE }} \
+            > rendered-manifests.yaml
+
+      # Scan rendered K8s manifests for security misconfigurations
+      - name: Kubernetes manifest scan (Checkov)
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          file: rendered-manifests.yaml
+          framework: kubernetes
+          output_format: sarif
+          output_file_path: checkov.sarif
+          soft_fail: true  # set to false to hard-block on policy violations
+
+      - name: Upload Checkov results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov.sarif
+          category: checkov-helm
+
+  # ── Job 5: GitOps Deploy ─────────────────────────────────────────────────────
+  # Only runs after both image-scan and helm-security pass.
+  # Writes the new image tag to the GitOps repo to trigger ArgoCD/Flux.
+  gitops-deploy:
+    name: GitOps Deploy
+    runs-on: self-hosted
+    needs: [image-scan, helm-security]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops-repo
+
+      - name: Update image tag in Helm values
         run: |
           sed -i 's|^\(\s*tag:\s*\).*|\1"${{ github.sha }}"|' gitops-repo/${{ env.GITOPS_FILE }}
-      
-      - name: Set up Helm                                                                                                                
-        uses: azure/setup-helm@v4
-        with:                                                                                                                            
-         version: '3.17.0'
 
-      - name: Validate Helm values
-        run: |
-           helm lint gitops-repo/charts/olia
-
-      - name: Commit and Push
+      - name: Commit and push
         run: |
           cd gitops-repo
           git config user.name "GitHub Actions Bot"
           git config user.email "github-actions-bot@olivesoft.fr"
           git add ${{ env.GITOPS_FILE }}
-          git diff --staged --quiet && echo "No changes to commit" && exit 0  
-          git commit -m "Deploy : Update Olia image to ${{ github.sha }}" 
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "deploy: update olia image to ${{ github.sha }}"
           git push origin main
-          
-             
