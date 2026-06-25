@@ -239,3 +239,4 @@ def extract_user_key_from_state(state: str) -> Optional[str]:
     if ":" not in state:
         return None
     return state.split(":", 1)[0] or None
+
