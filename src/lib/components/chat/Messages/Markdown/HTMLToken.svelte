@@ -108,21 +108,40 @@
 		{@const fileId = match && match[1]}
 		{#if fileId}
 			<iframe
-				class="w-full my-2"
+				class="w-full my-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white"
 				src={`${WEBUI_BASE_URL}/api/v1/files/${fileId}/content/html`}
-				title="Content"
+				title="Chart Visualization"
 				frameborder="0"
-				sandbox="allow-scripts allow-downloads{($settings?.iframeSandboxAllowForms ?? false)
+				sandbox="allow-scripts allow-downloads allow-same-origin{($settings?.iframeSandboxAllowForms ?? false)
 					? ' allow-forms'
-					: ''}{($settings?.iframeSandboxAllowSameOrigin ?? false) ? ' allow-same-origin' : ''}"
+					: ''}"
 				referrerpolicy="strict-origin-when-cross-origin"
 				allowfullscreen
 				width="100%"
+				style="width: 100%; height: 760px; min-height: 760px; border: 0; overflow: hidden;"
 				on:load={(e) => {
-					try {
-						e.currentTarget.style.height =
-							e.currentTarget.contentWindow.document.body.scrollHeight + 20 + 'px';
-					} catch {}
+					const iframe = e.currentTarget;
+
+					// Default stable height for Plotly charts
+					iframe.style.height = '760px';
+					iframe.style.minHeight = '760px';
+
+					// Optional auto-resize if browser allows access
+					setTimeout(() => {
+						try {
+							const doc = iframe.contentWindow?.document;
+							const bodyHeight = doc?.body?.scrollHeight ?? 0;
+							const htmlHeight = doc?.documentElement?.scrollHeight ?? 0;
+							const finalHeight = Math.max(bodyHeight, htmlHeight, 760);
+
+							iframe.style.height = finalHeight + 40 + 'px';
+							iframe.style.minHeight = finalHeight + 40 + 'px';
+						} catch {
+							// Keep fixed 760px height if auto-resize is blocked
+							iframe.style.height = '760px';
+							iframe.style.minHeight = '760px';
+						}
+					}, 800);
 				}}
 			></iframe>
 		{/if}

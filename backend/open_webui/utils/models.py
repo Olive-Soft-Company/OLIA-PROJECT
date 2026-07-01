@@ -342,7 +342,17 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
         print("action_ids =", action_ids)
         print("action_ids types =", [(aid, type(aid).__name__) for aid in action_ids])
         print("==================================================")
-        action_ids.sort(key=lambda aid: (get_action_priority(aid), aid))
+        def safe_action_priority(action_id):
+            try:
+                priority = get_action_priority(action_id)
+                
+                if priority is None or priority == "":
+                    return 0
+                return int(priority)
+            except Exception:
+                return 0
+            
+        action_ids.sort(key=lambda aid: (safe_action_priority(aid), str(aid)))
 
         filter_ids = [
             filter_id
