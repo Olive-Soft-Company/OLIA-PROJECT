@@ -23,7 +23,7 @@ jobs:
 
       - name: Login to Azure Container Registry
         run: |
-          echo "${{ secrets.ACR_PASSWORD }}" | docker login olivesoft.azurecr.io -u olivesoft --password-stdin
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login olivesoft.azurecr.io -u oliarg --password-stdin
 
       - name: Build Docker image
         run: |
